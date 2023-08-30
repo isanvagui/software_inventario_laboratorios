@@ -1,0 +1,144 @@
+body{
+    /* height: 100%;
+    margin: 0; */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover; 
+    background-image: linear-gradient(to bottom,rgba(25, 88, 85, 1), rgba(83, 88, 231, 0.73));
+  }
+
+/* .boton{
+    font-size:50px;
+    font-family:Verdana,Helvetica;
+    font-weight:bold;
+    color:white;
+    background:#2e28cd;
+    /* float: right; ojo no va 
+    border-width:5px;
+    border-radius:15px;
+    width:300px;
+    height:109px;
+   }*/
+
+/* .botonEditar{
+  padding: 15px;  tamaño de letra
+  font-size:50px;
+  font-family:Verdana,Helvetica;
+  text-align: center; no va
+  font-weight:bold;
+  color:white;
+  background:#2e28cd;
+  float: center; no va
+  border-width:5px;
+  border-radius:15px;
+  width:470px;
+  height:109px; 
+}*/
+.divSalud{
+  font-size:12px; /*cambie el tamaño de la letra */
+  /* border: 5px solid darkblue; */
+  /* height: 280px; */
+  /* margin: 0 auto; */
+  /* padding: -10%; */
+  width: 1300px;
+  /* display: flex; */
+  justify-content: space-between;
+  float: right;
+}
+
+.divGastronomia{
+  /* font-size:16px; cambie el tamaño de la letra */
+  /* border: 5px solid darkblue; */
+  /* height: 280px; */
+  /* margin: 5%; */
+  /* padding: -10%; */
+  width: 1100px;
+  /* display: flex; */
+  justify-content: space-between;
+  float: right;
+}
+
+.regresar{
+  margin-top: 15;
+  border-radius:15px;
+  /* border: 5px solid darkblue; */
+  height: 100px;
+  /* margin: 2%; */
+  /* padding:0%; */
+  width: 180px;
+  /* display: flex; */
+  /* justify-content: space-between; */
+  float: left;
+}
+
+/* ====================================//============================================ */
+.btn-eliminar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 7vh; /* da espacio verticalmente entre los botones */
+}
+
+.center-horizon-vert {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 20vh; /* da espacio verticalmente entre los botones */
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.col-sm-4 {
+   margin: 15px; /* da espacio horizontalmente entre los botones */
+}
+
+.boton {
+  font-weight:bold; /* cambia la letra a negrita  */
+  background-color: #f00; /* Cambia el color de fondo según tus necesidades */
+  color: #fff;
+  /* width: 100%; */
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  border-width:5px;
+  border-radius:15px;
+  width:140px;
+  height:80px; 
+}
+
+.boton-dos {
+  font-weight:bold;
+  background-color: #0f0; /* Cambia el color de fondo según tus necesidades */
+  color: #fff;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  border-width:5px;
+  border-radius:15px;
+  width:140px;
+  height:80px; 
+}
+
+.semaforo {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 5px;
+}
+.red {
+  color: red;
+}
+.yellow {
+  color: yellow;
+}
+.green {
+  color: green;
+}
+

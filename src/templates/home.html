@@ -1,0 +1,113 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+
+{% block body %}
+<!-- <h1 style="color:#f7f7f7;"> Bienvenido: {{ current_user.fullname }} </h1>
+
+    <div class="center-horizon-vert">
+        <div class="row">         
+           <div class="col-sm-4">
+                <button class="boton" type="submit">
+                 <a href="/indexGastronomia" style="color: white; ">GASTRONOMIA</a>
+                </button>
+           </div>
+           <div class="col-sm-4">
+              <button class="boton-dos" type="submit">
+               <a href="/indexGastronomia" style="color: white; ">SALUD</a>
+              </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="center-horizon-vert">
+        <div class="row">
+            <div class="col-sm-4">
+              <button class="boton-dos" type="submit">
+               <a href="/indexGastronomia" style="color: white; ">LACMA</a>
+              </button>
+            </div>
+            <div class="col-sm-4">>
+                <button class="boton-dos" type="submit">
+                <a href="/indexGastronomia" style="color: white; ">ARQUITECTURA</a>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+<center><a class="btn btn-secondary" href="{{ url_for('logout') }}" style="margin: 10px">CERRAR SESIÓN</a></center> -->
+<!-- <a class="btn btn-secondary" href="{{ url_for('logout') }}">CERRAR SESIÓN</a> -->
+
+<!-- =======================================//================================================================ -->
+<!-- <h1 style="color:#f7f7f7;"> Bienvenido: {{ current_user.fullname }} </h1>
+
+<div class="row justify-content-center">
+  <div class="col-sm-4 mb-3">
+    <button class="boton btn btn-primary btn-lg btn-block" type="submit">
+      <a href="/indexGastronomia" style="color: white;">GASTRONOMIA</a>
+    </button>
+  </div>
+  <div class="col-sm-4 mb-3">
+    <button class="boton-dos btn btn-primary btn-lg btn-block" type="submit">
+      <a href="/indexGastronomia" style="color: white;">SALUD</a>
+    </button>
+  </div>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-sm-4 mb-3">
+    <button class="boton-dos btn btn-primary btn-lg btn-block" type="submit">
+      <a href="/indexGastronomia" style="color: white;">LACMA</a>
+    </button>
+  </div>
+  <div class="col-sm-4 mb-3">
+    <button class="boton-dos btn btn-primary btn-lg btn-block" type="submit">
+      <a href="/indexGastronomia" style="color: white;">ARQUITECTURA</a>
+    </button>
+  </div>
+</div>
+
+<center><a class="btn btn-secondary" href="{{ url_for('logout') }}" style="margin: 10px">CERRAR SESIÓN</a></center> -->
+
+<!-- =======================================//================================================================ -->
+<h1 style="color:#f7f7f7;"> Bienvenido: {{ current_user.fullname }} </h1>
+
+<div class="center-horizon-vert">
+    <div class="row">
+        <div class="col-sm-4">
+            <button class="boton" type="submit">
+                <a href="/indexGastronomia" style="color: white; ">GASTRONOMIA</a>
+            </button>
+        </div>
+
+        <div class="col-sm-4">
+            <button class="boton-dos" type="submit">
+                <a href="/indexSalud" style="color: white; ">SALUD</a>
+            </button>
+        </div>        
+    </div>
+</div>
+
+<div class="center-horizon-vert">
+    <div class="row">
+        <div class="col-sm-4">
+            <button class="boton-dos" type="submit">
+                <a href="/indexGastronomia" style="color: white; ">LACMA</a>
+            </button>
+        </div>
+        <div class="col-sm-4">
+            <button class="boton-dos" type="submit">
+                <a href="/indexGastronomia" style="color: white; ">ARQUITECTURA</a>
+            </button>
+        </div>
+    </div>
+</div>
+
+<center>
+    <a class="btn btn-secondary" href="{{ url_for('logout') }}" style="margin: 10px">CERRAR SESIÓN</a>
+</center>
+
+{% endblock %}

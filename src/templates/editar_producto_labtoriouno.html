@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="col-md-4  offset-md-4">
+    <div class="card card-body">
+        <form action = "/actualizar_laboratoriouno/{{producto.0}}" method="POST">
+
+            <div class="form-group">
+                <input type="text" name="codigo_articulo" placeholder="Codigo Articulo" value="{{producto.1}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="ingrediente" placeholder="Ingrediente" value="{{producto.2}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="unidad_medida" placeholder="Unidad de Medida" value="{{producto.3}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="cantidad_preparacion" placeholder="Cantidad de preparación" value="{{producto.4}}" class="form-control">
+            </div>
+            <!------ linea de token es necesaria ya que el sistema lo solicita-->
+            <input type="hidden" name="csrf_token" value="{{csrf_token() }}"/>
+            <!---------------------- es solo esta linea------------------------->
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-block" class="form-control">
+                    GUARDAR
+                </button>
+                <!-- <center><a class="btn btn-success btn-block" href="{{ url_for('labtorioUno') }}" style="margin: 10px">GUARDAR</a></center> -->
+            </div>
+        </form>
+    </div>
+</div>
+
+<center><a class="btn btn-secondary" href="{{ url_for('labtorioUno') }}" style="margin: 10px">REGRESAR</a></center>
+
+{% endblock%}

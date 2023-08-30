@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<div class="col-md-4  offset-md-4">
+    <div class="card card-body">
+        <form action = "/actualizarSalud/{{producto.0}}" method="POST">
+
+            <div class="form-group">
+                <input type="text" name="cod_articulo" placeholder="Codigo Articulo" value="{{producto.1}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="nombre_equipo" placeholder="Nombre de equipo" value="{{producto.2}}" class="form-control" >
+            </div>
+            <div class="form-group">
+                <text style="color: darkgray">Programación mantenimiento:</text>
+                <input type="date" name="fecha_mantenimiento" value="{{producto.3}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <text style="color: darkgray">Fecha calibración:</text>
+                <input type="date" name="fecha_calibracion" value="{{producto.4}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <text style="color: darkgray">Fecha ingreso:</text>
+                <input type="date" name="fecha_ingreso" value="{{producto.5}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <!-- <text style="color: darkgray">Periodicidad:</text> -->
+                <input type="text" name="periodicidad" placeholder="Periodicidad" value="{{producto.6}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="estado_equipo" placeholder="Estado equipo" value="{{producto.7}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="ubicacion_original" placeholder="Ubicación original" value="{{producto.8}}" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="garantia" placeholder="Garantia" value="{{producto.9}}"class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="criticos" placeholder="Criticos" value="{{producto.10}}"class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="text" name="proveedor_responsable" placeholder="Proveedor responsable" value="{{producto.11}}" class="form-control">
+            </div>
+                <!------ linea de token es necesaria ya que el sistema lo solicita-->
+                <input type="hidden" name="csrf_token" value="{{csrf_token()}}"/>
+                <!---------------------- es solo esta linea------------------------->
+            <div class="form-group">
+                <center><button type="submit" class="btn btn-primary btn-block">GUARDAR</button></center>
+            </div>
+      
+        </form>
+    </div>
+</div>
+
+<center><a class="btn btn-secondary" href="{{ url_for('indexSalud') }}" style="margin: 10px">REGRESAR</a></center>
+
+{% endblock%}
