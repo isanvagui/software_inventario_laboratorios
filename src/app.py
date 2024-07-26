@@ -1,17 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_mysqldb import MySQL
+from flask_mysqldb import MySQL,MySQLdb
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
 from config import config
-
 from datetime import datetime, timedelta
 
+# Para subir archivos tipo foto al servidor
+import os
+from werkzeug.utils import secure_filename
 
 # Models:
 from models.ModelUser import ModelUser
 
 # Entities:
 from models.entities.User import User
+# Para el modulo json que se esta utilizan para el checked
+from flask import Flask, render_template, request, jsonify 
 
 app = Flask(__name__)
 
@@ -19,11 +23,21 @@ csrf = CSRFProtect()
 db = MySQL(app)
 login_manager_app = LoginManager(app)
 app.secret_key='mysecretkey'
+app.config['UPLOAD_FOLDER'] = 'src/static/fotos'
 
 @login_manager_app.user_loader
 def load_user(id):
     return ModelUser.get_by_id(db, id)
 
+@app.after_request
+def evita_cache(response):
+    response.cache_control.no_store = True
+    response.cache_control.no_cache = True
+    response.cache_control.must_revalidate = True
+    response.cache_control.max_age = 0
+    response.expires = 0
+    response.pragma = 'no-cache'
+    return response
 
 @app.route('/')
 def index():
@@ -52,37 +66,69 @@ def login():
 
 
 @app.route('/logout')
+# @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
 @app.route('/home')
+@login_required
 def home():
     return render_template('home.html')
+
+
 #---------------------------INICIA MODULO DE GASTRONOMIA-----------------------------
 @app.route('/indexGastronomia')
+@login_required
 def indexGastronomia():
-    cur = db.connection.cursor()
+    cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+    # cur = db.connection.cursor()
     cur.execute('SELECT * FROM productos')
     data = cur.fetchall()
-    # print(data)
+    print(data)
     return render_template('indexGastronomia.html', productos = data)
 
 @app.route('/add_producto', methods=['POST'])
 def AGREGAR_PRODUCTO():
     if request.method =='POST':
-        cod_articulo = request.form ['cod_articulo']
-        descripcion = request.form ['descripcion']
-        un_medida = request.form ['un_medida']
-        clasificacion = request.form ['clasificacion']
-        cur = db.connection.cursor() 
-        cur.execute('INSERT INTO productos (cod_articulo, descripcion, un_medida, clasificacion) VALUES (%s, %s, %s, %s)', (cod_articulo, descripcion, un_medida, clasificacion))
+        cod_articulo = request.form['cod_articulo']
+        descripcion = request.form['descripcion']
+        fecha = request.form['fecha']
+        fecha = datetime.strptime(fecha, '%Y-%m-%d')
+        concepto = request.form['concepto']
+        cantidad_producto = float(request.form['cantidad_producto'])
+        un_medida = request.form['un_medida']
+        # stock_productos = request.form['stock_productos']
+        clasificacion = request.form['clasificacion']
+        entrada = float(request.form['entrada']) if request.form['concepto'] == "Entrada" else 0.0
+        salida = float(request.form['salida']) if request.form['concepto'] == "Salida" else 0.0
+
+        cur = db.connection.cursor()
+        
+        cantidad_calculada = cantidad_producto * (entrada - salida)     
+
+        # Inserta el registro
+        cur.execute('INSERT INTO productos (cod_articulo, descripcion, fecha, cantidad_producto, concepto, un_medida, clasificacion, entrada, salida, cantidad_calculada) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)',
+                                           (cod_articulo, descripcion, fecha, cantidad_producto, concepto, un_medida, clasificacion, entrada, salida, cantidad_calculada))
         db.connection.commit()
-        flash ('Contacto agregado satisfactoriamente')
-        return redirect(url_for('indexGastronomia')) 
+
+        # Actualizar el saldo de todos los registros con el mismo cod_articulo
+        cur.execute('SELECT * FROM productos WHERE cod_articulo = %s', (cod_articulo,))
+        data = cur.fetchall()
+        saldo = 0
+        stock_productos = 0
+        for producto in data:
+            saldo += float(producto[12])  # Calcula el saldo    
+            stock_productos += float(producto[5]) * (1 if producto[4] == "Entrada" else -1) # Update the "stock_productos" based on the "concepto"
+            cur.execute('UPDATE productos SET saldo = %s, stock_productos = %s WHERE id = %s', (saldo, stock_productos,producto[0]))
+        db.connection.commit()
+
+        flash('Producto agregado satisfactoriamente')
+        return redirect(url_for('indexGastronomia'))
 
 # ESTA FUNCIÓN ME LLEVA A OTRA VENTANA TRAYENDO LOS PARAMETROS DE AGREGAR PARA DESPUES PODER ACTUALIZAR EN LA SIGUIENTE FUNCIÓN. LAS DOS SE COMPLEMENTAN
 @app.route('/edit_producto/<id>')
+@login_required
 def GET_PRODUCTO(id):
     cur = db.connection.cursor()
     cur.execute('SELECT * FROM productos WHERE id = %s', [id])
@@ -100,7 +146,7 @@ def ACTUALIZAR_PRODUCTO(id):
         cur = db.connection.cursor() 
         cur.execute(""" UPDATE productos SET cod_articulo = %s, descripcion = %s, un_medida = %s, clasificacion = %s WHERE id = %s """, (cod_articulo, un_medida, descripcion, clasificacion, id))
         db.connection.commit()
-        flash('Producto actualizado satisfactorimanete')
+        flash('Producto actualizado satisfactoriamente')
         return redirect(url_for('indexGastronomia'))
 
 # FUNCIÓN ELIMINAR
@@ -129,7 +175,8 @@ def AGREGAR_PRODUCTO_LABTORIOUNO():
         unidad_medida = request.form ['unidad_medida']
         cantidad_preparacion = request.form ['cantidad_preparacion']
         cur = db.connection.cursor() 
-        cur.execute('INSERT INTO labtoriouno (codigo_articulo, ingrediente, unidad_medida, cantidad_preparacion) VALUES (%s, %s, %s, %s)', (codigo_articulo, ingrediente, unidad_medida, cantidad_preparacion))
+        cur.execute('INSERT INTO labtoriouno (codigo_articulo, ingrediente, unidad_medida, cantidad_preparacion) VALUES (%s, %s, %s, %s)', 
+                                             (codigo_articulo, ingrediente, unidad_medida, cantidad_preparacion))
         db.connection.commit()
         flash ('Contacto agregado satisfactoriamente')
         return redirect(url_for('labtorioUno')) 
@@ -167,11 +214,13 @@ def ELIMINAR_PRODUCTO_LABORATORIOUNO(id):
 
 #--------------------------- INICIA MODULO DE SALUD-----------------------------
 @app.route('/indexSalud')
+@login_required
 def indexSalud():
-    cur = db.connection.cursor()
-    cur.execute('SELECT * FROM indexssalud')
+    cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+    # cur = db.connection.cursor()
+    cur.execute('SELECT * FROM indexssalud where enable=1') #A raiz del enable=1 no se deben eliminar en la DB
     data = cur.fetchall()
-    # print(data)
+    print(data)
     return render_template('indexSalud.html', indexssalud = data)
 
 @app.route('/add_productoSalud', methods=['POST'])
@@ -183,18 +232,23 @@ def AGREGAR_PRODUCTO_SALUD():
         fecha_mantenimiento = request.form ['fecha_mantenimiento']
         vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
 
-        fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y-%m-%d')
-        vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d')
+        if fecha_mantenimiento and vencimiento_mantenimiento:
+            fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y-%m-%d')
+            vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d')
 
-        diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
+            diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
 
-        if diferencia_dias < 0:
-            color = 'red'  # Vencido
-        elif diferencia_dias <= 30:
-            color = 'yellow'  # Próximo a vencer
+            if diferencia_dias < 0:
+                color = 'red'  # Vencido
+            elif diferencia_dias <= 30:
+                color = 'yellow'  # Próximo a vencer
+            else:
+                color = 'green'  # Vigente
+            # print(diferencia_dias)
         else:
-            color = 'green'  # Vigente
-        print(diferencia_dias)
+            # Manejar el caso donde no se proporciona una fecha
+            flash('Debe ingresar las fechas de mantenimiento y vencimiento.', 'error')
+            return redirect(url_for('indexSalud'))
         
  
         fecha_calibracion = request.form ['fecha_calibracion']
@@ -208,13 +262,69 @@ def AGREGAR_PRODUCTO_SALUD():
         criticos = request.form ['criticos']
         proveedor_responsable = request.form ['proveedor_responsable']
 
+        # Manejo de la imagen
+        if 'imagen_producto' not in request.files:
+            flash('No existe archivo')
+            return redirect(request.url)
+        file = request.files['imagen_producto']
+        if file.filename == '':
+            flash('Por favor selecciona el archivo')
+            return redirect(request.url)
+        if file:
+            filename = secure_filename(file.filename)
+            filepath_to_db = os.path.join(app.config['UPLOAD_FOLDER'].split('/')[-1], filename) #Esta ruta guarda la imagen en la BD 
+            filepath_to_save = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            filepath_to_db = filepath_to_db.replace("\\", "/")
+            file.save(filepath_to_save)
+
         cur = db.connection.cursor() 
-        cur.execute('INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
-                                             (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color))
+        cur.execute('INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, imagen, color) VALUES (  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
+                                             (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, filepath_to_db, color))
         db.connection.commit()
-        print(estado_equipo)
+        # print(estado_equipo)
         flash ('Producto agregado satisfactoriamente')
         return redirect(url_for('indexSalud')) 
+    
+# ================================CHECKBOX PROGRAMACIÓN MANTENIMIENTO===============================
+@app.route('/checkbox_programacionMantenimiento', methods=['POST'])
+def checkbox_programacionMantenimiento():
+
+    if request.method == 'POST':
+            data = request.get_json()
+            producto_id = data['productoId']
+            nuevo_estado = data['nuevoEstado']
+            name = data['name']
+       
+            cur = db.connection.cursor()
+            if name == "fecha_mantenimiento":
+                cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE id = %s', (nuevo_estado, producto_id))
+            
+            elif name == "fecha_calibracion":
+                cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
+            db.connection.commit()
+            # print("hola",data)
+            # return redirect(url_for('indexSalud'))
+            return jsonify({'message': 'Estado actualizado correctamente'})
+
+    return jsonify({'error': 'Método no permitido'}), 405
+# ======================================================================================================
+
+# ================================CHECKBOX PROGRAMACIÓN FECHA DE CALIBRACIÓN===============================
+# @app.route('/checkbox_programacionCalibracion', methods=['POST'])
+# def checkbox_programacionCalibracion():
+#     if request.method == 'POST':
+#             data = request.get_json()
+#             producto_id = data['productoId']
+#             nuevo_estado = data['nuevoEstado']
+
+#             cur = db.connection.cursor()
+#             cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
+#             db.connection.commit()
+
+#             return redirect(url_for('indexSalud'))
+
+#     return jsonify({'error': 'Método no permitido'}), 405
+# =====================================================================================================
     
 # ACTUALIZA EL ESTADO DEL EQUIPO DESDE EL DESPLEGABLE QUE SE ENCUENTRA EN LA MISMA TABLA INDEXSALUD
 @app.route('/update_estado_equipo', methods=['POST'])
@@ -230,15 +340,16 @@ def update_estado_equipo():
         flash('Estado del equipo actualizado correctamente')
         return redirect(url_for('indexSalud'))
 
-# ESTA FUNCIÓN ME LLEVA A OTRA VENTANA TRAYENDO LOS PARAMETROS DE AGREGAR PARA DESPUES PODER ACTUALIZAR EN LA SIGUIENTE FUNCIÓN. LAS DOS SE COMPLEMENTAN
+# ESTA FUNCIÓN ME LLEVA A OTRA VISTA TRAYENDO LOS PARAMETROS DE AGREGAR PARA DESPUES PODER ACTUALIZAR EN LA SIGUIENTE FUNCIÓN. LAS DOS SE COMPLEMENTAN 
 @app.route('/edit_productoSalud/<id>')
+@login_required
 def GET_PRODUCTO_SALUD(id):
     cur = db.connection.cursor()
     cur.execute('SELECT * FROM indexssalud WHERE id = %s', [id])
     data = cur.fetchall()
     return render_template('editar_producto_indexSalud.html', producto = data[0])
 
-# FUNCIÓN ACTUALIZAR
+# FUNCIÓN ACTUALIZAR EDITAR/VER HOJA DE VIDA
 @app.route('/actualizarSalud/<id>', methods = ['POST'])
 def ACTUALIZAR_PRODUCTO_SALUD(id):
     if request.method =='POST':
@@ -246,38 +357,54 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
         nombre_equipo = request.form ['nombre_equipo']
 
         fecha_mantenimiento = request.form ['fecha_mantenimiento']
-        #--------------------------- estas dos lineas permiten mostrar la fecha de vencimiento apartir de la fecha_mantenimiento -----------------------------
-        # fecha_mantenimiento = datetime.strptime(request.form['fecha_mantenimiento'], '%Y-%m-%d')
-        # vencimiento_mantenimiento = fecha_mantenimiento + timedelta(days=365)
+        vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
 
+        if fecha_mantenimiento and vencimiento_mantenimiento:
+            fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y-%m-%d')
+            vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d')
+
+            diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
+
+            if diferencia_dias < 0:
+                color = 'red'  # Vencido
+            elif diferencia_dias <= 30:
+                color = 'yellow'  # Próximo a vencer
+            else:
+                color = 'green'  # Vigente
+            print(diferencia_dias)
+        else:
+            # Manejar el caso donde no se proporciona una fecha
+            flash('Debe ingresar las fechas de mantenimiento y vencimiento.', 'error')
+            return redirect(url_for('indexSalud'))
+ 
         fecha_calibracion = request.form ['fecha_calibracion']
         fecha_ingreso = request.form ['fecha_ingreso']
         periodicidad = request.form ['periodicidad']
-        estado_equipo = request.form ['estado_equipo']
-        ubicacion_original = request.form ['ubicacion_original']
-        garantia = request.form ['garantia']
-        criticos = request.form ['criticos']
-        proveedor_responsable = request.form ['proveedor_responsable']
+
+        # estado_equipo = request.form ['estado_equipo']
+        
+        # ubicacion_original = request.form ['ubicacion_original']
+        # garantia = request.form ['garantia']
+        # criticos = request.form ['criticos']
+        # proveedor_responsable = request.form ['proveedor_responsable']
+
         cur = db.connection.cursor() 
-        cur.execute(""" UPDATE indexssalud SET cod_articulo = %s, nombre_equipo = %s, fecha_mantenimiento = %s, fecha_calibracion = %s, fecha_ingreso = %s, periodicidad = %s, estado_equipo = %s, ubicacion_original = %s, garantia = %s, criticos = %s, proveedor_responsable = %s WHERE id = %s """, 
-                                               (cod_articulo, nombre_equipo, fecha_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, id))
+        cur.execute(""" UPDATE indexssalud SET cod_articulo = %s, nombre_equipo = %s, fecha_mantenimiento = %s, vencimiento_mantenimiento = %s, fecha_calibracion = %s, fecha_ingreso = %s, periodicidad = %s, color = %s WHERE id = %s""",
+                                              (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, color, id))
         db.connection.commit()
+        # print(estado_equipo)
         flash('Producto actualizado satisfactorimanete')
-        return redirect(url_for('indexSalud'))
+        return redirect(url_for('indexSalud')) 
 
 # FUNCIÓN ELIMINAR
 @app.route('/delete_productoSalud/<string:id>')
 def ELIMINAR_CONTACTO_SALUD(id):
     cur = db.connection.cursor()
-    cur.execute('DELETE FROM indexssalud WHERE id = {0}'.format(id))
+    # cur.execute('DELETE FROM indexssalud WHERE id = {0}'.format(id))
+    cur.execute('UPDATE indexssalud SET enable=0 WHERE id = {0}'.format(id)) #Esta linea de codigo en la vista elimina el producto pero no de la DB, la cual realiza es una actualización
     db.connection.commit()
     flash('Producto eliminado satisfactoriamente')
     return redirect(url_for('indexSalud'))
-
-@app.route('/protected')
-@login_required
-def protected():
-    return "<h1>Esta es una vista protegida, solo para usuarios autenticados.</h1>"
 
 
 def status_401(error):

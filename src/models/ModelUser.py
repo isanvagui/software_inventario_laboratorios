@@ -1,6 +1,6 @@
 from .entities.User import User
 
-#---------------------trae los registros de prestamo de la BD MySQL------------------
+#---------------------trae los registros de la BD MySQL------------------
 class ModelUser():
 
     @classmethod

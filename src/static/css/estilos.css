@@ -34,6 +34,18 @@ body{
   width:470px;
   height:109px; 
 }*/
+/* .div1{ */
+  /* font-size:12px; cambie el tamaño de la letra */
+  /* border: 5px solid darkblue; */
+  /* height: 280px; */
+  /* margin: 0px 925px 0px 0px; */
+  /* padding: -10%; */
+  /* width: 1300px; */
+  /* display: flex; */
+  /* justify-content: space-between; */
+  /* float: left; */
+/* } */
+
 .divSalud{
   font-size:12px; /*cambie el tamaño de la letra */
   /* border: 5px solid darkblue; */
@@ -126,12 +138,13 @@ body{
 }
 
 .semaforo {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-left: 5px;
+  margin: 25px 0 0 25px; /*Centra el semaforo en el campo*/
+  /* font-size: 15px; leda tamaño al texto detro del semaforo */
+  display: flex; 
+  justify-content: center;
+  align-items: center;
 }
+
 .red {
   color: red;
 }
@@ -142,3 +155,57 @@ body{
   color: green;
 }
 
+i.bi-radioactive {
+  /* color: rgb(255, 0, 195); Color para el icono de crítico */
+  /* float:left; */
+  margin-left: -14px;
+  padding: 10px;
+  font-size: 34px;
+}
+
+i.bi-shield-check {
+  /*color: green;  Color para el icono de no crítico */
+  margin-left: -14px;
+  padding: 10px;
+  font-size: 34px;
+}
+
+/* =======================PRUEBA HOJA DE VIDA ESTILOS===================== */
+/* hojaVida {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.product-info {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.product-info h2 {
+  font-size: 24px;
+  margin-top: 0;
+}
+.product-info p {
+  margin: 0;
+}
+.product-status {
+  font-weight: bold;
+}
+.editable {
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+.editable input {
+  border: none;
+  background-color: transparent;
+  width: 100%;
+  font-size: 14px;
+}
+.save-button {
+  display: none;
+  margin-top: 10px;
+} */

@@ -3,6 +3,7 @@
 {% block title %}Modulo Salud{% endblock %}
 
 {% block body %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://bootswatch.com/5/materia/bootstrap.min.css">
 <div class="row">
     <div class="col_md_5">
@@ -36,7 +37,7 @@
         <!-- donde se ingresan los datos principales del crud --> 
         <div class="div1"> <!-- cuadrar el style en el css que quede divSalud Pendiente-->
             <div class="card card_body">
-                <form action = "/add_productoSalud" method="POST">
+                <form action = "/add_productoSalud" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <input type="text" name="cod_articulo" placeholder="Codigo Articulo" class="form-control">
                     </div>
@@ -72,7 +73,7 @@
                         <input type="text" name="ubicacion_original" placeholder="Ubicación original" class="form-control">
                     </div>
                     <div class="form-group">
-                        <input type="text" name="garantia" placeholder="Garantia" class="form-control">
+                        <input type="text" name="garantia" placeholder="Garantía ingreso" class="form-control">
                     </div>
                     <div class="form-group">
                         <input type="text" name="criticos" placeholder="Criticos" class="form-control">
@@ -80,12 +81,14 @@
                     <div class="form-group">
                         <input type="text" name="proveedor_responsable" placeholder="Proveedor responsable" class="form-control">
                     </div>
-                    
+                    <div class="form-group">
+                        <input type="file" name="imagen_producto" class="custom-file-input">
+                    </div>
                         <!------ linea de token es necesaria ya que el sistema lo solicita-->
                         <input type="hidden" name="csrf_token" value="{{csrf_token() }}"/>
                         <!---------------------- es solo esta linea------------------------->
                     <div class="form-group">
-                        <center><button type="submit" class="btn btn-primary btn-block">GUARDAR</button></center>
+                        <center><button type="submit" class="btn btn-dark btn-block">GUARDAR</button></center>
                     </div>
                     
                 </form>
@@ -107,15 +110,15 @@
                             <td>Nombre de equipo</td>
                             <td>Periodicidad (Meses)</td>
                             <td>Programación mantenimiento</td>
-
+                            <!--<td>Checkin mantenimiento</td> -->
                             <!-- <td>Vencimiento mantenimiento</td>  -->
                             
-                            <td>Programación feche de calibración</td> 
+                            <td>Programación fecha de calibración</td> 
                             <td>Fecha ingreso</td>
                             
                             <td>Estado equipo</td>
                             <td>Ubicación original</td>
-                            <td>Garantia</td>
+                            <td>Garantía ingreso</td>
                             <td>Criticos</td>
                             <td>Proveedor responsable</td>
                             <td>Semaforo mantenimiento</td>
@@ -127,41 +130,58 @@
                     {% for producto in indexssalud %}
                     <!-- acciones de editar o eliminar -->
                     <tr>
-                        <td>{{ producto.1 }}</td>
-                        <td>{{ producto.2 }}</td>
-                        <td>{{ producto.7 }}</td>
-                        <td>{{ producto.3 }}  <input type="checkbox" /></td>
-                        <!-- <td>{{ producto.4 }}</td>  -->
-                        <td>{{ producto.5 }} <input type="checkbox" /></td>
-                        <td>{{ producto.6 }}</td>
-                        <td>{{ producto.8 }}
+                        <td>{{ producto.cod_articulo }}</td>
+                        <td>{{ producto.nombre_equipo }}</td>
+                        <td>{{ producto.periodicidad }}</td>
+                        <!-- <td>{{ producto.3 }}<input style="margin-left: 10px" type="radio" /></td> -->
+                        <td>{{ producto.fecha_mantenimiento }}
+                            <input type="checkbox" name="fecha_mantenimiento" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.echa_mantenimiento }}" {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
+                        </td>
+                        <!-- <td>{{ producto.4 }}</td> -->
+                        <!--<td>{{ producto.14 }}</td> -->
+                        <td>{{ producto.fecha_calibracion }}
+                            <input type="checkbox" name="fecha_calibracion" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}" {% if producto.checkbox_calibracion == 'Activo' %}checked{% endif %}>
+                        </td>
+                        <td>{{ producto.fecha_ingreso }}</td>
+                        <td>{{ producto.estado_equipo }}
                             <form action = "/update_estado_equipo" method="POST">
                                 <!------ linea de token es necesaria ya que el sistema lo solicita-->
                                 <input type="hidden" name="csrf_token" value="{{csrf_token() }}"/>
                                 <!---------------------- es solo esta linea------------------------->
-                                <input type="hidden" name="producto_id" value="{{ producto.0 }}">
+                                <input type="hidden" name="producto_id" value="{{ producto.id }}">
                                 <select name="nuevo_estado_equipo">
-                                    <option value="uso" {% if producto.8 == 'uso' %}selected{% endif %}>Uso</option>
-                                    <option value="mantenimiento" {% if producto.8 == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
-                                    <option value="prestamo" {% if producto.8 == 'prestamo' %}selected{% endif %}>Prestamo</option>
+                                    <option value="uso" {% if producto.estado_equipo == 'uso' %}selected{% endif %}>Uso</option>
+                                    <option value="mantenimiento" {% if producto.estado_equipo == 'mantenimiento' %}selected{% endif %}>Mantenimiento</option>
+                                    <option value="prestamo" {% if producto.estado_equipo == 'prestamo' %}selected{% endif %}>Prestamo</option>
+                                    <option value="calibracion" {% if producto.estado_equipo == 'calibracion' %}selected{% endif %}>Calibración</option>
                                 </select>
-                                <div><button type="submit">Guardar</button></div>
+                                <div><button type="submit" name="guardar_estado">Guardar</button></div>
                             </form>
                         </td> 
-                        <td>{{ producto.9 }}</td>
-                        <td>{{ producto.10 }}</td>
-                        <td>{{ producto.11 }}</td>
-                        <td>{{ producto.12 }}</td>
-                        <td class="semaforo {{ producto.13 }}" style="width: 80px; border-radius: 50%; height: 80px; background-color: {% if producto.13 == 'red' %}red{% elif producto.13 == 'yellow' %}yellow{% else %}green{% endif %}">
-                            {{ producto.13 }}
+                        <td>{{ producto.ubicacion_original }}</td>
+                        <td>{{ producto.garantia }}</td>
+                        <!-- <td>{{ producto.11 }}</td> -->
+                        <td>
+                            {% if producto.criticos == "si" %}
+                                <i class="bi bi-radioactive"></i> <!-- Icono para crítico -->
+                            {% else %}
+                                <i class="bi bi-shield-check"></i> <!-- Icono para no crítico -->
+                            {% endif %}
+                        </td>
+                        
+                        <td>{{ producto.proveedor_responsable }}</td>
+                        
+                        <td class="semaforo" style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
+                            <!-- {{ producto.13 }} -->
                         </td>    
+
                         <td> 
                             <div class="btn-eliminar">
-                                <a href="/edit_productoSalud/{{producto.0}}" class="btn btn-primary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
+                                <a href="/edit_productoSalud/{{producto.id}}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
                             </div> 
                             
                             <div class="btn-eliminar">
-                                <a href="/delete_productoSalud/{{producto.0}}" class="btn btn-danger btn-lg"><FONT SIZE=3>Eliminar</FONT></a>
+                                <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-dark btn-lg"><FONT SIZE=3>Eliminar</FONT></a>
                             </div>  
                         </td>
                     </tr>
@@ -179,8 +199,17 @@
         }   
     
         );
+
+        
     </script> 
 
 </div>
+
+<!-- con este script llamamos el token para el checkbox -->
+<script>
+    var csrf_token = "{{ csrf_token() }}";
+</script>
+
 <center><a class="btn btn-secondary" href="{{ url_for('home') }}">REGRESAR</a></center>
 {% endblock %}
+
