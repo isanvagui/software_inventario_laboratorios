@@ -1,3 +1,6 @@
+import csv
+from io import TextIOWrapper
+
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_mysqldb import MySQL,MySQLdb
 from flask_wtf.csrf import CSRFProtect
@@ -229,6 +232,12 @@ def AGREGAR_PRODUCTO_SALUD():
         cod_articulo = request.form ['cod_articulo']
         nombre_equipo = request.form ['nombre_equipo']
 
+        try:
+            cod_articulo = int(cod_articulo)
+        except ValueError:
+            flash('Por favor ingresar solo números en el código del articulo', 'error')
+            return redirect(url_for('indexSalud'))
+
         fecha_mantenimiento = request.form ['fecha_mantenimiento']
         vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
 
@@ -239,9 +248,11 @@ def AGREGAR_PRODUCTO_SALUD():
             diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
 
             if diferencia_dias < 0:
-                color = 'red'  # Vencido
+                color = 'purple'  # Vencido
             elif diferencia_dias <= 30:
-                color = 'yellow'  # Próximo a vencer
+                color = 'red'  # Cuando falta menos de un mes para vencer
+            elif diferencia_dias <= 90:
+                color = 'yellow'  # Cuando falta menos de tres mes para vencer
             else:
                 color = 'green'  # Vigente
             # print(diferencia_dias)
@@ -284,6 +295,54 @@ def AGREGAR_PRODUCTO_SALUD():
         # print(estado_equipo)
         flash ('Producto agregado satisfactoriamente')
         return redirect(url_for('indexSalud')) 
+
+#---------------------------INICIA SUBIDA CSV DE SALUD-----------------------------
+@app.route('/upload_csv', methods=['POST'])
+def upload_csv():
+    if request.method == 'POST':
+        file = request.files['file']
+        if not file:
+            flash('No selecciono archivo')
+            return redirect(url_for('indexSalud'))
+        
+        # Decodifica la fila
+        file = TextIOWrapper(file, encoding='utf-8')
+        csv_reader = csv.reader(file)
+        
+        # Salta el encabezado
+        next(csv_reader)
+        
+        # Procesa las filas
+        cur = db.connection.cursor()
+        for row in csv_reader:
+            cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable = row
+            
+            # Analiza las fechas en formato YYYY/MM/DD
+            if fecha_mantenimiento:
+                fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y/%m/%d')
+            if vencimiento_mantenimiento:
+                vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y/%m/%d')
+            if fecha_calibracion:
+                fecha_calibracion = datetime.strptime(fecha_calibracion, '%Y/%m/%d')
+            if fecha_ingreso:
+                fecha_ingreso = datetime.strptime(fecha_ingreso, '%Y/%m/%d')
+
+            # Calcula el color segun las fechas
+            if fecha_mantenimiento and vencimiento_mantenimiento:
+                # fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y-%m-%d')
+                # vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d')
+                diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
+                color = 'purple' if diferencia_dias < 0 else 'red' if diferencia_dias <= 30 else 'yellow' if diferencia_dias <= 90 else 'green'
+            else:
+                color = 'green'
+            
+            cur.execute('INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
+                                                 (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color))
+        
+        db.connection.commit()
+        flash('Datos agregados exitosamen')
+        return redirect(url_for('indexSalud'))
+#---------------------------FINALIZA SUBIDA CSV DE SALUD-----------------------------    
     
 # ================================CHECKBOX PROGRAMACIÓN MANTENIMIENTO===============================
 @app.route('/checkbox_programacionMantenimiento', methods=['POST'])

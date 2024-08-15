@@ -39,7 +39,7 @@
             <div class="card card_body">
                 <form action = "/add_productoSalud" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
-                        <input type="text" name="cod_articulo" placeholder="Codigo Articulo" class="form-control">
+                        <input type="text" name="cod_articulo" placeholder="Código Articulo" class="form-control">
                     </div>
                     <div class="form-group">
                         <input type="text" name="nombre_equipo" placeholder="Nombre de equipo" class="form-control" >
@@ -82,7 +82,7 @@
                         <input type="text" name="proveedor_responsable" placeholder="Proveedor responsable" class="form-control">
                     </div>
                     <div class="form-group">
-                        <input type="file" name="imagen_producto" class="custom-file-input">
+                        <input type="file" name="imagen_producto" class="custom-file-input"> <!-- campo imagen producto --> 
                     </div>
                         <!------ linea de token es necesaria ya que el sistema lo solicita-->
                         <input type="hidden" name="csrf_token" value="{{csrf_token() }}"/>
@@ -93,6 +93,21 @@
                     
                 </form>
                 
+            </div>
+
+            <!-- New form for uploading CSV -->
+            <div class="card card_body mt-4">
+                <form action="/upload_csv" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" name="file" accept=".csv" class="custom-file-input" required>
+                    </div>
+                     <!------ linea de token es necesaria ya que el sistema lo solicita-->
+                     <input type="hidden" name="csrf_token" value="{{csrf_token() }}"/>
+                     <!---------------------- es solo esta linea------------------------->
+                    <div class="form-group">
+                        <center><button type="submit" class="btn btn-dark btn-block">Subir CSV</button></center>
+                    </div>
+                </form>
             </div>
             
         </div>
@@ -135,7 +150,7 @@
                         <td>{{ producto.periodicidad }}</td>
                         <!-- <td>{{ producto.3 }}<input style="margin-left: 10px" type="radio" /></td> -->
                         <td>{{ producto.fecha_mantenimiento }}
-                            <input type="checkbox" name="fecha_mantenimiento" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.echa_mantenimiento }}" {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
+                            <input type="checkbox" name="fecha_mantenimiento" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.fecha_mantenimiento }}" {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
                         </td>
                         <!-- <td>{{ producto.4 }}</td> -->
                         <!--<td>{{ producto.14 }}</td> -->
@@ -171,7 +186,7 @@
                         
                         <td>{{ producto.proveedor_responsable }}</td>
                         
-                        <td class="semaforo" style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
+                        <td class="semaforo" style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'purple' %}purple{% elif producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
                             <!-- {{ producto.13 }} -->
                         </td>    
 
