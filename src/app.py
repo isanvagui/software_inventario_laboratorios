@@ -161,50 +161,51 @@ def ELIMINAR_CONTACTO(id):
     flash('Producto eliminado satisfactoriamente')
     return redirect(url_for('indexGastronomia'))
 
-#--------------------------------------------- LABORATORIO UNO GASTRONOMIA --------------------------------
-@app.route('/labtorioUno')
-def labtorioUno():
-    cur = db.connection.cursor()
-    cur.execute('SELECT * FROM labtoriouno')
+#--------------------------------------------- DATOS PROVEEDOR SALUD --------------------------------
+@app.route('/datosProveedorSalud')
+def datosProveedorSalud():
+    cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+    # cur = db.connection.cursor()
+    cur.execute('SELECT * FROM datosproveedorsalud')
     data = cur.fetchall()
     # print(data)
-    return render_template('labtorioUno.html', labtoriouno = data)
+    return render_template('datosProveedorSalud.html', datosproveedorsalud = data)
 
-@app.route('/add_producto_laboratorioUno', methods=['POST'])
-def AGREGAR_PRODUCTO_LABTORIOUNO():
+@app.route('/add_datos_proveedor_salud', methods=['POST'])
+def AGREGAR_DATOS_PROVEEDOR_SALUD():
     if request.method =='POST':
-        codigo_articulo = request.form ['codigo_articulo']
-        ingrediente = request.form ['ingrediente']
-        unidad_medida = request.form ['unidad_medida']
-        cantidad_preparacion = request.form ['cantidad_preparacion']
+        telefono_empresa = request.form ['telefono_empresa']
+        nombre_empresa = request.form ['nombre_empresa']
+        nombre_contacto = request.form ['nombre_contacto']
+        ciudad = request.form ['ciudad']
         cur = db.connection.cursor() 
-        cur.execute('INSERT INTO labtoriouno (codigo_articulo, ingrediente, unidad_medida, cantidad_preparacion) VALUES (%s, %s, %s, %s)', 
-                                             (codigo_articulo, ingrediente, unidad_medida, cantidad_preparacion))
+        cur.execute('INSERT INTO datosproveedorsalud (telefono_empresa, nombre_empresa, nombre_contacto, ciudad) VALUES (%s, %s, %s, %s)', 
+                                                     (telefono_empresa, nombre_empresa, nombre_contacto, ciudad))
         db.connection.commit()
-        flash ('Contacto agregado satisfactoriamente')
-        return redirect(url_for('labtorioUno')) 
+        flash ('Datos agregado satisfactoriamente')
+        return redirect(url_for('datosproveedorsalud')) #=============***PARA QUE NO SE ME OLVIDE DONDE VOY FALTA HACER PRUEBAS QUE SI PERMITA EDITAR LOS DATOS Y FALTA PODER ACTULIZARLOS SIN NECESIDAD DE ABRIR OTRA VISTA***============
 
 # ESTA FUNCIÓN ME LLEVA A OTRA VENTANA TRAYENDO LOS PARAMETROS DE AGREGAR PARA DESPUES PODER ACTUALIZAR EN LA SIGUIENTE FUNCIÓN. LAS DOS SE COMPLEMENTAN
-@app.route('/editar_producto_labtoriouno/<id>')
-def EDITAR_PRODUCTO(id):
-    cur = db.connection.cursor()
-    cur.execute('SELECT * FROM labtoriouno WHERE id = %s', [id])
-    data = cur.fetchall()
-    return render_template('editar_producto_labtoriouno.html', producto = data[0])
+# @app.route('/edit_datos_proveedor_salud/<id>')
+# def EDITAR_DATOS_PROVEEDOR_SALUD(id):
+#     cur = db.connection.cursor()
+#     cur.execute('SELECT * FROM datosproveedorsalud WHERE id = %s', [id])
+#     data = cur.fetchall()
+#     return render_template('datosProveedorSalud.html', producto = data[0])
 
 # FUNCIÓN ACTUALIZAR
-@app.route('/actualizar_laboratoriouno/<id>', methods = ['POST'])
-def ACTUALIZAR_PRODUCTO_LABORATORIUNO(id):
+@app.route('/update_datos_proveedor_salud/<id>', methods = ['POST'])
+def ACTUALIZAR_DATOS_PROVEEDOR_SALUD(id):
     if request.method =='POST':
-        codigo_articulo = request.form ['codigo_articulo']
-        ingrediente = request.form ['ingrediente']
-        unidad_medida = request.form ['unidad_medida']
-        cantidad_preparacion = request.form ['cantidad_preparacion']
+        telefono_empresa = request.form ['telefono_empresa']
+        nombre_empresa = request.form ['nombre_empresa']
+        nombre_contacto = request.form ['nombre_contacto']
+        ciudad = request.form ['ciudad']
         cur = db.connection.cursor() 
-        cur.execute(""" UPDATE labtoriouno SET codigo_articulo = %s, ingrediente = %s, unidad_medida = %s, cantidad_preparacion = %s WHERE id = %s """, (codigo_articulo, unidad_medida, ingrediente, cantidad_preparacion, id))
+        cur.execute(""" UPDATE datosproveedorsalud SET telefono_empresa = %s, nombre_empresa = %s, nombre_contacto = %s, ciudad = %s WHERE id = %s """, (telefono_empresa, nombre_empresa, nombre_contacto, ciudad, id))
         db.connection.commit()
-        flash('Producto actualizado satisfactorimanete')
-        return redirect(url_for('labtorioUno'))
+        flash('Datos actualizados satisfactorimanete')
+        return redirect(url_for('datosProveedorSalud'))
 
 # FUNCIÓN ELIMINAR
 @app.route('/delete_producto_laboratorioUno/<string:id>')
@@ -232,6 +233,7 @@ def AGREGAR_PRODUCTO_SALUD():
         cod_articulo = request.form ['cod_articulo']
         nombre_equipo = request.form ['nombre_equipo']
 
+        # Validación de cod_articulo
         try:
             cod_articulo = int(cod_articulo)
         except ValueError:
@@ -241,20 +243,25 @@ def AGREGAR_PRODUCTO_SALUD():
         fecha_mantenimiento = request.form ['fecha_mantenimiento']
         vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
 
+        checkbox_mantenimiento = 'Inactivo' # Valor predeterminado
+
         if fecha_mantenimiento and vencimiento_mantenimiento:
             fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y-%m-%d')
             vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d')
 
             diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
-
+            
             if diferencia_dias < 0:
                 color = 'purple'  # Vencido
             elif diferencia_dias <= 30:
                 color = 'red'  # Cuando falta menos de un mes para vencer
+                checkbox_mantenimiento = 'Inactivo'  # Desactiva el checkbox si faltan menos de 30 días
             elif diferencia_dias <= 90:
                 color = 'yellow'  # Cuando falta menos de tres mes para vencer
+                checkbox_mantenimiento = 'Activo'  # Activa el checkbox si faltan más de 30 días
             else:
                 color = 'green'  # Vigente
+                checkbox_mantenimiento = 'Activo'  
             # print(diferencia_dias)
         else:
             # Manejar el caso donde no se proporciona una fecha
@@ -289,8 +296,8 @@ def AGREGAR_PRODUCTO_SALUD():
             file.save(filepath_to_save)
 
         cur = db.connection.cursor() 
-        cur.execute('INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, imagen, color) VALUES (  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
-                                             (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, filepath_to_db, color))
+        cur.execute('INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, checkbox_mantenimiento, imagen ) VALUES (  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
+                                             (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, checkbox_mantenimiento, filepath_to_db))
         db.connection.commit()
         # print(estado_equipo)
         flash ('Producto agregado satisfactoriamente')
@@ -302,7 +309,7 @@ def upload_csv():
     if request.method == 'POST':
         file = request.files['file']
         if not file:
-            flash('No selecciono archivo')
+            flash('No selecciono ningun archivo')
             return redirect(url_for('indexSalud'))
         
         # Decodifica la fila
@@ -345,27 +352,42 @@ def upload_csv():
 #---------------------------FINALIZA SUBIDA CSV DE SALUD-----------------------------    
     
 # ================================CHECKBOX PROGRAMACIÓN MANTENIMIENTO===============================
-@app.route('/checkbox_programacionMantenimiento', methods=['POST'])
-def checkbox_programacionMantenimiento():
-
-    if request.method == 'POST':
-            data = request.get_json()
-            producto_id = data['productoId']
-            nuevo_estado = data['nuevoEstado']
-            name = data['name']
+# @app.route('/checkbox_programacionMantenimiento', methods=['POST'])
+# def checkbox_programacionMantenimiento():
+#     if request.method == 'POST':
+#         data = request.get_json()
+#         producto_id = data['productoId']
+#         name = data['name']
        
-            cur = db.connection.cursor()
-            if name == "fecha_mantenimiento":
-                cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE id = %s', (nuevo_estado, producto_id))
+#         cur = db.connection.cursor()
+        
+#         # Obtener las fechas de mantenimiento y vencimiento del producto
+#         cur.execute('SELECT fecha_mantenimiento, vencimiento_mantenimiento FROM indexssalud WHERE id = %s', (producto_id,))
+#         result = cur.fetchone()
+        
+#         # if result:
+#         fecha_mantenimiento, vencimiento_mantenimiento = result
             
-            elif name == "fecha_calibracion":
-                cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
-            db.connection.commit()
-            # print("hola",data)
-            # return redirect(url_for('indexSalud'))
-            return jsonify({'message': 'Estado actualizado correctamente'})
+#         # Calcular la diferencia en días
+#         diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
+            
+#         # Activar o desactivar el checkbox según la diferencia en días
+#         if diferencia_dias > 30:
+#             nuevo_estado = 1  # Activar checkbox
+#         else:
+#             nuevo_estado = 0  # Desactivar checkbox
+            
+#             if name == "fecha_mantenimiento":
+#                 cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE id = %s', (nuevo_estado, producto_id))
+#             elif name == "fecha_calibracion":
+#                 cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
+                
+#             db.connection.commit()
+#             # print("hola",data)
+#             # return redirect(url_for('indexSalud'))
+#             return jsonify({'message': 'Estado actualizado correctamente'})
 
-    return jsonify({'error': 'Método no permitido'}), 405
+#     return jsonify({'error': 'Método no permitido'}), 405
 # ======================================================================================================
 
 # ================================CHECKBOX PROGRAMACIÓN FECHA DE CALIBRACIÓN===============================
@@ -418,22 +440,29 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
         fecha_mantenimiento = request.form ['fecha_mantenimiento']
         vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
 
+        checkbox_mantenimiento = 'Inactivo' # Valor predeterminado
+
         if fecha_mantenimiento and vencimiento_mantenimiento:
             fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y-%m-%d')
             vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d')
 
             diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
-
+            
             if diferencia_dias < 0:
-                color = 'red'  # Vencido
+                color = 'purple'  # Vencido
             elif diferencia_dias <= 30:
-                color = 'yellow'  # Próximo a vencer
+                color = 'red'  # Cuando falta menos de un mes para vencer
+                checkbox_mantenimiento = 'Inactivo'  # Desactiva el checkbox si faltan menos de 30 días
+            elif diferencia_dias <= 90:
+                color = 'yellow'  # Cuando falta menos de tres mes para vencer
+                checkbox_mantenimiento = 'Activo'  # Activa el checkbox si faltan más de 30 días
             else:
                 color = 'green'  # Vigente
-            print(diferencia_dias)
+                checkbox_mantenimiento = 'Activo'  
+            # print(diferencia_dias)
         else:
             # Manejar el caso donde no se proporciona una fecha
-            flash('Debe ingresar las fechas de mantenimiento y vencimiento.', 'error')
+            # flash('Debe ingresar las fechas de mantenimiento y vencimiento.', 'error')
             return redirect(url_for('indexSalud'))
  
         fecha_calibracion = request.form ['fecha_calibracion']
@@ -448,8 +477,9 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
         # proveedor_responsable = request.form ['proveedor_responsable']
 
         cur = db.connection.cursor() 
-        cur.execute(""" UPDATE indexssalud SET cod_articulo = %s, nombre_equipo = %s, fecha_mantenimiento = %s, vencimiento_mantenimiento = %s, fecha_calibracion = %s, fecha_ingreso = %s, periodicidad = %s, color = %s WHERE id = %s""",
-                                              (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, color, id))
+        cur = db.connection.cursor() 
+        cur.execute(""" UPDATE indexssalud SET cod_articulo = %s, nombre_equipo = %s, fecha_mantenimiento = %s, vencimiento_mantenimiento = %s, fecha_calibracion = %s, fecha_ingreso = %s, periodicidad = %s, color = %s, checkbox_mantenimiento = %s WHERE id = %s""",
+                                               (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, fecha_ingreso, periodicidad, color, checkbox_mantenimiento, id))
         db.connection.commit()
         # print(estado_equipo)
         flash('Producto actualizado satisfactorimanete')

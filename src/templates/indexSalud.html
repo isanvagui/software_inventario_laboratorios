@@ -22,17 +22,7 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <!-- <div class="regresar">
-            <div class="regresar">
-                <a class="btn btn-secondary" href="{{ url_for('labtorioUno') }}">VER LABORATORIO 1</a>
-            </div>
-            <div class="regresar">
-                <a class="btn btn-secondary" href="{{ url_for('labtorioUno') }}">VER LABORATORIO 2</a>
-            </div>
-            <div class="regresar">
-                <a class="btn btn-secondary" href="{{ url_for('labtorioUno') }}">VER LABORATORIO 3</a>
-            </div>
-        </div> -->
+
 
         <!-- donde se ingresan los datos principales del crud --> 
         <div class="div1"> <!-- cuadrar el style en el css que quede divSalud Pendiente-->
@@ -150,12 +140,12 @@
                         <td>{{ producto.periodicidad }}</td>
                         <!-- <td>{{ producto.3 }}<input style="margin-left: 10px" type="radio" /></td> -->
                         <td>{{ producto.fecha_mantenimiento }}
-                            <input type="checkbox" name="fecha_mantenimiento" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.fecha_mantenimiento }}" {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
+                            <input type="checkbox" name="fecha_mantenimiento" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_mantenimiento }}" {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
                         </td>
                         <!-- <td>{{ producto.4 }}</td> -->
                         <!--<td>{{ producto.14 }}</td> -->
                         <td>{{ producto.fecha_calibracion }}
-                            <input type="checkbox" name="fecha_calibracion" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}" {% if producto.checkbox_calibracion == 'Activo' %}checked{% endif %}>
+                            <!-- <input type="checkbox" name="fecha_calibracion" data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}" {% if producto.checkbox_calibracion == 'Activo' %}checked{% endif %}> -->
                         </td>
                         <td>{{ producto.fecha_ingreso }}</td>
                         <td>{{ producto.estado_equipo }}
@@ -183,12 +173,22 @@
                                 <i class="bi bi-shield-check"></i> <!-- Icono para no crítico -->
                             {% endif %}
                         </td>
+
+                        <!-- <div class="form-group">
+                            <center><button type="submit" class="btn btn-dark btn-block">GUARDAR</button></center>
+                        </div>
+                        <div class="btn-eliminar">
+                            <button class="boton-dos" type="submit">
+                                <a href="/datosProveedorSalud/" style="color: white; ">SALUD</a>
+                            </button>
+                        </div>   -->
+                        <td>{{ producto.proveedor_responsable }}
+                            <div class="btn-eliminar">
+                                <a href="/datosProveedorSalud" class="btn btn-dark btn-lg"><FONT SIZE=3>DATOS</FONT></a>
+                            </div>
+                        </td>
                         
-                        <td>{{ producto.proveedor_responsable }}</td>
-                        
-                        <td class="semaforo" style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'purple' %}purple{% elif producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
-                            <!-- {{ producto.13 }} -->
-                        </td>    
+                        <td class="semaforo" style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'purple' %}purple{% elif producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}"> </td>    
 
                         <td> 
                             <div class="btn-eliminar">
