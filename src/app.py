@@ -1,8 +1,8 @@
 import csv
-from io import TextIOWrapper
+from io import TextIOWrapper, StringIO
 import io
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, Response
 from flask_mysqldb import MySQL,MySQLdb
 from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager, login_user, logout_user, login_required
@@ -505,6 +505,33 @@ def updateDate_csv():
         flash('Fechas actualizadas con éxito')
         return redirect(url_for('indexSalud'))
 #---------------------------FINALIZA ACTUALIZACIÓN MASIVA DE FECHAS CSV DE SALUD----------------------------- 
+
+#---------------------------INICIA EXPORTACIÓN DE CSV DE EQUIPOS DE SALUD----------------------------- 
+@app.route('/exportCsvsalud')
+def exportCsv():
+    # Obtener los datos de la tabla indexssalud
+    cur = db.connection.cursor()
+    cur.execute('SELECT cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, especificaciones_instalacion, cuidados_basicos FROM indexssalud WHERE enable = 1')
+    registros = cur.fetchall()
+
+    # Crear un archivo CSV en memoria
+    si = StringIO()
+    writer = csv.writer(si)
+
+    # Escribir los encabezados de las columnas
+    writer.writerow(['cod_articulo', 'nombre_equipo', 'fecha_mantenimiento', 'vencimiento_mantenimiento', 'fecha_calibracion', 'vencimiento_calibracion', 'fecha_ingreso', 
+                     'periodicidad', 'estado_equipo', 'ubicacion_original', 'garantia', 'criticos', 'proveedor_responsable', 'especificaciones_instalacion', 'cuidados_basicos'])
+
+    # Escribir los registros de la tabla
+    for registro in registros:
+        writer.writerow(registro)
+
+    # Preparar el archivo CSV para su descarga
+    output = Response(si.getvalue(), mimetype='text/csv')
+    output.headers['Content-Disposition'] = 'attachment; filename=equiposSalud.csv'
+
+    return output
+#---------------------------FINALIZA EXPORTACIÓN DE CSV DE EQUIPOS DE SALUD----------------------------- 
     
 # ================================CHECKBOX PROGRAMACIÓN MANTENIMIENTO===============================
 # @app.route('/checkbox_programacionMantenimiento', methods=['POST'])
