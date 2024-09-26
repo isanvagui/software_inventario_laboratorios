@@ -80,48 +80,43 @@
     </style>
 </head>
 <body>
-    {% for producto in datosproveedorsalud %}
+    {% for proveedor in datosproveedorsalud %}
     <div class="cv-container">
         <div class="left-column">
-
+            <img src="{{ url_for('static', filename='fotos//siluetapp.png') }}" alt="Producto Imagen" width="210">
             <div class="contact-info">
-
                 <ul>
-
-                    <li><i class="fas fa-barcode"></i> <span>{{ producto.telefono_empresa }}</span></li>
-                    <li><i class="fas fa-calendar"></i> <span>{{ producto.nombre_empresa }}</span></li>
-                    <li><i class="fas fa-calendar-check"></i> <span>{{ producto.nombre_contacto }}</span></li>
-                    <li><i class="fas fa-calendar-plus"></i> <span>{{ producto.ciudad }}</span></li>
-                    <!-- <li><i class="fas fa-calendar-alt"></i> <span>{{ producto.6 }}</span></li>
-                    <li><i class="fas fa-sync"></i> <span>{{ producto.7 }}</span></li> -->
+                    <li><i class="fas bi-telephone-fill"></i> <span>{{ proveedor.telefono_empresa }}</span></li>
+                    <li><i class="fas fa-solid fa-city"></i> <span>{{ proveedor.nombre_empresa }}</span></li>
+                    <li><i class="fas fa-regular fa-user"></i> <span>{{ proveedor.nombre_contacto }}</span></li>
+                    <li><i class="fas bi-geo-alt-fill"></i> <span>{{ proveedor.ciudad }}</span></li>
                 </ul>
             </div>
-
         </div>
-        <div class="right-column">
 
+        <div class="right-column">
             <div class="section">
-                <h2>Acciones</h2>
-                <form action="/update_datos_proveedor_salud/{{ producto.id }}" method="POST">
+                <h2>Datos proveedor</h2>
+                <form action="/update_datos_proveedor_salud/{{ proveedor.id }}" method="POST">
                     <div class="form-group">
                         <label for="telefono_empresa">Telefono empresa</label>
-                        <input type="text" id="telefono_empresa" name="telefono_empresa" value="{{ producto.telefono_empresa }}" class="form-control">
+                        <input type="text" id="telefono_empresa" name="telefono_empresa" value="{{ proveedor.telefono_empresa }}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="nombre_empresa">Nombre empresa</label>
-                        <input type="text" id="nombre_empresa" name="nombre_empresa" value="{{ producto.nombre_empresa}}" class="form-control">
+                        <input type="text" id="nombre_empresa" name="nombre_empresa" value="{{ proveedor.nombre_empresa}}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="nombre_contacto">Nombre contacto</label>
-                        <input type="text" id="nombre_contacto" name="nombre_contacto" value="{{ producto.nombre_contacto }}" class="form-control">
+                        <input type="text" id="nombre_contacto" name="nombre_contacto" value="{{ proveedor.nombre_contacto }}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="ciudad">ciudad</label>
-                        <input type="text" id="ciudad" name="ciudad" value="{{ producto.ciudad }}" class="form-control">
+                        <input type="text" id="ciudad" name="ciudad" value="{{ proveedor.ciudad }}" class="form-control">
                     </div>
 
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <center><button type="submit" style="margin: 20px" class="btn btn-dark">Guardar</button></center>
+                    <center><button type="submit" style="margin: 20px" class="btn btn-dark">ACTUALIZAR</button></center>
                     <center><a class="btn btn-secondary" href="{{ url_for('indexSalud') }}">REGRESAR</a></center>
                 </form>
             </div>

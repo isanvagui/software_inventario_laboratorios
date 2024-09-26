@@ -82,11 +82,10 @@
 <body>
     <div class="cv-container">
         <div class="left-column">
-            <img src="{{ url_for('static', filename=producto.16) }}" alt="Producto Imagen" width="210">
+            <img src="{{ url_for('static', filename=producto.17) }}" alt="Producto Imagen" width="210">
             <h2>{{ producto.nombre_equipo }}</h2>
             <p>{{ producto.descripcion }}</p>
             <div class="contact-info">
-
                 <ul>
                     <li>
                         {% if producto.11 == "si" %}
@@ -100,7 +99,7 @@
                     <li><i class="fas fa-calendar-check"></i> <span>{{ producto.4 }}</span></li>
                     <li><i class="fas fa-calendar-plus"></i> <span>{{ producto.5 }}</span></li>
                     <li><i class="fas fa-calendar-alt"></i> <span>{{ producto.6 }}</span></li>
-                    <li><i class="fas fa-sync"></i> <span>{{ producto.7 }}</span></li>
+                    <li><i class="fas fa-sync"></i> <span>{{ producto.8 }}</span></li>
                 </ul>
             </div>
             <!-- <div class="references">
@@ -111,28 +110,62 @@
                 </ul>
             </div> -->
         </div>
+
         <div class="right-column">
             <div class="section">
                 <h1>{{ producto.2 }}</h1>
                 <h2>Detalles del Producto</h2>
                 <li>Nombre de equipo: {{ producto.2 }}</li>
-                <li>Estado de equipo: {{ producto.8 }}</li>
-                <li>Ubicación original: {{ producto.9 }}</li>
+                <li>Estado de equipo: {{ producto.9}}</li>
+                <li>Ubicación original: {{ producto.10 }}</li>
                 <p>{{ producto.descripcion }}</p>
             </div>
+
             <div class="section">
                 <h2>Información del Mantenimiento</h2>
                 <!-- <ul> -->
-                    <li>Programación mantenimiento: {{ producto.3 }}</li>
+                    <li>Inicio mantenimiento: {{ producto.3 }}</li>
                     <li>Vencimiento mantenimiento: {{ producto.4 }}</li>
-                    <li>Fecha calibración: {{ producto.5 }}</li>
-                    <li>Fecha ingreso: {{ producto.6 }}</li>
-                    <li>Periodicidad: {{ producto.7 }}</li>
+                    <li>Inicio calibración: {{ producto.5 }}</li>
+                    <li>vencimiento calibración: {{ producto.6 }}</li>
+                    <li>Periodicidad mantenimiento: {{ producto.8 }}</li>
                 <!-- </ul> -->
             </div>
+
             <div class="section">
-                <h2>Acciones</h2>
+                <h2>Historial de mantenimiento y calibración</h2>
+                {%if historial %}
+                <td>
+                    <div class="btn-eliminar">
+                        <a href="{{url_for('historialFechas', cod_articulo = historial) }}" class="btn btn-dark btn-lg"><FONT SIZE=3>VER HISTORIAL</FONT></a>                     
+                    </div>
+                {% else %}
+                <li>No existe historial</li>
+                </td>
+                {% endif %}
+            </div>
+    
+            <div class="section">
+                
                 <form action="/actualizarSalud/{{ producto.0 }}" method="POST">
+
+                    <div class="section">
+                        <h2>Especificaciones de instalación</h2>
+                        <div class="form-group">
+                            <label for="especificaciones_instalacion"></label>
+                            <textarea id="especificaciones_instalacion" name="especificaciones_instalacion" class="form-control">{{ producto.18 }}</textarea>
+                        </div>
+                    </div>
+        
+                    <div class="section">
+                        <h2>Cuidados básicos</h2>
+                        <div class="form-group">
+                            <label for="cuidados_basicos"></label>
+                            <textarea id="cuidados_basicos" name="cuidados_basicos" class="form-control" >{{ producto.19 }}</textarea>
+                        </div>  
+                    </div>
+
+                    <h2>Acciones</h2>
                     <div class="form-group">
                         <label for="cod_articulo">Codigo Articulo</label>
                         <input type="text" id="cod_articulo" name="cod_articulo" value="{{ producto.1 }}" class="form-control">
@@ -142,7 +175,7 @@
                         <input type="text" id="nombre_equipo" name="nombre_equipo" value="{{ producto.2 }}" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="fecha_mantenimiento">Programación mantenimiento</label>
+                        <label for="fecha_mantenimiento">Inicio mantenimiento</label>
                         <input type="date" id="fecha_mantenimiento" name="fecha_mantenimiento" value="{{ producto.3 }}" class="form-control">
                     </div>
                     <div class="form-group">
@@ -150,19 +183,19 @@
                         <input type="date" id="vencimiento_mantenimiento" name="vencimiento_mantenimiento" value="{{ producto.4 }}" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="fecha_calibracion">Fecha calibración</label>
+                        <label for="fecha_calibracion">Inicio calibración</label>
                         <input type="date" id="fecha_calibracion" name="fecha_calibracion" value="{{ producto.5 }}" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="fecha_ingreso">Fecha ingreso</label>
-                        <input type="date" id="fecha_ingreso" name="fecha_ingreso" value="{{ producto.6 }}" class="form-control">
+                        <label for="vencimiento_calibracion">Vencimiento calibración</label>
+                        <input type="date" id="vencimiento_calibracion" name="vencimiento_calibracion" value="{{ producto.6 }}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="periodicidad">Periodicidad</label>
-                        <input type="text" id="periodicidad" name="periodicidad" value="{{ producto.7 }}" class="form-control">
+                        <input type="text" id="periodicidad" name="periodicidad" value="{{ producto.8 }}" class="form-control">
                     </div>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <center><button type="submit" style="margin: 20px" class="btn btn-dark">Guardar</button></center>
+                    <center><button type="submit" style="margin: 20px" class="btn btn-dark">ACTUALIZAR</button></center>
                     <center><a class="btn btn-secondary" href="{{ url_for('indexSalud') }}">REGRESAR</a></center>
                 </form>
             </div>
