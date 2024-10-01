@@ -1,0 +1,273 @@
+{% extends 'layout.html' %}
+
+{% block title %}Modulo Salud{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://bootswatch.com/5/materia/bootstrap.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/indexSalud.css') }}">
+<div class="row">
+    <div class="col_md_5">
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+
+        <!-- donde se ingresan los datos principales del crud -->
+        <div class="div1-indexSalud"> <!-- cuadrar el style en el css que quede divSalud Pendiente-->
+            <div class="card-indexSalud card_body">
+                <form action="/add_productoSalud" method="POST" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <input type="text" name="cod_articulo" placeholder="Código Articulo" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="nombre_equipo" placeholder="Nombre de equipo" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <text style="color: darkgray">Inicio mantenimiento:</text>
+                            <input type="date" name="fecha_mantenimiento" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <text style="color: darkgray">Vencimiento mantenimiento:</text>
+                            <input type="date" name="vencimiento_mantenimiento" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <text style="color: darkgray">Inicio calibración:</text>
+                            <input type="date" name="fecha_calibracion" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <text style="color: darkgray">Vencimiento calibración:</text>
+                            <input type="date" name="vencimiento_calibracion" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <text style="color: darkgray">Fecha ingreso:</text>
+                            <input type="date" name="fecha_ingreso" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <text style="color: darkgray; opacity: 0%;">.</text>
+                            <input type="text" name="periodicidad" placeholder="Periodicidad" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="estado_equipo" placeholder="Estado equipo" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="ubicacion_original" placeholder="Ubicación original"
+                                class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="garantia" placeholder="Garantía ingreso" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" name="criticos" placeholder="Criticos" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="proveedor_responsable">Proveedor Responsable</label>
+                            <select name="proveedor_responsable" class="form-control">
+                                {% for proveedor in proveedores %}
+                                <option value="{{ proveedor.id }}">{{ proveedor.nombre_empresa }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <br>
+                            <input style="padding: 15px; margin-left: -15px;" type="file" name="imagen_producto" class="custom-file-input">
+                            <!-- campo imagen producto -->
+                        </div>
+                    </div>
+                    <input type="hidden" name="csrf_token" value="{{csrf_token() }}" />
+                    <div class="form-group">
+                        <center><button type="submit" class="btn-indexSalud">GUARDAR</button></center>
+                    </div>
+                </form>
+            </div>
+
+
+
+            <!-- New form for insertding CSV -->
+            <!-- <div class="card card_body mt-4">
+                <form action="/insert_csv" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <input type="file" name="file" accept=".csv" class="custom-file-input" required>
+                    </div> -->
+            <!------ linea de token es necesaria ya que el sistema lo solicita-->
+            <!-- <input type="hidden" name="csrf_token" value="{{csrf_token() }}"/> -->
+            <!---------------------- es solo esta linea------------------------->
+            <!-- <div class="form-group">
+                        <center><button type="submit" class="btn btn-dark btn-block">Ingresar equipos</button></center>
+                    </div> -->
+            <!-- </form>
+        </div> -->
+
+            <!-- New form for uploading CSV -->
+            <!-- <div class="card card_body mt-4">
+            <form action="/updateDate_csv" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="file" name="file" accept=".csv" class="custom-file-input" required>
+                </div> -->
+            <!------ linea de token es necesaria ya que el sistema lo solicita-->
+            <!-- <input type="hidden" name="csrf_token" value="{{csrf_token() }}" /> -->
+            <!---------------------- es solo esta linea------------------------->
+            <!-- <div class="form-group">
+                    <center><button type="submit" class="btn btn-dark btn-block">Actulizar fechas</button></center>
+                </div>
+            </form>
+        </div> -->
+        </div>
+
+    </div>
+    <!-- aca se muestra la tabla con los datos ingresados anteriormente en la misma vista-->
+    <!-- MODIFIQUE LA TABLA DE DATOS, ESTOY HACIENDO PRUEBAS -->
+    <div class="col_md_5">
+        <div class="col_md_7 pt-4">
+            <div class="divSalud">
+                <table class="table table-striped table-bordered bg-white table-sm" id="tabla">
+                    <thead>
+
+                        <tr>
+                            <td>Codigo Articulo</td>
+                            <td>Nombre de equipo</td>
+                            <td>Periodicidad (Meses)</td>
+                            <td>Programación mantenimiento</td>
+                            <!--<td>Checkin mantenimiento</td>-->
+                            <!--<td>Vencimiento mantenimiento</td>-->
+                            <td>Programación calibración</td>
+                            <td>Fecha ingreso</td>
+
+                            <td>Estado equipo</td>
+                            <td>Ubicación original</td>
+                            <td>Garantía ingreso</td>
+                            <td>Criticos</td>
+                            <td>Proveedor responsable</td>
+                            <td>Semaforo mantenimiento</td>
+                            <td>Acción</td>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        {% for producto in indexssalud %}
+                        <!-- acciones de editar o eliminar -->
+                        <tr>
+                            <td>{{ producto.cod_articulo }}</td>
+                            <td>{{ producto.nombre_equipo }}</td>
+                            <td>{{ producto.periodicidad }}</td>
+                            <!-- <td>{{ producto.3 }}<input style="margin-left: 10px" type="radio" /></td> -->
+                            <td>{{ producto.fecha_mantenimiento }}
+                                <input type="checkbox" name="fecha_mantenimiento" data-producto-id="{{ producto.id }}"
+                                    data-estado-inicial="{{ producto.checkbox_mantenimiento }}" {% if
+                                    producto.checkbox_mantenimiento=='Activo' %}checked{% endif %}>
+                            </td>
+                            <!-- <td>{{ producto.4 }}</td> -->
+                            <!--<td>{{ producto.14 }}</td> -->
+                            <td>{{ producto.fecha_calibracion }}
+                                <input type="checkbox" name="fecha_calibracion" data-producto-id="{{ producto.id }}"
+                                    data-estado-inicial="{{ producto.checkbox_calibracion }}" {% if
+                                    producto.checkbox_calibracion=='Activo' %}checked{% endif %}>
+                            </td>
+                            <td>{{ producto.fecha_ingreso }}</td>
+                            <td>{{ producto.estado_equipo }}
+                                <form action="/update_estado_equipo" method="POST">
+                                    <!------ linea de token es necesaria ya que el sistema lo solicita-->
+                                    <input type="hidden" name="csrf_token" value="{{csrf_token() }}" />
+                                    <!---------------------- es solo esta linea------------------------->
+                                    <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                    <select name="nuevo_estado_equipo">
+                                        <option value="uso" {% if producto.estado_equipo=='uso' %}selected{% endif %}>
+                                            Uso
+                                        </option>
+                                        <option value="mantenimiento" {% if producto.estado_equipo=='mantenimiento'
+                                            %}selected{% endif %}>Mantenimiento</option>
+                                        <option value="prestamo" {% if producto.estado_equipo=='prestamo' %}selected{%
+                                            endif %}>Prestamo</option>
+                                        <option value="calibracion" {% if producto.estado_equipo=='calibracion'
+                                            %}selected{% endif %}>Calibración</option>
+                                    </select>
+                                    <div><button type="submit" name="guardar_estado">Guardar</button></div>
+                                </form>
+                            </td>
+                            <td>{{ producto.ubicacion_original }}</td>
+                            <td>{{ producto.garantia }}</td>
+                            <!-- <td>{{ producto.11 }}</td> -->
+                            <td>
+                                {% if producto.criticos == "si" %}
+                                <i class="bi bi-radioactive"></i> <!-- Icono para crítico -->
+                                {% else %}
+                                <i class="bi bi-shield-check"></i> <!-- Icono para no crítico -->
+                                {% endif %}
+                            </td>
+
+                            <!-- <div class="form-group">
+                                    <center><button type="submit" class="btn btn-dark btn-block">GUARDAR</button></center>
+                                </div>
+                                <div class="btn-eliminar">
+                                    <button class="boton-dos" type="submit">
+                                        <a href="/datosProveedorSalud/" style="color: white; ">SALUD</a>
+                                    </button>
+                                </div>   -->
+                            <td>
+                                <div class="btn-eliminar">
+                                    <a href="/datosProveedorSalud/{{ producto.proveedor_responsable }}"
+                                        class="btn btn-dark btn-lg">
+                                        <FONT SIZE=3>DATOS</FONT>
+                                    </a>
+                                </div>
+                            </td>
+
+                            <td class="semaforo"
+                                style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'purple' %}purple{% elif producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
+                            </td>
+
+                            <td>
+                                <div class="btn-eliminar">
+                                    <a href="/edit_productoSalud/{{producto.id}}" class="btn btn-secondary btn-sm">
+                                        <FONT SIZE=2>Editar/Ver hoja de vida</FONT>
+                                    </a>
+                                </div>
+
+                                <div class="btn-eliminar">
+                                    <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-dark btn-lg">
+                                        <FONT SIZE=3>Eliminar</FONT>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- boton de busqueda y filtro, con lenguaje en español -->
+    <script>
+        $("#tabla").DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            }
+        }
+
+        );
+
+    </script>
+
+</div>
+
+<!-- con este script llamamos el token para el checkbox -->
+<script>
+    var csrf_token = "{{ csrf_token() }}";
+</script>
+
+<center><a class="btn btn-secondary" href="{{ url_for('home') }}">REGRESAR</a></center>
+{% endblock %}

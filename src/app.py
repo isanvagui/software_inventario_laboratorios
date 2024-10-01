@@ -45,11 +45,13 @@ def evita_cache(response):
     return response
 
 @app.route('/')
+@login_required
 def index():
     return redirect(url_for('login'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
+# @login_required
 def login():
     if request.method == 'POST':
         # print(request.form['username'])
@@ -519,74 +521,74 @@ def exportCsv():
     writer = csv.writer(si)
 
     # Escribir los encabezados de las columnas
-    writer.writerow(['cod_articulo', 'nombre_equipo', 'fecha_mantenimiento', 'vencimiento_mantenimiento', 'fecha_calibracion', 'vencimiento_calibracion', 'fecha_ingreso', 
-                     'periodicidad', 'estado_equipo', 'ubicacion_original', 'garantia', 'criticos', 'proveedor_responsable', 'especificaciones_instalacion', 'cuidados_basicos'])
+    writer.writerow(['Código articulo', 'Nombre Equipo', 'Inicio Mantenimiento', 'Vencimiento Mantenimiento', 'Inicio Calibración', 'Vencimiento Calibración', 'Fecha Ingreso', 
+                     'Periodicidad', 'Estado Equipo', 'Ubicación Original', 'Garantía', 'Críticos', 'Proveedor Responsable', 'Especificaciones Instalación', 'Cuidados Básicos'])
 
     # Escribir los registros de la tabla
     for registro in registros:
         writer.writerow(registro)
 
     # Preparar el archivo CSV para su descarga
-    output = Response(si.getvalue(), mimetype='text/csv')
-    output.headers['Content-Disposition'] = 'attachment; filename=equiposSalud.csv'
+    salida = Response(si.getvalue().encode('utf-8-sig'), mimetype='text/csv')
+    salida.headers['Content-Disposition'] = 'attachment; filename=equiposSalud.csv'
 
-    return output
+    return salida
 #---------------------------FINALIZA EXPORTACIÓN DE CSV DE EQUIPOS DE SALUD----------------------------- 
     
 # ================================CHECKBOX PROGRAMACIÓN MANTENIMIENTO===============================
-# @app.route('/checkbox_programacionMantenimiento', methods=['POST'])
-# def checkbox_programacionMantenimiento():
-#     if request.method == 'POST':
-#         data = request.get_json()
-#         producto_id = data['productoId']
-#         name = data['name']
+@app.route('/checkbox_programacionMantenimiento', methods=['POST'])
+def checkbox_programacionMantenimiento():
+    if request.method == 'POST':
+        data = request.get_json()
+        producto_id = data['productoId']
+        name = data['name']
        
-#         cur = db.connection.cursor()
+        cur = db.connection.cursor()
         
-#         # Obtener las fechas de mantenimiento y vencimiento del producto
-#         cur.execute('SELECT fecha_mantenimiento, vencimiento_mantenimiento FROM indexssalud WHERE id = %s', (producto_id,))
-#         result = cur.fetchone()
+        # Obtener las fechas de mantenimiento y vencimiento del producto
+        cur.execute('SELECT fecha_mantenimiento, vencimiento_mantenimiento FROM indexssalud WHERE id = %s', (producto_id,))
+        result = cur.fetchone()
         
-#         # if result:
-#         fecha_mantenimiento, vencimiento_mantenimiento = result
+        # if result:
+        fecha_mantenimiento, vencimiento_mantenimiento = result
             
-#         # Calcular la diferencia en días
-#         diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
+        # Calcular la diferencia en días
+        diferencia_dias = (vencimiento_mantenimiento - fecha_mantenimiento).days
             
-#         # Activar o desactivar el checkbox según la diferencia en días
-#         if diferencia_dias > 30:
-#             nuevo_estado = 1  # Activar checkbox
-#         else:
-#             nuevo_estado = 0  # Desactivar checkbox
+        # Activar o desactivar el checkbox según la diferencia en días
+        if diferencia_dias > 30:
+            nuevo_estado = 1  # Activar checkbox
+        else:
+            nuevo_estado = 0  # Desactivar checkbox
             
-#             if name == "fecha_mantenimiento":
-#                 cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE id = %s', (nuevo_estado, producto_id))
-#             elif name == "fecha_calibracion":
-#                 cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
+            if name == "fecha_mantenimiento":
+                cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE id = %s', (nuevo_estado, producto_id))
+            elif name == "fecha_calibracion":
+                cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
                 
-#             db.connection.commit()
-#             # print("hola",data)
-#             # return redirect(url_for('indexSalud'))
-#             return jsonify({'message': 'Estado actualizado correctamente'})
+            db.connection.commit()
+            # print("hola",data)
+            # return redirect(url_for('indexSalud'))
+            return jsonify({'message': 'Estado actualizado correctamente'})
 
-#     return jsonify({'error': 'Método no permitido'}), 405
+    return jsonify({'error': 'Método no permitido'}), 405
 # ======================================================================================================
 
 # ================================CHECKBOX PROGRAMACIÓN FECHA DE CALIBRACIÓN===============================
-# @app.route('/checkbox_programacionCalibracion', methods=['POST'])
-# def checkbox_programacionCalibracion():
-#     if request.method == 'POST':
-#             data = request.get_json()
-#             producto_id = data['productoId']
-#             nuevo_estado = data['nuevoEstado']
+@app.route('/checkbox_programacionCalibracion', methods=['POST'])
+def checkbox_programacionCalibracion():
+    if request.method == 'POST':
+            data = request.get_json()
+            producto_id = data['productoId']
+            nuevo_estado = data['nuevoEstado']
 
-#             cur = db.connection.cursor()
-#             cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
-#             db.connection.commit()
+            cur = db.connection.cursor()
+            cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
+            db.connection.commit()
 
-#             return redirect(url_for('indexSalud'))
+            return redirect(url_for('indexSalud'))
 
-#     return jsonify({'error': 'Método no permitido'}), 405
+    return jsonify({'error': 'Método no permitido'}), 405
 # =====================================================================================================
     
 # ACTUALIZA EL ESTADO DEL EQUIPO DESDE EL DESPLEGABLE QUE SE ENCUENTRA EN LA MISMA TABLA INDEXSALUD

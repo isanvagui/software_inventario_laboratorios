@@ -73,42 +73,85 @@
 <center><a class="btn btn-secondary" href="{{ url_for('logout') }}" style="margin: 10px">CERRAR SESIÓN</a></center> -->
 
 <!-- =======================================//================================================================ -->
-   
-<h1 style="color:#f7f7f7;"> Bienvenido: {{ current_user.fullname }} </h1>
+<div class="container-home">
+  <h1 class="nombre-Bienvenida"> Bienvenido: {{ current_user.fullname }} </h1>
 
-<div class="center-horizon-vert">
+  <div class="center-horizon-vert-home">
     <div class="row">
-        <div class="col-sm-4">
-            <button class="boton" type="submit">
-                <a href="/indexGastronomia" style="color: white; ">GASTRONOMIA</a>
-            </button>
-        </div>
+      <div class="col-sm-3"> <!-- Cambiado a col-sm-3 para que quepan 4 en la fila -->
+        <button class="boton-home-1" type="submit">
+          <a href="/indexGastronomia" style="color: white;">GASTRONOMIA</a>
+        </button>
+      </div>
 
-        <div class="col-sm-4">
-            <button class="boton-dos" type="submit">
-                <a href="/indexSalud" style="color: white; ">SALUD</a>
-            </button>
-        </div>        
+      <div class="col-sm-3"> <!-- Cambiado a col-sm-3 -->
+        <button class="boton-home-2" type="submit">
+          <a href="/indexSalud" style="color: white;">SALUD</a>
+        </button>
+      </div>
+
+      <div class="col-sm-3"> <!-- Cambiado a col-sm-3 -->
+        <button class="boton-home-1" type="submit">
+          <a href="/indexGastronomia" style="color: white;">LACMA</a>
+        </button>
+      </div>
+
+      <div class="col-sm-3"> <!-- Cambiado a col-sm-3 -->
+        <button class="boton-home-2" type="submit">
+          <a href="/indexGastronomia" style="color: white;">ARQUITECTURA</a>
+        </button>
+      </div>
     </div>
+  </div>
+
+  <div class="container-dashboard-home">
+    <div class="row no-gutters"> <!-- Agregar 'no-gutters' para eliminar el espacio entre columnas -->
+      <div class="col-sm-6"> <!-- Columna para "CRITICOS" -->
+        <div class="grafico"
+          style="background-color: #143840; color: white; text-align: center; padding: 20px; box-sizing: border-box; border-radius: 10px;">
+          <h5>CRITICOS</h5>
+          <img src="{{ url_for('static', filename='img/Logo-Colmayor-Color-Blanco-1.png') }}" alt="Logo Colmayor"
+            class="img-fluid">
+          <!-- Aquí puedes agregar tu gráfico, como un canvas de Chart.js o un SVG -->
+        </div>
+      </div>
+
+      <div class="col-sm-6"> <!-- Columna para "PROXIMOS A VENCER" -->
+        <div class="grafico"
+          style="background-color: #143840; color: white; text-align: center; padding: 20px; box-sizing: border-box; border-radius: 10px;">
+          <h5>PROXIMOS A VENCER</h5>
+          <img src="{{ url_for('static', filename='img/Logo-Colmayor-Color-Blanco-1.png') }}" alt="Logo Colmayor"
+            class="img-fluid">
+          <!-- Aquí puedes agregar tu gráfico, como un canvas de Chart.js o un SVG -->
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="center-horizon-vert">
-    <div class="row">
-        <div class="col-sm-4">
-            <button class="boton-dos" type="submit">
-                <a href="/indexGastronomia" style="color: white; ">LACMA</a>
-            </button>
-        </div>
-        <div class="col-sm-4">
-            <button class="boton-dos" type="submit">
-                <a href="/indexGastronomia" style="color: white; ">ARQUITECTURA</a>
-            </button>
-        </div>
-    </div>
-</div>
 
-<center>
+
+
+
+
+<!-- <div class="center-horizon-vert-home">
+  <div class="row">
+      <div class="col-sm-4">
+          <button class="boton-home" type="submit">
+              <a href="/indexGastronomia" style="color: white;">LACMA</a>
+          </button>
+      </div>
+      <div class="col-sm-4">
+          <button class="boton-home" type="submit">
+              <a href="/indexGastronomia" style="color: white;">ARQUITECTURA</a>
+          </button>
+      </div>
+  </div>
+</div> -->
+
+
+<!-- <center>
     <a class="btn btn-secondary" href="{{ url_for('logout') }}" style="margin: 10px">CERRAR SESIÓN</a>
-</center>
+</center> -->
 
 {% endblock %}

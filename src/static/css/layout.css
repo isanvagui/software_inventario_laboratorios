@@ -1,0 +1,138 @@
+body {
+    display: flex;
+}
+
+/* Estilos de la barra lateral */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    background-color: #143840;
+    padding-top: 20px;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    /* Organiza los elementos en columna */
+    transition: background-color 0.9s ease;
+}
+
+.sidebar.collapsed {
+    width: 60px;
+}
+
+/* Botón para retraer y expandir el sidebar */
+.toggle-btn {
+    font-size: 24px;
+    cursor: pointer;
+    color: white;
+    padding: 10px 15px;
+    /* Asegura que tenga espacio y no se superponga */
+    align-self: flex-start;
+    /* Alinea el botón al principio */
+    transition: background-color 0.9s ease;
+}
+
+.sidebar a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: white;
+    display: block;
+    transition: all 0.3s ease;
+    transition: background-color 0.4s ease;
+}
+
+.sidebar.collapsed a {
+    font-size: 0;
+}
+
+.sidebar.collapsed a::before {
+    content: attr(data-icon);
+    font-size: 18px;
+    margin-right: 0;
+}
+
+.sidebar a:hover {
+    background-color: #25CACD;
+}
+
+/* Cerrar sesión colocado en la parte inferior */
+.logout {
+    margin-top: auto;
+    /* Empuja el botón hacia la parte inferior */
+    margin-bottom: 20px;
+    /* Margen inferior para separarlo del borde */
+}
+
+/* Ajuste del contenido principal */
+.content {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+    transition: margin-left 0.3s ease;
+    transition: background-color 0.9s ease;
+    margin-top: 10px;
+}
+
+.content.collapsed {
+    margin-left: 60px;
+}
+
+a {
+    color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+    text-decoration: underline;
+    width: 100%;
+    border-radius: 5%;
+}
+
+.container-layout {
+    max-width: 1600px;
+    padding: 1%;
+    margin-top: -2%;
+    margin-left: 420px;
+}
+
+@media (max-height: 780px) {
+
+    .container-layout {
+        max-width: 1300px;
+        padding: 1%;
+        margin-top: -1%;
+        margin-left: 30px;
+    }
+}
+
+.container-salud {
+    max-width: 1600px;
+    padding: 1%;
+    margin-top: 0%;
+    margin-left: -15px;
+}
+
+@media (max-height: 780px) {
+
+    .container-salud {
+        max-width: 900px;
+        padding: 1%;
+        margin-top: -5%;
+        margin-left: 150px;
+    }
+}
+
+.container-home {
+    max-width: 1600px;
+    padding: 1%;
+    margin-top: 5%;
+    margin-left: 0px;
+}
+
+@media (max-height: 780px) {
+
+    .container-home {
+        max-width: 1300px;
+        padding: 1%;
+        margin-top: -1%;
+        margin-left: 30px;
+    }
+}

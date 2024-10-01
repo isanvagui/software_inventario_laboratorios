@@ -1,52 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> AppLaboratorios </title>
-    <link rel="stylesheet" href="https://bootswatch.com/5/materia/bootstrap.min.css">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/estilos.css')}}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <!-- CONECCIÓN DE LA BASE DE DATOS PARA EL BOTÓN BUSCAR (SON LAS TRES LINEAS SIGUIENTES) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
-    
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Laboratorios Colmayor</title>
+  <link rel="stylesheet" href="https://bootswatch.com/5/materia/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/Escudo_Colmayor.png') }}" type="image/x-icon">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <!--<div class="container-fluid">-->
-          <a class="navbar-brand" href="/">Inventario Laboratorios</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <!-- <div class="collapse navbar-collapse" id="navbarNavAltMarkup"> -->
-            <div class="navbar-nav">
-              <!-- <a class="nav-link active" aria-current="page" href="#">Home</a> -->
-              <a class="nav-link" href="{{ url_for('home') }}">Inicio</a>
-              <a class="nav-link" href="{{ url_for('agregarNuevoProveedor') }}">Agregar proveedor</a>
-              <a class="nav-link" href="{{ url_for('exportCsv') }}">Exportar CSV</a>
-              <!-- <a class="nav-link disabled">Disabled</a> -->
-            </div>
-          <!--<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-            </div>
-          </div>
-        </div>-->
-    </nav>
-
-    <div class = "container pt-4">
-        {% block body %}
-        {% endblock %}
+  <!-- Barra lateral -->
+  <div class="sidebar" id="sidebar">
+    <!-- Botón para retraer y expandir el sidebar -->
+    <div class="toggle-btn" id="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
     </div>
 
+    <!-- Siempre visibles -->
+    <a href="{{ url_for('home') }}" data-icon="🏠">Inicio</a>
     
-    <!-- <script src="static/js/main.js"></script> -->
-    <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" crossorigin="anonymous"></script> <!--l-->
+    <!-- Botones condicionales -->
+    {% if request.path == url_for('indexSalud') %}
+      <a href="{{ url_for('agregarNuevoProveedor') }}" data-icon="➕">Agregar proveedor</a>
+      <a href="{{ url_for('exportCsv') }}" data-icon="📄">Exportar CSV</a>
+      <a id="toggleFormBtn" class="btn-indexSalud" data-icon="🛒">Agregar Equipo Manual</a>
+      <a id="toggleForm" class="btn-indexSalud" data-icon="🛒">Agregar Equipos Masivos CSV</a>
+      <a id="toggleFor" class="btn-indexSalud" data-icon="🛒">Actulizar fechas CSV</a>
+    {% elif request.path == url_for('indexGastronomia') %}
+      <a href="{{ url_for('home') }}" data-icon="📄">Modulos</a>
+    {% else %}
+      <a href="{{ url_for('indexGastronomia') }}" data-icon="➕">Gastronomia</a>
+      <a href="{{ url_for('indexSalud') }}" data-icon="📄">Salud</a>
+      <a href="{{ url_for('indexGastronomia') }}" data-icon="📄">LACMA</a>
+      <a href="{{ url_for('indexGastronomia') }}" data-icon="📄">Arquitectura</a>
+    {% endif %}
+    
+    <a class="navbar-brand"></a>
+    
+    <!-- Cerrar sesión -->
+    <a href="{{ url_for('logout') }}" data-icon="🔒" class="logout">Cerrar Sesión</a>
+  </div>
 
+  <!-- Contenido principal -->
+  <div class="content" id="content">
+    <div class="container-layout">
+      {% block body %}
+      {% endblock %}
+    </div>
+  </div>
+
+  <!-- JavaScript para el colapso del sidebar -->
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+      document.getElementById('content').classList.toggle('collapsed');
+    }
+  </script>
+
+  <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+    integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
+    crossorigin="anonymous"></script>
 </body>
+
 </html>

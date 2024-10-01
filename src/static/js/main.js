@@ -43,4 +43,5 @@ document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
             this.checked = estadoInicial === 'Activo';
         }
     });
+    
 });

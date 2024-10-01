@@ -4,7 +4,8 @@ body{
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover; 
-    background-image: linear-gradient(to bottom,rgba(25, 88, 85, 1), rgba(83, 88, 231, 0.73));
+    /* background-image: linear-gradient(to bottom,rgba(25, 88, 85, 1), rgba(83, 88, 231, 0.73)); */
+    background-color: white;
   }
 
 /* .boton{
@@ -209,3 +210,118 @@ i.bi-shield-check {
   display: none;
   margin-top: 10px;
 } */
+
+.nombre-Bienvenida {
+  height: 50%; /* Mantiene la altura del contenedor */
+  padding: 3px; /* Espaciado interno */
+  display: flex; /* Activar flexbox */
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center; /* Centrar verticalmente */
+  text-align: center; /* Asegurar que el texto esté centrado */
+  font-size: 1.7em; /* Tamaño de fuente medio, ajusta según sea necesario */
+}
+
+.center-horizon-vert-home {
+  display: flex;                   /* Activar flexbox */
+  justify-content: center;         /* Centrar horizontalmente */
+  align-items: center;             /* Alinear verticalmente */
+  padding: 20px;                   /* Espacio interno */
+}
+
+.row {
+  display: flex;                   /* Activar flexbox en la fila */
+  justify-content: space-between;  /* Distribuir los elementos uniformemente */
+  flex-wrap: wrap;                 /* Permitir que los elementos se envuelvan */
+}
+
+.boton-home-1 {
+  background-color: #19BCD6;       /* Color de fondo */
+  border: none;                    /* Sin borde */
+  color: white;                    /* Color del texto */
+  padding: 15px;                   /* Espaciado interno vertical */
+  font-size: 16px;                 /* Tamaño de fuente */
+  cursor: pointer;                 /* Cambiar cursor al pasar sobre el botón */
+  transition: background-color 0.3s; /* Transición suave */
+  width: 100%;                     /* Asegura que el botón use todo el ancho de la columna */
+  text-align: center;              /* Centrar el texto */
+  box-sizing: border-box;          /* Asegurar que el padding no afecte el ancho total */
+  border-radius: 10px;            /* Bordes redondeados */
+}
+
+.boton-home-2 {
+  background-color: #5F6D73;       /* Color de fondo */
+  border: none;                    /* Sin borde */
+  color: white;                    /* Color del texto */
+  padding: 15px;                   /* Espaciado interno vertical */
+  font-size: 16px;                 /* Tamaño de fuente */
+  cursor: pointer;                 /* Cambiar cursor al pasar sobre el botón */
+  transition: background-color 0.3s; /* Transición suave */
+  width: 100%;                     /* Asegura que el botón use todo el ancho de la columna */
+  text-align: center;              /* Centrar el texto */
+  box-sizing: border-box;          /* Asegurar que el padding no afecte el ancho total */
+  border-radius: 10px;            /* Bordes redondeados */
+}
+
+/* Si deseas redondear los bordes solo en las esquinas superiores o inferiores, puedes especificar así:
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
+border-bottom-left-radius: 10px;
+border-bottom-right-radius: 10px;
+*/
+
+.boton-home-1:hover {
+  background-color: #5F6D73;       /* Color de fondo al pasar el mouse */
+}
+
+.boton-home-1 a {
+  text-decoration: none;            /* Sin subrayado en el texto */
+  color: inherit;                  /* Heredar el color del botón */
+  display: block;                  /* Hacer que el enlace use el 100% del botón */
+  height: 100%;                    /* Hacer que el enlace ocupe todo el botón */
+  line-height: 1.5;
+  width: 200px;                /* Ajustar el espacio entre líneas */
+}
+
+.boton-home-2:hover {
+  background-color: #19BCD6;       /* Color de fondo al pasar el mouse */
+}
+
+.boton-home-2 a {
+  text-decoration: none;            /* Sin subrayado en el texto */
+  color: inherit;                  /* Heredar el color del botón */
+  display: block;                  /* Hacer que el enlace use el 100% del botón */
+  height: 100%;                    /* Hacer que el enlace ocupe todo el botón */
+  line-height: 1.5;
+  width: 200px;                /* Ajustar el espacio entre líneas */
+}
+
+.container-dashboard-home {
+  padding: 20px;                   /* Espacio interno del contenedor */
+  background-color: #f8f9fa;      /* Color de fondo */
+  border-radius: 10px;             /* Bordes redondeados */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.grafico {
+  background-color: #143840;      /* Color de fondo */
+  color: white;                   /* Color del texto */
+  text-align: center;             /* Centrar el texto */
+  padding: 20px;                  /* Espaciado interno */
+  border-radius: 10px;            /* Bordes redondeados */
+  box-sizing: border-box;          /* Asegura que el padding no afecte el ancho total */
+}
+
+.img-fluid {
+  max-width: 100%;                /* Asegura que la imagen no exceda el ancho del contenedor */
+  height: auto;                   /* Mantiene la relación de aspecto */
+  margin-top: 10px;               /* Espacio superior para separar la imagen del texto */
+}
+
+
+.row.no-gutters {
+  margin-right: 0;                 /* Eliminar margen derecho de la fila */
+  margin-left: 0;                  /* Eliminar margen izquierdo de la fila */
+  width: 100%;                     /* Asegura que la fila use todo el ancho disponible */
+}
+
+
