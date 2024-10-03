@@ -5,6 +5,7 @@
 {% block body %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://bootswatch.com/5/materia/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/indexSalud.css') }}">
 <div class="container-salud">
     <div class="container-indexSalud">
@@ -194,7 +195,7 @@
                                                     %}selected{% endif %}>Calibración</option>
                                             </select>
                                             <button type="submit" name="guardar_estado"
-                                                class="btn btn-dark btn-sm">Guardar</button>
+                                                class="btn-indexSalud">Guardar</button>
                                         </form>
                                     </td>
                                     <td>{{ producto.ubicacion_original }}</td>
@@ -208,9 +209,8 @@
                                     </td>
                                     <td>
                                         <div class="btn-eliminar">
-                                            <a href="/datosProveedorSalud/{{ producto.proveedor_responsable }}"
-                                                class="btn btn-dark btn-lg">
-                                                <FONT SIZE=3>DATOS</FONT>
+                                            <a href="/datosProveedorSalud/{{ producto.proveedor_responsable }}" class="btn btn-tabla btn-lg">
+                                                <FONT SIZE=3>datos</FONT>
                                             </a>
                                         </div>
                                     </td>
@@ -224,8 +224,9 @@
                                                 <FONT SIZE=2>Editar/Ver hoja de vida</FONT>
                                             </a>
                                         </div>
+                                        <br>
                                         <div class="btn-eliminar">
-                                            <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-dark btn-lg">
+                                            <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-tabla btn-lg" >
                                                 <FONT SIZE=3>Eliminar</FONT>
                                             </a>
                                         </div>
@@ -240,6 +241,21 @@
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+<!-- boton de busqueda y filtro, con lenguaje en español -->
+<script>
+    $("#tabla").DataTable({
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+        }
+    }
+
+    );
+
+</script>
 
 <!-- Scripts para el ocultar el formulario -->
 <script>

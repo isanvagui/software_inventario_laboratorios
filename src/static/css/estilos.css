@@ -89,7 +89,7 @@ body{
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 7vh; /* da espacio verticalmente entre los botones */
+  /*height: 7vh;  da espacio verticalmente entre los botones */
 }
 
 .center-horizon-vert {
