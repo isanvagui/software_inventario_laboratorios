@@ -116,6 +116,7 @@
 </head>
 
 <body>
+    
     <div class="cv-container">
         <div class="left-column">
             <img src="{{ url_for('static', filename=producto.17) }}" alt="Producto Imagen" width="210">
@@ -130,7 +131,7 @@
                         <i class="bi bi-shield-check"></i> <!-- Icono para no crítico -->
                         {% endif %}
                     </li>
-                    <li><i class="fas fa-barcode"></i> <span>{{ producto.1 }}</span></li>
+                    <li><i class="fas fa-barcode"></i> <span>{{ producto.2 }}</span></li>
                     <li><i class="fas fa-calendar"></i> <span>{{ producto.3 }}</span></li>
                     <li><i class="fas fa-calendar-check"></i> <span>{{ producto.4 }}</span></li>
                     <li><i class="fas fa-calendar-plus"></i> <span>{{ producto.5 }}</span></li>
@@ -149,7 +150,9 @@
 
         <div class="right-column">
             <div class="section">
-                <h1>{{ producto.2 }}</h1>
+                <center>
+                    <h1>{{ producto.2 }}</h1>
+                </center>
                 <h2>Detalles del Producto</h2>
                 <li>Nombre de equipo: {{ producto.2 }}</li>
                 <li>Estado de equipo: {{ producto.9}}</li>
@@ -186,14 +189,14 @@
 
             <div class="section">
 
-                <form action="/actualizarSalud/{{ producto.0 }}" method="POST">
-
+                <form action="/actualizarSalud/{{ producto.id }}" method="POST">
+                    
                     <div class="section">
                         <h2>Especificaciones de instalación</h2>
                         <div class="form-group">
                             <label for="especificaciones_instalacion"></label>
                             <textarea id="especificaciones_instalacion" name="especificaciones_instalacion"
-                                class="form-control">{{ producto.18 }}</textarea>
+                                class="form-control">{{ producto.especificaciones_instalacion}}</textarea>
                         </div>
                     </div>
 
@@ -202,10 +205,10 @@
                         <div class="form-group">
                             <label for="cuidados_basicos"></label>
                             <textarea id="cuidados_basicos" name="cuidados_basicos"
-                                class="form-control">{{ producto.19 }}</textarea>
+                                class="form-control">{{ producto.cuidados_basicos }}</textarea>
                         </div>
                     </div>
-
+                    
                     <h2>Acciones</h2>
                     <div class="form-group">
                         <label for="cod_articulo">Codigo Articulo</label>

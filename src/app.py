@@ -81,7 +81,54 @@ def logout():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('home.html')
+    cur = db.connection.cursor()
+
+    # Obtener la fecha actual
+    fecha_actual = datetime.now().date()
+
+    # Consultar la cantidad de equipos según el vencimiento del mantenimiento
+    cur.execute("""
+        SELECT 
+            SUM(DATEDIFF(vencimiento_mantenimiento, %s) < 0) AS vencidas,
+            SUM(DATEDIFF(vencimiento_mantenimiento, %s) BETWEEN 0 AND 30) AS proximas,
+            SUM(DATEDIFF(vencimiento_mantenimiento, %s) BETWEEN 31 AND 90) AS entre_31_y_90,
+            SUM(DATEDIFF(vencimiento_mantenimiento, %s) > 90) AS mas_90_dias
+        FROM indexssalud
+        WHERE enable = 1
+    """, (fecha_actual, fecha_actual, fecha_actual, fecha_actual))
+
+    # Obtener los resultados
+    resultados = cur.fetchone()
+
+    vencidas = resultados[0]
+    proximas = resultados[1]
+    entre_31_y_90 = resultados[2]
+    mas_90_dias = resultados[3]
+
+    # Consultar la cantidad de equipos según el vencimiento de la calibración
+    cur.execute("""
+        SELECT 
+            SUM(DATEDIFF(vencimiento_calibracion, %s) < 0) AS vencidas,
+            SUM(DATEDIFF(vencimiento_calibracion, %s) BETWEEN 0 AND 30) AS proximas,
+            SUM(DATEDIFF(vencimiento_calibracion, %s) BETWEEN 31 AND 90) AS entre_31_y_90,
+            SUM(DATEDIFF(vencimiento_calibracion, %s) > 90) AS mas_90_dias
+        FROM indexssalud
+        WHERE enable = 1
+    """, (fecha_actual, fecha_actual, fecha_actual, fecha_actual))
+
+    # Obtener los resultados del vencimiento de calibración
+    resultados_calibracion = cur.fetchone()
+    vencidas_calibracion = resultados_calibracion[0]
+    proximas_calibracion = resultados_calibracion[1]
+    entre_31_y_90_calibracion = resultados_calibracion[2]
+    mas_90_dias_calibracion = resultados_calibracion[3]
+
+    return render_template('home.html', vencidas=vencidas, proximas=proximas, entre_31_y_90=entre_31_y_90, mas_90_dias=mas_90_dias,
+                           vencidas_calibracion=vencidas_calibracion, 
+                           proximas_calibracion=proximas_calibracion, 
+                           entre_31_y_90_calibracion=entre_31_y_90_calibracion, 
+                           mas_90_dias_calibracion=mas_90_dias_calibracion)
+    # return render_template('home.html')
 
 
 #---------------------------INICIA MODULO DE GASTRONOMIA-----------------------------
