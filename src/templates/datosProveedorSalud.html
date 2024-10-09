@@ -22,7 +22,7 @@
         }
         .left-column {
             width: 35%;
-            background-color: #1a1a1a;
+            background-color: #434242;
             color: white;
             padding: 20px;
             display: flex;
@@ -77,6 +77,19 @@
         .section ul li {
             margin-bottom: 10px;
         }
+        .btn-update-proveedor {
+            background-color: rgba(20, 56, 64, 1);
+            /* Color de fondo */
+            color: white;
+            /* Color del texto, ajustable */
+            border: none;
+            /* Remover bordes si deseas */
+        }
+
+        .btn-update-proveedor:hover {
+            background-color: rgba(37, 202, 205, 1);
+            /* Color más claro para hover */
+        }
     </style>
 </head>
 <body>
@@ -96,7 +109,7 @@
 
         <div class="right-column">
             <div class="section">
-                <h2>Datos proveedor</h2>
+                <center><h2>Datos proveedor</h2></center>
                 <form action="/update_datos_proveedor_salud/{{ proveedor.id }}" method="POST">
                     <div class="form-group">
                         <label for="telefono_empresa">Telefono empresa</label>
@@ -116,8 +129,16 @@
                     </div>
 
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <center><button type="submit" style="margin: 20px" class="btn btn-dark">ACTUALIZAR</button></center>
-                    <center><a class="btn btn-secondary" href="{{ url_for('indexSalud') }}">REGRESAR</a></center>
+                    <center><button type="submit" style="margin: 20px" class="btn btn-update-proveedor btn-lg"><FONT SIZE=3>actualizar</FONT></button></center>
+                    <!-- <center><button type="submit" style="margin: 20px" class="btn-update-proveedor">ACTUALIZAR</button></center> -->
+                    <!-- <center><a type="submit" style="margin: 20px" class="btn btn-update-proveedor btn-lg" href="{{ url_for('indexSalud') }}"><FONT SIZE=3>regresar</FONT></a></center> -->
+                    
+                    <div class="btn-eliminar">
+                        <center><a class="btn btn-update-proveedor btn-lg" href="{{ url_for('indexSalud') }}">
+                                    <FONT SIZE=3>regresar</FONT>
+                                </a>
+                        </center>
+                    </div>
                 </form>
             </div>
         </div>

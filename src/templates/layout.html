@@ -29,8 +29,10 @@
       <a href="{{ url_for('agregarNuevoProveedor') }}" data-icon="➕">Agregar proveedor</a>
       <a href="{{ url_for('exportCsv') }}" data-icon="📄">Exportar CSV</a>
       <a id="toggleFormBtn" class="btn-indexSalud" data-icon="🛒">Agregar Equipo Manual</a>
-      <a id="toggleForm" class="btn-indexSalud" data-icon="🛒">Agregar Equipos Masivos CSV</a>
-      <a id="toggleFor" class="btn-indexSalud" data-icon="🛒">Actulizar fechas CSV</a>
+      <a id="toggleForm" class="btn-indexSalud" data-icon="🛒">Insertar Equipos Masivos .CSV</a>
+      <a id="toggleFor" class="btn-indexSalud" data-icon="🛒">Actulizar Fechas Masivas .CSV</a>
+      {% elif request.path == url_for('agregarNuevoProveedor') %}
+        <a href="{{ url_for('indexSalud') }}" data-icon="📄">Salud</a>
     {% elif request.path == url_for('indexGastronomia') %}
       <a href="{{ url_for('home') }}" data-icon="📄">Modulos</a>
     {% else %}

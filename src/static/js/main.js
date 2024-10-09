@@ -6,9 +6,9 @@ document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
         const productoId = this.getAttribute('data-producto-id');
         const estadoInicial = this.getAttribute('data-estado-inicial');
         const name = this.getAttribute('name');
-        const nuevoEstado = this.checked ? 'Activo' : 'No activo';
+        const nuevoEstado = this.checked ? 'Activo' : 'Inactivo';
 
-        alert(name);
+        // alert(name);
 
         // Confirmar con el usuario antes de enviar la solicitud
         if (confirm(`¿Cambiar el estado de ${name} ${productoId} a ${nuevoEstado}?`)) {

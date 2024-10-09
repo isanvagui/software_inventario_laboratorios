@@ -3,39 +3,68 @@
 {% block title %}historial fechas{% endblock %}
 
 {% block body %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-<link rel="stylesheet" href="https://bootswatch.com/5/materia/bootstrap.min.css">
-<div class="row">
-    
-    <div class="col_md_7 pt-4">
-        <div class="divSalud">
-            <table class="table table-striped table-bordered bg-white table-sm">
-                <thead>
-                    <tr>
-                        <td>Código articulo</td>
-                        <td>Inicio mantenimiento</td>
-                        <td>Vencimiento mantenimiento</td>
-                        <td>Inicio calibración</td>
-                        <td>Vencimiento calibración</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for registro in historial %}
-                    <tr>
-                        <td>{{ registro.cod_articulo}}</td>
-                        <td>{{ registro.fecha_mantenimiento }}</td>
-                        <td>{{ registro.vencimiento_mantenimiento }}</td>
-                        <td>{{ registro.fecha_calibracion }}</td>    
-                        <td>{{ registro.vencimiento_calibracion }}</td>
-                    </tr>    
-                    {% endfor %}
-                </tbody>
-            </table>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://bootswatch.com/5/materia/bootstrap.min.css">
+    <style>
+    .btn-update-data {
+        background-color: rgba(20, 56, 64, 1);
+        /* Color de fondo */
+        color: white;
+        /* Color del texto, ajustable */
+        border: none;
+        /* Remover bordes si deseas */
+    }
+
+    .btn-update-data:hover {
+        background-color: rgba(37, 202, 205, 1);
+        /* Color más claro para hover */
+    }
+    </style>
+</head>
+
+<body>
+    <div class="col-md-12">
+        <div class="dtable-container">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered bg-white table-sm">
+                    <thead>
+                        <tr>
+                            <td>Código articulo</td>
+                            <td>Programación Mantenimiento</td>
+                            <td>Próximo Mantenimiento</td>
+                            <td>Programación Calibración</td>
+                            <td>Próxima Calibración</td>
+                            <td>Periodicidad Mantenimiento</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in historial %}
+                        <tr>
+                            <td>{{ registro.cod_articulo}}</td>
+                            <td>{{ registro.fecha_mantenimiento }}</td>
+                            <td>{{ registro.vencimiento_mantenimiento }}</td>
+                            <td>{{ registro.fecha_calibracion }}</td>
+                            <td>{{ registro.vencimiento_calibracion }}</td>
+                            <td>{{ registro.periodicidad }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div> 
-    
-</div>
 
-<center><a class="btn btn-secondary" href="{{ url_for('indexSalud') }}">REGRESAR</a></center>
+        <div class="btn-eliminar">
+            <center><a class="btn btn-update-data btn-lg" href="{{ url_for('indexSalud') }}">
+                        <FONT SIZE=3>regresar</FONT>
+                    </a>
+            </center>
+        </div>
+    </div>
+</body>
+
 {% endblock %}
-

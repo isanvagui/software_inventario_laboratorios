@@ -39,44 +39,54 @@
                                             class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input type="text" name="nombre_equipo" placeholder="Nombre de equipo"
+                                        <input type="text" name="nombre_equipo" placeholder="Nombre Equipo"
                                             class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Inicio mantenimiento:</label>
+                                        <label style="color: darkgray">Programación Mantenimiento:</label>
                                         <input type="date" name="fecha_mantenimiento" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Vencimiento mantenimiento:</label>
+                                        <label style="color: darkgray">Próximo Mantenimiento:</label>
                                         <input type="date" name="vencimiento_mantenimiento" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Inicio calibración:</label>
+                                        <label style="color: darkgray">Programación Calibración:</label>
                                         <input type="date" name="fecha_calibracion" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Vencimiento calibración:</label>
+                                        <label style="color: darkgray">Próxima Calibración:</label>
                                         <input type="date" name="vencimiento_calibracion" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Fecha ingreso:</label>
+                                        <label style="color: darkgray">Fecha Ingreso:</label>
                                         <input type="date" name="fecha_ingreso" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <label style="color: darkgray; opacity: 0%;">.</label>
-                                        <input type="text" name="periodicidad" placeholder="Periodicidad"
+                                        <input type="text" name="periodicidad" placeholder="Periodicidad Mantenimiento"
                                             class="form-control">
                                     </div>
+
                                     <div class="col-md-6 form-group">
-                                        <input type="text" name="estado_equipo" placeholder="Estado equipo"
-                                            class="form-control">
+                                        <label for="estado_equipo">Estado Equipo</label>
+                                        <select name="estado_equipo" class="form-control">
+                                            {% for estadoEquipo in estadoEquipos %}
+                                            <option value="{{ estadoEquipo.estado_equipo }}">{{ estadoEquipo.estado_equipo }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 form-group">
+                                        <label for="ubicacion_original">Ubicación Original</label>
+                                        <select name="ubicacion_original" class="form-control">
+                                            {% for ubicacionEquipo in ubicacionEquipos %}
+                                            <option value="{{ ubicacionEquipo.ubicacion_original }}">{{ ubicacionEquipo.ubicacion_original }}</option>
+                                            {% endfor %}
+                                        </select>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input type="text" name="ubicacion_original" placeholder="Ubicación original"
-                                            class="form-control">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <input type="text" name="garantia" placeholder="Garantía ingreso"
+                                        <input type="text" name="garantia" placeholder="Garantía Ingreso"
                                             class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
@@ -149,7 +159,7 @@
                                 <tr>
                                     <td>Codigo Articulo</td>
                                     <td>Nombre de equipo</td>
-                                    <td>Periodicidad (Meses)</td>
+                                    <td>Periodicidad mantenimineto (Meses)</td>
                                     <td>Programación mantenimiento</td>
                                     <td>Programación calibración</td>
                                     <td>Fecha ingreso</td>
@@ -184,18 +194,13 @@
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                                             <input type="hidden" name="producto_id" value="{{ producto.id }}">
                                             <select name="nuevo_estado_equipo">
-                                                <option value="uso" {% if producto.estado_equipo=='uso' %}selected{%
-                                                    endif %}>Uso</option>
-                                                <option value="mantenimiento" {% if
-                                                    producto.estado_equipo=='mantenimiento' %}selected{% endif %}>
-                                                    Mantenimiento</option>
-                                                <option value="prestamo" {% if producto.estado_equipo=='prestamo'
-                                                    %}selected{% endif %}>Prestamo</option>
-                                                <option value="calibracion" {% if producto.estado_equipo=='calibracion'
-                                                    %}selected{% endif %}>Calibración</option>
+                                                {% for estadoEquipo in estadoEquipos %}
+                                                <option value="{{ estadoEquipo.estado_equipo }}" {% if producto.estado_equipo == estadoEquipo.estado_equipo %}selected{% endif %}>
+                                                    {{ estadoEquipo.estado_equipo }}
+                                                </option>
+                                                {% endfor %}
                                             </select>
-                                            <button type="submit" name="guardar_estado"
-                                                class="btn-indexSalud">Guardar</button>
+                                            <button type="submit" name="guardar_estado" class="btn-indexSalud">Guardar</button>
                                         </form>
                                     </td>
                                     <td>{{ producto.ubicacion_original }}</td>
