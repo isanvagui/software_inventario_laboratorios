@@ -20,7 +20,7 @@
     .div1-indexSalud {
         width: 101.4%;
         max-width: 1300px;
-        margin-bottom: -130px; /* para mover la margen de los contenedores*/
+        margin-bottom: 1px; /* para mover la margen de los contenedores*/
         padding: 0 10px;
         display: center;
         min-height: 100vh;
@@ -31,7 +31,7 @@
 
 .table-container {
     width: 100%;
-    max-width: 1300px;
+    max-width: 1500px;
     margin-bottom: -690px;
     /* Igual margen para el formulario y la tabla */
     padding: 0;
@@ -120,7 +120,7 @@
     width: 100%;
     overflow: hidden;
     /* Elimina la barra de desplazamiento */
-    max-width: 1300px;
+    max-width: 1500px;
     /* Limita el tamaño máximo */
     border-radius: 0px;
 }

@@ -42,30 +42,39 @@
                                         <input type="text" name="nombre_equipo" placeholder="Nombre Equipo"
                                             class="form-control">
                                     </div>
-                                    <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Programación Mantenimiento:</label>
-                                        <input type="date" name="fecha_mantenimiento" class="form-control">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Próximo Mantenimiento:</label>
-                                        <input type="date" name="vencimiento_mantenimiento" class="form-control">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Programación Calibración:</label>
-                                        <input type="date" name="fecha_calibracion" class="form-control">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Próxima Calibración:</label>
-                                        <input type="date" name="vencimiento_calibracion" class="form-control">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Fecha Ingreso:</label>
-                                        <input type="date" name="fecha_ingreso" class="form-control">
-                                    </div>
+
                                     <div class="col-md-6 form-group">
                                         <label style="color: darkgray; opacity: 0%;">.</label>
                                         <input type="text" name="periodicidad" placeholder="Periodicidad Mantenimiento"
                                             class="form-control">
+                                    </div>
+
+                                    <div class="col-md-6 form-group">
+                                        <label style="color: darkgray; opacity: 0%;">.</label>
+                                        <input type="text" name="periodicidad_calibracion" placeholder="Periodicidad Calibración"
+                                            class="form-control">
+                                    </div>
+
+                                    <div class="col-md-6 form-group">
+                                        <label style="color: darkgray">Programación Mantenimiento</label>
+                                        <input type="date" name="fecha_mantenimiento" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label style="color: darkgray">Próximo Mantenimiento</label>
+                                        <input type="date" name="vencimiento_mantenimiento" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label style="color: darkgray">Programación Calibración</label>
+                                        <input type="date" name="fecha_calibracion" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label style="color: darkgray">Próxima Calibración</label>
+                                        <input type="date" name="vencimiento_calibracion" class="form-control">
+                                    </div>
+
+                                    <div class="col-md-6 form-group">
+                                        <label style="color: darkgray">Fecha Ingreso</label>
+                                        <input type="date" name="fecha_ingreso" class="form-control">
                                     </div>
 
                                     <div class="col-md-6 form-group">
@@ -85,13 +94,7 @@
                                             {% endfor %}
                                         </select>
                                     </div>
-                                    <div class="col-md-6 form-group">
-                                        <input type="text" name="garantia" placeholder="Garantía Ingreso"
-                                            class="form-control">
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <input type="text" name="criticos" placeholder="Criticos" class="form-control">
-                                    </div>
+
                                     <div class="col-md-6 form-group">
                                         <label for="proveedor_responsable">Proveedor Responsable</label>
                                         <select name="proveedor_responsable" class="form-control">
@@ -100,11 +103,21 @@
                                             {% endfor %}
                                         </select>
                                     </div>
+
+                                    <div class="col-md-6 form-group">
+                                        <input type="text" name="garantia" placeholder="Garantía Ingreso"
+                                            class="form-control">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <input type="text" name="criticos" placeholder="Criticos" class="form-control">
+                                    </div>
+
                                     <div class="col-md-6 form-group">
                                         <br>
                                         <input type="file" name="imagen_producto" class="custom-file-input"
                                             style="padding: 20px; margin-left: -15px;">
                                     </div>
+
                                 </div>
                             </div>
                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}" />
@@ -161,6 +174,7 @@
                                     <td>Nombre de equipo</td>
                                     <td>Periodicidad mantenimineto (Meses)</td>
                                     <td>Programación mantenimiento</td>
+                                    <td>Periodicidad calibración (Meses)</td>
                                     <td>Programación calibración</td>
                                     <td>Fecha ingreso</td>
                                     <td>Estado equipo</td>
@@ -179,14 +193,18 @@
                                     <td>{{ producto.nombre_equipo }}</td>
                                     <td>{{ producto.periodicidad }}</td>
                                     <td>{{ producto.fecha_mantenimiento }}
-                                        <input type="checkbox" name="fecha_mantenimiento"
-                                            data-producto-id="{{ producto.id }}" {% if
-                                            producto.checkbox_mantenimiento=='Activo' %}checked{% endif %}>
+                                        <input type="checkbox" name="fecha_mantenimiento" 
+                                        data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
+                                        {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
+
                                     </td>
+
+                                    <td>{{ producto.periodicidad_calibracion }}</td>
+                                    
                                     <td>{{ producto.fecha_calibracion }}
                                         <input type="checkbox" name="fecha_calibracion"
-                                            data-producto-id="{{ producto.id }}" {% if
-                                            producto.checkbox_calibracion=='Activo' %}checked{% endif %}>
+                                            data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}"
+                                            {% if producto.checkbox_calibracion=='Activo' %}checked{% endif %}>
                                     </td>
                                     <td>{{ producto.fecha_ingreso }}</td>
                                     <td>
@@ -310,30 +328,9 @@
     });
 </script>
 
-<!-- Scripts para el checkbox -->
+<!-- Scripts para el checkbox (Para activar o desactivar manualmente desde la tabla.) -->
 <script>
-    $("#tabla").on("change", "input[type='checkbox']", function () {
-        var productoId = $(this).data('producto-id');
-        var isChecked = $(this).is(':checked');
-        var fieldName = $(this).attr('name');
-
-        $.ajax({
-            url: '/update_checkbox',
-            method: 'POST',
-            data: {
-                producto_id: productoId,
-                field_name: fieldName,
-                is_checked: isChecked,
-                csrf_token: "{{csrf_token()}}"
-            },
-            success: function (response) {
-                console.log('Checkbox actualizado correctamente');
-            },
-            error: function (xhr, status, error) {
-                console.error('Error al actualizar el checkbox:', error);
-            }
-        });
-    });
+    var csrf_token = "{{ csrf_token() }}";
 </script>
 
 {% endblock %}
