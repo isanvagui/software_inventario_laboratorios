@@ -94,8 +94,7 @@ def home():
             SUM(DATEDIFF(vencimiento_mantenimiento, %s) BETWEEN 0 AND 30) AS proximas,
             SUM(DATEDIFF(vencimiento_mantenimiento, %s) BETWEEN 31 AND 90) AS entre_31_y_90,
             SUM(DATEDIFF(vencimiento_mantenimiento, %s) > 90) AS mas_90_dias
-        FROM indexssalud
-        WHERE enable = 1
+        FROM indexssalud WHERE enable = 1 and de_baja = 0
     """, (fecha_actual, fecha_actual, fecha_actual, fecha_actual))
 
     # Obtener los resultados
@@ -116,7 +115,7 @@ def home():
             SUM(DATEDIFF(vencimiento_calibracion, %s) BETWEEN 31 AND 90) AS entre_31_y_90,
             SUM(DATEDIFF(vencimiento_calibracion, %s) > 90) AS mas_90_dias
         FROM indexssalud
-        WHERE enable = 1
+        WHERE enable = 1 and de_baja = 0
     """, (fecha_actual, fecha_actual, fecha_actual, fecha_actual))
 
     # Obtener los resultados del vencimiento de calibración
@@ -272,7 +271,7 @@ def AGREGAR_DATOS_PROVEEDOR_SALUD():
 def indexSalud():
     cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
     # cur = db.connection.cursor()
-    cur.execute('SELECT * FROM indexssalud where enable=1') #A raiz del enable=1 no se deben eliminar en la DB
+    cur.execute('SELECT * FROM indexssalud where enable=1 AND de_baja=0') #A raiz del enable=1 no se deben eliminar en la DB
     data = cur.fetchall()
 
     cur.execute('SELECT id, nombre_empresa FROM datosproveedorsalud')
@@ -346,7 +345,6 @@ def AGREGAR_PRODUCTO_SALUD():
         if fecha_calibracion and vencimiento_calibracion:
             fecha_calibracion = datetime.strptime(fecha_calibracion, '%Y-%m-%d')
             vencimiento_calibracion = datetime.strptime(vencimiento_calibracion, '%Y-%m-%d')
-
             # if vencimiento_calibracion <= hora_actual + timedelta(days=30):
             #     checkbox_calibracion = 'Inactivo'
             # else:
@@ -382,37 +380,64 @@ def AGREGAR_PRODUCTO_SALUD():
 
         # especificaciones_instalacion = request.form ['especificaciones_instalacion']
         # cuidados_basicos = request.form ['cuidados_basicos']
-
-        cur = db.connection.cursor() 
-        cur.execute(
-            "INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, imagen, periodicidad_calibracion) VALUES (  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-            (
-                cod_articulo,
-                nombre_equipo,
-                fecha_mantenimiento,
-                vencimiento_mantenimiento,
-                fecha_calibracion,
-                vencimiento_calibracion,
-                fecha_ingreso,
-                periodicidad,
-                estado_equipo,
-                ubicacion_original,
-                garantia,
-                criticos,
-                proveedor_responsable,
-                color,
-                # checkbox_mantenimiento,
-                # checkbox_calibracion,
-                filepath_to_db,
-                periodicidad_calibracion
-            ),
-        )
+        # cur = db.connection.cursor() 
+        if estado_equipo == "DE BAJA":
+            # Guardar en la tabla de equipos de baja
+            cur.execute(
+                "INSERT INTO equipossalud_debaja (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, imagen, periodicidad_calibracion) VALUES (  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (
+                    cod_articulo,
+                    nombre_equipo,
+                    fecha_mantenimiento,
+                    vencimiento_mantenimiento,
+                    fecha_calibracion,
+                    vencimiento_calibracion,
+                    fecha_ingreso,
+                    periodicidad,
+                    estado_equipo,
+                    ubicacion_original,
+                    garantia,
+                    criticos,
+                    proveedor_responsable,
+                    color,
+                    # checkbox_mantenimiento,
+                    # checkbox_calibracion,
+                    filepath_to_db,
+                    periodicidad_calibracion
+                    
+                ),
+            )            
+        else:   
+            cur.execute(
+                "INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, imagen, periodicidad_calibracion) VALUES (  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (
+                    cod_articulo,
+                    nombre_equipo,
+                    fecha_mantenimiento,
+                    vencimiento_mantenimiento,
+                    fecha_calibracion,
+                    vencimiento_calibracion,
+                    fecha_ingreso,
+                    periodicidad,
+                    estado_equipo,
+                    ubicacion_original,
+                    garantia,
+                    criticos,
+                    proveedor_responsable,
+                    color,
+                    # checkbox_mantenimiento,
+                    # checkbox_calibracion,
+                    filepath_to_db,
+                    periodicidad_calibracion
+                    
+                ),
+            )
         db.connection.commit()
         # print(estado_equipo)
 
         # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
-        cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad) VALUES ( %s, %s, %s, %s, %s, %s)""", 
-                                                    (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad))
+        cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES ( %s, %s, %s, %s, %s, %s, %s)""", 
+                                                    (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
         db.connection.commit()
             
         flash ('Equipo agregado satisfactoriamente')
@@ -520,30 +545,60 @@ def insert_csv():
                 # flash('Debe ingresar las fechas de inicio y vencimiento de calibración.', 'error')
                 # return redirect(url_for('indexSalud'))
 
-            cur.execute("INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, imagen, especificaciones_instalacion, cuidados_basicos, periodicidad_calibracion, color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (
-                    cod_articulo,
-                    nombre_equipo,
-                    fecha_mantenimiento,
-                    vencimiento_mantenimiento,
-                    fecha_calibracion,
-                    vencimiento_calibracion,
-                    fecha_ingreso,
-                    periodicidad,
-                    estado_equipo,
-                    ubicacion_original,
-                    garantia,
-                    criticos,
-                    proveedor_responsable,
-                    ruta_imagen_db,
-                    especificaciones_instalacion, 
-                    cuidados_basicos,
-                    periodicidad_calibracion,
-                    color,
-                    # checkbox_mantenimiento,
-                    # checkbox_calibracion,
-                ),
-            )
+            if estado_equipo == 'DE BAJA':
+
+                # Insertar en la tabla equipossalud_debaja
+                cur.execute("INSERT INTO equipossalud_debaja (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, imagen, especificaciones_instalacion, cuidados_basicos, periodicidad_calibracion, color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (
+                        cod_articulo,
+                        nombre_equipo,
+                        fecha_mantenimiento,
+                        vencimiento_mantenimiento,
+                        fecha_calibracion,
+                        vencimiento_calibracion,
+                        fecha_ingreso,
+                        periodicidad,
+                        estado_equipo,
+                        ubicacion_original,
+                        garantia,
+                        criticos,
+                        proveedor_responsable,
+                        ruta_imagen_db,
+                        especificaciones_instalacion, 
+                        cuidados_basicos,
+                        periodicidad_calibracion,
+                        color,
+                        # checkbox_mantenimiento,
+                        # checkbox_calibracion,
+                    ),
+                )
+            else:
+
+                # Insertar en la tabla indexssalud
+                cur.execute("INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, imagen, especificaciones_instalacion, cuidados_basicos, periodicidad_calibracion, color) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (
+                        cod_articulo,
+                        nombre_equipo,
+                        fecha_mantenimiento,
+                        vencimiento_mantenimiento,
+                        fecha_calibracion,
+                        vencimiento_calibracion,
+                        fecha_ingreso,
+                        periodicidad,
+                        estado_equipo,
+                        ubicacion_original,
+                        garantia,
+                        criticos,
+                        proveedor_responsable,
+                        ruta_imagen_db,
+                        especificaciones_instalacion, 
+                        cuidados_basicos,
+                        periodicidad_calibracion,
+                        color,
+                        # checkbox_mantenimiento,
+                        # checkbox_calibracion,
+                    ),
+                )
 
             # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
             cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)""", 
@@ -731,23 +786,115 @@ def update_estado_equipo():
         producto_id = request.form['producto_id']
         nuevo_estado = request.form['nuevo_estado_equipo']
 
-        cur = db.connection.cursor()
-        cur.execute('UPDATE indexssalud SET estado_equipo = %s WHERE id = %s', (nuevo_estado, producto_id))
-        db.connection.commit()
+        cod_articulo = request.form ['cod_articulo']
+        nombre_equipo = request.form ['nombre_equipo']
 
+        # Obtener hora actual del equipo
+        hora_actual = datetime.now()
+
+        # PARA EL CHECKBOX Y SEMAFORO DE MANTENIMIENTO
+        fecha_mantenimiento = request.form ['fecha_mantenimiento']
+        vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
+
+        if fecha_mantenimiento and vencimiento_mantenimiento:
+            fecha_mantenimiento = datetime.strptime(fecha_mantenimiento, '%Y-%m-%d')
+            vencimiento_mantenimiento = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d')
+
+            if hora_actual > vencimiento_mantenimiento:
+                color = 'purple'  # Vencido
+            elif vencimiento_mantenimiento <= hora_actual + timedelta(days=30):
+                color = 'red'  # Falta menos de un mes
+            elif vencimiento_mantenimiento <= hora_actual + timedelta(days=90):
+                color = 'yellow'  # Falta menos de tres meses
+            else:
+                color = 'green'  # Vigente
+        else:
+            flash('Debe ingresar las fechas de inicio y vencimiento de mantenimiento.', 'error')
+            return redirect(url_for('indexSalud'))
+
+        # PARA EL CHECKBOX DE CALIBRACIÓN
+        fecha_calibracion = request.form ['fecha_calibracion']
+        vencimiento_calibracion = request.form ['vencimiento_calibracion']
+
+        if fecha_calibracion and vencimiento_calibracion:
+            fecha_calibracion = datetime.strptime(fecha_calibracion, '%Y-%m-%d')
+            vencimiento_calibracion = datetime.strptime(vencimiento_calibracion, '%Y-%m-%d')
+
+        else:
+            flash('Debe ingresar las fechas de inicio y vencimiento de calibración.', 'error')
+            return redirect(url_for('indexSalud'))
+
+        fecha_ingreso = request.form ['fecha_ingreso']
+        periodicidad = request.form ['periodicidad']
+        estado_equipo = request.form ['estado_equipo']
+        ubicacion_original = request.form ['ubicacion_original']
+        garantia = request.form ['garantia']
+        criticos = request.form ['criticos']
+        proveedor_responsable = request.form ['proveedor_responsable']
+        filepath_to_db = request.form ['filepath_to_db']
+
+        periodicidad_calibracion = request.form ['periodicidad_calibracion']
+
+        cur = db.connection.cursor()
+
+        if nuevo_estado == 'DE BAJA':
+            # Selecciona el equipo a dar de baja
+            cur.execute('SELECT * FROM indexssalud WHERE id = %s', (producto_id,))
+            # equipo = cur.fetchone()
+
+            # Inserta el equipo en la nueva tabla equipossalud_debaja
+            cur.execute(
+                "INSERT INTO equipossalud_debaja (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, imagen, periodicidad_calibracion) VALUES (  %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (
+                    cod_articulo,
+                    nombre_equipo,
+                    fecha_mantenimiento,
+                    vencimiento_mantenimiento,
+                    fecha_calibracion,
+                    vencimiento_calibracion,
+                    fecha_ingreso,
+                    periodicidad,
+                    estado_equipo,
+                    ubicacion_original,
+                    garantia,
+                    criticos,
+                    proveedor_responsable,
+                    color,
+                    # checkbox_mantenimiento,
+                    # checkbox_calibracion,
+                    filepath_to_db,
+                    periodicidad_calibracion
+                ),
+            )
+
+            # Marcar equipo como inactivo en la tabla indexssalud
+            cur.execute('UPDATE indexssalud SET de_baja = 1 WHERE id = %s', (producto_id,))
+        
+        else:
+            # Actualiza el estado si no está dado de baja
+            cur.execute('UPDATE indexssalud SET estado_equipo = %s WHERE id = %s', (nuevo_estado, producto_id))
+
+        db.connection.commit()
         flash('Estado del equipo actualizado correctamente')
         return redirect(url_for('indexSalud'))
 
+
 # ESTA FUNCIÓN ME LLEVA A OTRA VISTA TRAYENDO LOS PARAMETROS DE AGREGAR PARA DESPUES PODER ACTUALIZAR EN LA SIGUIENTE FUNCIÓN. LAS DOS SE COMPLEMENTAN
-@app.route('/edit_productoSalud/<id>')
+@app.route('/edit_productoSalud/<id>/<vista>', methods=['GET'])
 @login_required
-def GET_PRODUCTO_SALUD(id):
+def GET_PRODUCTO_SALUD(id, vista):
     cur = db.connection.cursor()
-    cur.execute('SELECT * FROM indexssalud WHERE id = %s', [id])
+
+    # Verificar de qué vista proviene la solicitud para seleccionar la tabla correcta
+    if vista == 'indexSalud':
+        cur.execute('SELECT * FROM indexssalud WHERE id = %s', [id])
+    elif vista == 'equiposDeBajaSalud':
+        cur.execute('SELECT * FROM equipossalud_debaja WHERE id = %s', [id])
+
     data = cur.fetchall()
 
     if data:
-        cod_articulo = data[0][1] 
+        cod_articulo = data[0][1]
     print(cod_articulo)    
     # Obtener el historial de fechas del equipo
     cur.execute("""SELECT * FROM historial_fechas WHERE cod_articulo = %s ORDER BY fecha_mantenimiento DESC""", [cod_articulo])
@@ -877,6 +1024,19 @@ def historialFechas(cod_articulo):
     print(historial)
     return render_template('historialFechas.html', historial=historial)
 
+# ==========================INICIA FUNCIÓN EQUIPOS DADOS DE BAJA=====================
+@app.route('/equiposDeBajaSalud')
+def equiposDeBajaSalud():
+    cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute('SELECT id, estado_equipo FROM estados_equipos')
+    estadoEquipos = cur.fetchall()
+    
+    cur.execute('SELECT * FROM equipossalud_debaja')
+    equipos_de_baja = cur.fetchall()
+    return render_template('equiposDeBajaSalud.html', equipos_de_baja=equipos_de_baja, estadoEquipos=estadoEquipos)
+# ==========================FINALIZA FUNCIÓN EQUIPOS DADOS DE BAJA=====================
+
+
 # FUNCIÓN ELIMINAR
 @app.route('/delete_productoSalud/<string:id>')
 def ELIMINAR_CONTACTO_SALUD(id):
@@ -901,4 +1061,5 @@ if __name__ == '__main__':
     csrf.init_app(app)
     app.register_error_handler(401, status_401)
     app.register_error_handler(404, status_404)
+    # app.run(host='0.0.0.0',port=8080)
     app.run()

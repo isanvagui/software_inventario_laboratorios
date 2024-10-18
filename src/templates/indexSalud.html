@@ -196,11 +196,8 @@
                                         <input type="checkbox" name="fecha_mantenimiento" 
                                         data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
                                         {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
-
                                     </td>
-
                                     <td>{{ producto.periodicidad_calibracion }}</td>
-                                    
                                     <td>{{ producto.fecha_calibracion }}
                                         <input type="checkbox" name="fecha_calibracion"
                                             data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}"
@@ -210,7 +207,24 @@
                                     <td>
                                         <form action="/update_estado_equipo" method="POST">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                            
                                             <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                                            <input type="hidden" name="cod_articulo" value="{{ producto.cod_articulo }}">
+                                            <input type="hidden" name="nombre_equipo" value="{{ producto.nombre_equipo }}">
+                                            <input type="hidden" name="fecha_mantenimiento" value="{{ producto.fecha_mantenimiento }}">
+                                            <input type="hidden" name="vencimiento_mantenimiento" value="{{ producto.vencimiento_mantenimiento }}">
+                                            <input type="hidden" name="fecha_calibracion" value="{{ producto.fecha_calibracion }}">
+                                            <input type="hidden" name="vencimiento_calibracion" value="{{ producto.vencimiento_calibracion }}">
+                                            <input type="hidden" name="fecha_ingreso" value="{{ producto.fecha_ingreso }}">
+                                            <input type="hidden" name="periodicidad" value="{{ producto.periodicidad }}">
+                                            <input type="hidden" name="estado_equipo" value="{{ producto.estado_equipo }}">
+                                            <input type="hidden" name="ubicacion_original" value="{{ producto.ubicacion_original }}">
+                                            <input type="hidden" name="garantia" value="{{ producto.garantia }}">
+                                            <input type="hidden" name="criticos" value="{{ producto.criticos }}">
+                                            <input type="hidden" name="proveedor_responsable" value="{{ producto.proveedor_responsable }}">
+                                            <input type="hidden" name="filepath_to_db" value="{{ producto.filepath_to_db }}">
+                                            <input type="hidden" name="periodicidad_calibracion" value="{{ producto.periodicidad_calibracion }}">
+
                                             <select name="nuevo_estado_equipo">
                                                 {% for estadoEquipo in estadoEquipos %}
                                                 <option value="{{ estadoEquipo.estado_equipo }}" {% if producto.estado_equipo == estadoEquipo.estado_equipo %}selected{% endif %}>
@@ -242,10 +256,11 @@
                                     </td>
                                     <td>
                                         <div class="btn-eliminar">
-                                            <a href="/edit_productoSalud/{{producto.id}}"
+                                            <!-- <a href="/edit_productoSalud/{{producto.id}}"
                                                 class="btn btn-secondary btn-sm">
                                                 <FONT SIZE=2>Editar/Ver hoja de vida</FONT>
-                                            </a>
+                                            </a> -->
+                                            <a href="{{ url_for('GET_PRODUCTO_SALUD', id=producto['id'], vista='indexSalud') }}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
                                         </div>
                                         <br>
                                         <div class="btn-eliminar">

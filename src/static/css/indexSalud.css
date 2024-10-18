@@ -7,31 +7,32 @@
 
 .div1-indexSalud {
     width: 100%;
-    max-width: 1300px;
-    margin-bottom: -690px;
+    max-width: 1472px;
+    margin-bottom: -590px;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    margin-left: 23px;
 }
 
 @media (max-height: 788px) {
     .div1-indexSalud {
         width: 101.4%;
-        max-width: 1300px;
-        margin-bottom: 1px; /* para mover la margen de los contenedores*/
+        max-width: 1423px;
+        margin-bottom: -51px; /* para mover la margen de los contenedores*/
         padding: 0 10px;
         display: center;
         min-height: 100vh;
-        margin-left: -9px;
+        margin-left: 9px;
         
     }
 }
 
 .table-container {
     width: 100%;
-    max-width: 1500px;
+    max-width: 1475px;
     margin-bottom: -690px;
     /* Igual margen para el formulario y la tabla */
     padding: 0;
@@ -56,13 +57,32 @@
     border-radius: 5px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 1300px;
+    max-width: 2000px;
     margin: 0 auto;
+    margin-left: -22px;
     /* Margen uniforme */
     width: 100%;
     /* Asegura que el contenedor ocupe el ancho completo */
     top: 0;
     /* Lo posiciona en la parte superior */
+}
+
+@media (max-width: 768px) {
+    .card-indexSalud {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 2000px;
+        margin: 0 auto;
+        margin-left: -22px;
+        /* Margen uniforme */
+        width: 100%;
+        /* Asegura que el contenedor ocupe el ancho completo */
+        top: 0;
+        /* Lo posiciona en la parte superior */
+    }
 }
 
 .form-grid {
@@ -136,7 +156,6 @@ table.dataTable {
     min-height: 300px; /* Altura mínima para evitar que sea demasiado corta */
     max-height: 900px; /* Limitar la altura si el contenido es demasiado largo */
     overflow-y: auto; /* Añadir barra de desplazamiento vertical si es necesario */
-    
 }
 
 #tabla td, #tabla th {
@@ -180,15 +199,14 @@ table.dataTable {
     width: 100%;
     max-width: 1800px;
     margin-bottom: 10px;
-
 }
 
 .card-equipos-masivos {
     box-shadow: 0 1px 4px rgba(0, 0, 0, .4);
     flex-shrink: 0;
     width: 98.2%;
-    max-width: 84.3%;
-    margin-left: 10px;
+    max-width: 95.4%;
+    margin-left: 13px;
     border-radius: 7px;
     margin-bottom: 20px;
 }
