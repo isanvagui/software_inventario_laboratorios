@@ -8,7 +8,7 @@
 .div1-indexSalud {
     width: 100%;
     max-width: 1472px;
-    margin-bottom: -590px;
+    margin-bottom: -90px;
     padding: 0;
     display: flex;
     justify-content: center;
@@ -152,7 +152,7 @@ table.dataTable {
     
 }
 #tabla {
-    font-size: 15.1px; /* Mueve el margen de la tabla */
+    font-size: 14.7px; /* Mueve el margen de la tabla */
     min-height: 300px; /* Altura mínima para evitar que sea demasiado corta */
     max-height: 900px; /* Limitar la altura si el contenido es demasiado largo */
     overflow-y: auto; /* Añadir barra de desplazamiento vertical si es necesario */
@@ -205,7 +205,7 @@ table.dataTable {
     box-shadow: 0 1px 4px rgba(0, 0, 0, .4);
     flex-shrink: 0;
     width: 98.2%;
-    max-width: 95.4%;
+    max-width: 98%;
     margin-left: 13px;
     border-radius: 7px;
     margin-bottom: 20px;

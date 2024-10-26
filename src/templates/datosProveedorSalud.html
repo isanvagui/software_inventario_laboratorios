@@ -93,15 +93,31 @@
     </style>
 </head>
 <body>
+    
+    <div class="col-md-12 mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category,message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     {% for proveedor in datosproveedorsalud %}
     <div class="cv-container">
         <div class="left-column">
-            <img src="{{ url_for('static', filename='fotos//siluetapp.png') }}" alt="Producto Imagen" width="210">
+            <img src="{{ url_for('static', filename='img//siluetapp.png') }}" alt="Producto Imagen" width="210">
             <div class="contact-info">
                 <ul>
                     <li><i class="fas bi-telephone-fill"></i> <span>{{ proveedor.telefono_empresa }}</span></li>
                     <li><i class="fas fa-solid fa-city"></i> <span>{{ proveedor.nombre_empresa }}</span></li>
                     <li><i class="fas fa-regular fa-user"></i> <span>{{ proveedor.nombre_contacto }}</span></li>
+                    <li><i class="fas fa-envelope"></i> <span>{{ proveedor.correo }}</span></li>
+                    <li><i class="fas fa-user-tie"></i> <span>{{ proveedor.cargo_contacto }}</span></li>
                     <li><i class="fas bi-geo-alt-fill"></i> <span>{{ proveedor.ciudad }}</span></li>
                 </ul>
             </div>
@@ -124,6 +140,14 @@
                         <input type="text" id="nombre_contacto" name="nombre_contacto" value="{{ proveedor.nombre_contacto }}" class="form-control">
                     </div>
                     <div class="form-group">
+                        <label for="correo">Correo electronico</label>
+                        <input type="text" id="correo" name="correo" value="{{ proveedor.correo}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="cargo_contacto">Cargo contacto</label>
+                        <input type="text" id="cargo_contacto" name="cargo_contacto" value="{{ proveedor.cargo_contacto }}" class="form-control">
+                    </div>
+                    <div class="form-group">
                         <label for="ciudad">ciudad</label>
                         <input type="text" id="ciudad" name="ciudad" value="{{ proveedor.ciudad }}" class="form-control">
                     </div>
@@ -144,6 +168,7 @@
         </div>
     </div>
     {% endfor %}
+    </div>
 </body>  
 
 {% endblock%}

@@ -2,9 +2,9 @@ body {
     display: flex;
 }
 
-/* Estilos de la barra lateral */
+/* Estilos generales del sidebar */
 .sidebar {
-    width: 250px;
+    width: 60px; /* Ancho del sidebar colapsado */
     height: 100vh;
     position: fixed;
     background-color: #143840;
@@ -13,13 +13,39 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    /* Organiza los elementos en columna */
-    transition: background-color 0.9s ease;
-    z-index: 1000; /* Sobrepone el menu para que siempre se encuentre por encima las tablas o formularios hacia la izquierda */
+    /* transition: background-color 0.9s ease; */
+    z-index: 1000;
 }
 
-.sidebar.collapsed {
-    width: 60px;
+/* Ancho del sidebar expandido */
+.sidebar.expanded {
+    width: 250px; /* Ancho del sidebar expandido */
+}
+
+/* Estilo para los enlaces */
+.sidebar a {
+    font-size: 0; /* Oculta el texto cuando está colapsado */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: font-size 0.3s ease; /* Transición para el tamaño del texto */
+}
+
+/* Mostrar el texto al expandir */
+.sidebar.expanded a {
+    font-size: 18px; /* Tamaño del texto cuando el sidebar está expandido */
+}
+
+/* Asegurar que los iconos se muestren al estar colapsado */
+.sidebar.collapsed a::before {
+    content: attr(data-icon); /* Muestra el icono */
+    font-size: 18px;
+    margin-right: 0;
+}
+
+/* Efecto hover para los enlaces */
+.sidebar a:hover {
+    background-color: #25CACD; /* Color de fondo al hacer hover sobre los enlaces */
 }
 
 /* Botón para retraer y expandir el sidebar */
@@ -28,58 +54,49 @@ body {
     cursor: pointer;
     color: white;
     padding: 10px 15px;
-    /* Asegura que tenga espacio y no se superponga */
-    align-self: flex-start;
-    /* Alinea el botón al principio */
+    align-self: flex-start; /* Alinea el botón al principio */
     transition: background-color 0.9s ease;
 }
 
+/* Estilo por defecto para los enlaces */
 .sidebar a {
     padding: 10px 15px;
     text-decoration: none;
-    font-size: 18px;
     color: white;
     display: block;
     transition: all 0.3s ease;
-    transition: background-color 0.4s ease;
-}
-
-.sidebar.collapsed a {
-    font-size: 0;
-}
-
-.sidebar.collapsed a::before {
-    content: attr(data-icon);
-    font-size: 18px;
-    margin-right: 0;
-}
-
-.sidebar a:hover {
-    background-color: #25CACD;
 }
 
 /* Cerrar sesión colocado en la parte inferior */
 .logout {
-    margin-top: auto;
-    /* Empuja el botón hacia la parte inferior */
-    margin-bottom: 20px;
-    /* Margen inferior para separarlo del borde */
+    margin-top: auto; /* Empuja el botón hacia la parte inferior */
+    margin-bottom: 20px; /* Margen inferior para separarlo del borde */
 }
 
 /* Ajuste del contenido principal */
 .content {
-    margin-left: 250px;
-    padding: 20px;
+    margin-left: 90px; /* Ajuste cuando el sidebar está expandido */
+    padding: 150px;
     width: 100%;
     transition: margin-left 0.3s ease;
-    transition: background-color 0.9s ease;
-    margin-top: 10px;
+    margin-top: -180px;
+}
+
+@media (max-height: 780px){
+    .content {
+        margin-left: 250px; /* Ajuste cuando el sidebar está expandido */
+        padding: 20px;
+        width: 100%;
+        transition: margin-left 0.3s ease;
+        margin-top: 10px;
+    }
 }
 
 .content.collapsed {
-    margin-left: 60px;
+    margin-left: 60px; /* Ajuste cuando el sidebar está colapsado */
 }
 
+/* Asegurar un estilo consistente para todos los enlaces */
 a {
     color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
     text-decoration: underline;
@@ -87,15 +104,17 @@ a {
     border-radius: 5%;
 }
 
-.container-layout {
+/* Ajustes para diferentes tamaños de pantalla */
+.container-layout,
+.container-salud,
+.container-home {
     max-width: 1600px;
     padding: 1%;
-    margin-top: -2%;
-    margin-left: 420px;
+    margin-top: 2%;
+    margin-left: 0;
 }
 
 @media (max-height: 780px) {
-
     .container-layout {
         max-width: 1300px;
         padding: 5%;
@@ -105,35 +124,26 @@ a {
 }
 
 .container-salud {
-    max-width: 1600px;
-    padding: 1%;
-    margin-top: 0%;
     margin-left: -15px;
 }
 
 @media (max-height: 780px) {
-
     .container-salud {
         max-width: 900px;
-        padding: 1%;
         margin-top: -5%;
-        margin-left: 150px;
+        margin-left: 12px;
     }
 }
 
 .container-home {
-    max-width: 1600px;
-    padding: 1%;
-    margin-top: 5%;
     margin-left: 0px;
 }
 
 @media (max-height: 780px) {
-
     .container-home {
         max-width: 1300px;
-        padding: 1%;
         margin-top: -1%;
-        margin-left: 30px;
+        margin-left: -70px;
     }
 }
+

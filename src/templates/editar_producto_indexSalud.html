@@ -15,7 +15,7 @@
 
         .cv-container {
             display: flex;
-            max-width: 900px;
+            max-width: 1000px;
             margin: auto;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
@@ -153,15 +153,18 @@
                 <center>
                     <h1>{{ producto.2 }}</h1>
                 </center>
-                <h2>Detalles del Producto</h2>
+                <h2>Detalles del Equipo</h2>
                 <li>Nombre de equipo: {{ producto.2 }}</li>
                 <li>Estado de equipo: {{ producto.9}}</li>
                 <li>Ubicación original: {{ producto.10 }}</li>
+                <li>Marca de equipo: {{ producto.21 }}</li>
+                <li>Modelo de equipo: {{ producto.22}}</li>
+                <li>Serial de equipo: {{ producto.23 }}</li>
                 <!-- <p>{{ producto.descripcion }}</p> -->
             </div>
 
             <div class="section">
-                <h2>Información del Mantenimiento</h2>
+                <h2>Información de Mantenimiento y Calibración</h2>
                 <!-- <ul> -->
                 <li>Programación Mantenimiento: {{ producto.3 }}</li>
                 <li>Próximo Mantenimiento: {{ producto.4 }}</li>
@@ -171,7 +174,7 @@
                 <li>Periodicidad Mantenimiento: {{ producto.8 }}</li>
                 <li>Periodicidad Calibración: {{ producto.20 }}</li>
                 <li>Ubicación Original: {{ producto.10 }}</li>
-                <li>Garantía: {{ producto.11 }}</li>
+                <li>Garantía Ingreso: {{ producto.11 }}</li>
                 <!-- </ul> -->
             </div>
 

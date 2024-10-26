@@ -12,19 +12,17 @@
         <div class="row">
             <!-- Formulario de ingreso -->
             <div class="col-md-12 mb-4">
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                {% for message in messages %}
-
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                {% endfor %}
-                {% endif %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category,message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endwith %}
 
                 <br>
@@ -105,17 +103,36 @@
                                     </div>
 
                                     <div class="col-md-6 form-group">
-                                        <input type="text" name="garantia" placeholder="Garantía Ingreso"
-                                            class="form-control">
+                                        <input type="text" name="garantia" placeholder="Garantía Ingreso" class="form-control">
                                     </div>
+
                                     <div class="col-md-6 form-group">
                                         <input type="text" name="criticos" placeholder="Criticos" class="form-control">
+                                    </div>
+                                    
+                                    <div class="col-md-6 form-group">
+                                        <input type="text" name="especificaciones_instalacion" placeholder="Especificaciones Instalación" class="form-control">
+                                    </div>
+                                    
+                                    <div class="col-md-6 form-group">
+                                        <input type="text" name="cuidados_basicos" placeholder="Cuidados Basicos" class="form-control">
+                                    </div>
+
+                                    <div class="col-md-6 form-group">
+                                        <input type="text" name="marca_equipo_salud" placeholder="Marca Equipo" class="form-control">
+                                    </div>
+                                    
+                                    <div class="col-md-6 form-group">
+                                        <input type="text" name="modelo_equipo_salud" placeholder="Modelo Equipo" class="form-control">
+                                    </div>
+                                    
+                                    <div class="col-md-6 form-group">
+                                        <input type="text" name="serial_equipo_salud" placeholder="Serial Equipo" class="form-control">
                                     </div>
 
                                     <div class="col-md-6 form-group">
                                         <br>
-                                        <input type="file" name="imagen_producto" class="custom-file-input"
-                                            style="padding: 20px; margin-left: -15px;">
+                                        <input type="file" name="imagen_producto" class="custom-file-input" style="padding: 20px; margin-left: -15px;">
                                     </div>
 
                                 </div>
@@ -140,7 +157,8 @@
                     <input type="hidden" name="csrf_token" value="{{csrf_token() }}" />
                     <!---------------------- es solo esta linea----------------------->
                     <div class="form-group">
-                        <center><button type="submit" class="btn-indexSalud">Ingresar equipos</button>
+                        <center>
+                            <button type="submit" class="btn-indexSalud">Ingresar equipos</button>
                         </center>
                     </div>
                 </form>
@@ -156,7 +174,8 @@
                     <input type="hidden" name="csrf_token" value="{{csrf_token() }}" />
                     <!---------------------- es solo esta linea------------------------->
                     <div class="form-group">
-                        <center><button type="submit" class="btn-indexSalud">Actulizar fechas</button>
+                        <center>
+                            <button type="submit" class="btn-indexSalud">Actulizar fechas</button>
                         </center>
                     </div>
                 </form>
@@ -205,7 +224,7 @@
                                     </td>
                                     <td>{{ producto.fecha_ingreso }}</td>
                                     <td>
-                                        <form action="/update_estado_equipo" method="POST">
+                                        <form action="/update_estado_equipo" method="POST" id="estadoEquipoForm">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                                             
                                             <input type="hidden" name="producto_id" value="{{ producto.id }}">
@@ -225,14 +244,14 @@
                                             <input type="hidden" name="filepath_to_db" value="{{ producto.filepath_to_db }}">
                                             <input type="hidden" name="periodicidad_calibracion" value="{{ producto.periodicidad_calibracion }}">
 
-                                            <select name="nuevo_estado_equipo">
+                                            <select name="nuevo_estado_equipo" id="estadoEquipoSelect">
                                                 {% for estadoEquipo in estadoEquipos %}
                                                 <option value="{{ estadoEquipo.estado_equipo }}" {% if producto.estado_equipo == estadoEquipo.estado_equipo %}selected{% endif %}>
                                                     {{ estadoEquipo.estado_equipo }}
                                                 </option>
                                                 {% endfor %}
                                             </select>
-                                            <button type="submit" name="guardar_estado" class="btn-indexSalud">Guardar</button>
+                                            <!-- <button type="submit" name="guardar_estado" class="btn-indexSalud">Guardar</button> -->
                                         </form>
                                     </td>
                                     <td>{{ producto.ubicacion_original }}</td>
@@ -295,6 +314,31 @@
 
 </script>
 
+<!-- script para mostrar alerta al cambiar de estado de equipo -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Selecciona todos los selects de estado
+        var selectsEstado = document.querySelectorAll('select[name="nuevo_estado_equipo"]');
+
+        // Agrega un event listener a cada select
+        selectsEstado.forEach(function(selectEstado) {
+            selectEstado.addEventListener('change', function() {
+                var nuevoEstado = this.value;
+                var confirmacion = confirm("¿Está seguro de cambiar el estado del equipo a: " + nuevoEstado + "?");
+
+                if (confirmacion) {
+                    // Envía el formulario correspondiente a este select
+                    var formEstado = this.closest('form'); // Encuentra el formulario más cercano
+                    formEstado.submit();
+                } else {
+                    // Si cancela, recarga la página para revertir el cambio
+                    window.location.reload();
+                }
+            });
+        });
+    });
+</script>
+
 <!-- Scripts para el ocultar el formulario -->
 <script>
     document.getElementById('toggleFormBtn').addEventListener('click', function () {
@@ -303,10 +347,10 @@
 
         if (formContainer.style.display === 'none' || formContainer.style.display === '') {
             formContainer.style.display = 'block';
-            toggleBtn.textContent = 'Ocultar Formulario';
+            toggleBtn.textContent = ' Ocultar Formulario';
         } else {
             formContainer.style.display = 'none';
-            toggleBtn.textContent = 'Agregar Equipo Manual';
+            toggleBtn.textContent = ' Agregar Equipo Manual';
         }
     });
 </script>
@@ -319,10 +363,10 @@
 
         if (formContain.style.display === 'none' || formContain.style.display === '') {
             formContain.style.display = 'block';
-            toggleBtn.textContent = 'Ocultar CSV';
+            toggleBtn.textContent = ' Ocultar CSV';
         } else {
             formContain.style.display = 'none';
-            toggleBtn.textContent = 'Agregar Equipos Masivos CSV';
+            toggleBtn.textContent = ' Agregar Equipos Masivos CSV';
         }
     });
 </script>
@@ -335,10 +379,10 @@
 
         if (formContai.style.display === 'none' || formContai.style.display === '') {
             formContai.style.display = 'block';
-            toggleBtn.textContent = 'Ocultar fechas CSV';
+            toggleBtn.textContent = ' Ocultar fechas CSV';
         } else {
             formContai.style.display = 'none';
-            toggleBtn.textContent = 'Actulizar Fechas CSV';
+            toggleBtn.textContent = ' Actulizar Fechas CSV';
         }
     });
 </script>
