@@ -9,7 +9,6 @@ from flask_login import LoginManager, login_user, logout_user, login_required
 from config import config
 from datetime import datetime, timedelta
 
-
 # Para subir archivos tipo foto al servidor
 import os
 import shutil
@@ -46,7 +45,7 @@ def evita_cache(response):
     return response
 
 @app.route('/')
-@login_required
+# @login_required
 def index():
     return redirect(url_for('login'))
 
@@ -218,6 +217,7 @@ def ELIMINAR_CONTACTO(id):
 
 # --------------------------------------------- DATOS PROVEEDOR SALUD --------------------------------
 @app.route('/datosProveedorSalud/<id>')
+@login_required
 def datosProveedorSalud(id):
     cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
     # cur = db.connection.cursor()
@@ -633,7 +633,7 @@ def insert_csv():
             db.connection.commit()
 
         db.connection.commit()
-        flash('Datos insertados exitosamente', 'success')
+        flash('Datos importados exitosamente', 'success')
         return redirect(url_for('indexSalud'))
 # ---------------------------FINALIZA INSERT MASIVA CSV DE SALUD-----------------------------
 
@@ -1066,6 +1066,7 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
 
 # HISTORIAL FECHAS MANTENIMIENTO Y CALIBRACIÓN
 @app.route('/historialFechas/<cod_articulo>')
+@login_required
 def historialFechas(cod_articulo):
     # print(cod_articulo)
     cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -1145,6 +1146,7 @@ def update_historial_fechas():
 
 # ==========================INICIA FUNCIÓN EQUIPOS DADOS DE BAJA=====================
 @app.route('/equiposDeBajaSalud')
+@login_required
 def equiposDeBajaSalud():
     cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
     cur.execute('SELECT id, estado_equipo FROM estados_equipos')
