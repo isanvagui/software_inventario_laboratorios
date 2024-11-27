@@ -19,6 +19,7 @@
                             <thead>
                                 <tr>
                                     <td>Codigo Articulo</td>
+                                    <td>Fecha de baja</td>
                                     <td>Nombre de equipo</td>
                                     <td>Periodicidad mantenimineto (Meses)</td>
                                     <td>Programación mantenimiento</td>
@@ -27,7 +28,7 @@
                                     <td>Fecha ingreso</td>
                                     <td>Estado equipo</td>
                                     <td>Ubicación original</td>
-                                    <td>Garantía ingreso</td>
+                                    <!-- <td>Garantía ingreso</td> -->
                                     <td>Criticos</td>
                                     <td>Proveedor responsable</td>
                                     <td>Semaforo mantenimiento</td>
@@ -38,21 +39,21 @@
                                 {% for producto in equipos_de_baja %}
                                 <tr>
                                     <td>{{ producto.cod_articulo }}</td>
+                                    <td>{{ producto.fecha_de_baja }}</td>
                                     <td>{{ producto.nombre_equipo }}</td>
                                     <td>{{ producto.periodicidad }}</td>
                                     <td>{{ producto.fecha_mantenimiento }}
-                                        <input type="checkbox" name="fecha_mantenimiento" 
+                                        <!-- <input type="checkbox" name="fecha_mantenimiento" 
                                         data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
-                                        {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
-
+                                        {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}> -->
                                     </td>
 
                                     <td>{{ producto.periodicidad_calibracion }}</td>
                                     
                                     <td>{{ producto.fecha_calibracion }}
-                                        <input type="checkbox" name="fecha_calibracion"
+                                        <!-- <input type="checkbox" name="fecha_calibracion"
                                             data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}"
-                                            {% if producto.checkbox_calibracion=='Activo' %}checked{% endif %}>
+                                            {% if producto.checkbox_calibracion=='Activo' %}checked{% endif %}> -->
                                     </td>
                                     <td>{{ producto.fecha_ingreso }}</td>
                                     <td>
@@ -69,12 +70,12 @@
                                         </form>
                                     </td>
                                     <td>{{ producto.ubicacion_original }}</td>
-                                    <td>{{ producto.garantia }}</td>
+                                    <!-- <td>{{ producto.garantia }}</td> -->
                                     <td>
                                         {% if producto.criticos == "si" %}
-                                        <i class="bi bi-radioactive"></i>
-                                        {% else %}
                                         <i class="bi bi-shield-check"></i>
+                                        {% else %}
+                                        <i class="bi bi-dash-circle fs-2"></i>
                                         {% endif %}
                                     </td>
                                     <td>
@@ -89,18 +90,14 @@
                                     </td>
                                     <td>
                                         <div class="btn-eliminar">
-                                            <!-- <a href="/edit_productoSalud/{{producto.id}}"
-                                                class="btn btn-secondary btn-sm">
-                                                <FONT SIZE=2>Editar/Ver hoja de vida</FONT>
-                                            </a> -->
                                             <a href="{{ url_for('GET_PRODUCTO_SALUD', id=producto['id'], vista='equiposDeBajaSalud') }}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
                                         </div>
-                                        <br>
+                                        <!-- <br>
                                         <div class="btn-eliminar">
                                             <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-tabla btn-lg" >
                                                 <FONT SIZE=3>Eliminar</FONT>
                                             </a>
-                                        </div>
+                                        </div> -->
                                     </td>
                                 </tr>
                                 {% endfor %}

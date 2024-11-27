@@ -126,9 +126,9 @@
                 <ul>
                     <li>
                         {% if producto.12 == "si" %}
-                        <i class="bi bi-radioactive"></i> <!-- Icono para crítico -->
+                        <i class="bi bi-shield-check"></i> <!-- Icono para crítico -->
                         {% else %}
-                        <i class="bi bi-shield-check"></i> <!-- Icono para no crítico -->
+                        <i class="bi bi-dash-circle fs-2"></i> <!-- Icono para no crítico -->
                         {% endif %}
                     </li>
                     <li><i class="fas fa-barcode"></i> <span>{{ producto.1 }}</span></li>
@@ -154,27 +154,28 @@
                     <h1>{{ producto.2 }}</h1>
                 </center>
                 <h2>Detalles del Equipo</h2>
-                <li>Nombre de equipo: {{ producto.2 }}</li>
-                <li>Estado de equipo: {{ producto.9}}</li>
-                <li>Ubicación original: {{ producto.10 }}</li>
-                <li>Marca de equipo: {{ producto.21 }}</li>
-                <li>Modelo de equipo: {{ producto.22}}</li>
-                <li>Serial de equipo: {{ producto.23 }}</li>
+                <li><b>Nombre de equipo: </b>{{ producto.2 }}</li>
+                <li><b>Estado de equipo: </b>{{ producto.9}}</li>
+                <li><b>Ubicación original: </b>{{ producto.10 }}</li>
+                <li><b>Marca de equipo: </b>{{ producto.21 }}</li>
+                <li><b>Modelo de equipo: </b>{{ producto.22}}</li>
+                <li><b>Serial de equipo: </b>{{ producto.23 }}</li>
                 <!-- <p>{{ producto.descripcion }}</p> -->
             </div>
 
             <div class="section">
                 <h2>Información de Mantenimiento y Calibración</h2>
                 <!-- <ul> -->
-                <li>Programación Mantenimiento: {{ producto.3 }}</li>
-                <li>Próximo Mantenimiento: {{ producto.4 }}</li>
-                <li>Programación Calibración: {{ producto.5 }}</li>
-                <li>Próxima Calibración: {{ producto.6 }}</li>
-                <li>Fecha Ingreso: {{ producto.7 }}</li>
-                <li>Periodicidad Mantenimiento: {{ producto.8 }}</li>
-                <li>Periodicidad Calibración: {{ producto.20 }}</li>
-                <li>Ubicación Original: {{ producto.10 }}</li>
-                <li>Garantía Ingreso: {{ producto.11 }}</li>
+                <li><b>Fecha de Baja: </b>{{ producto.24 }}</li>
+                <li><b>Fecha Ingreso: </b>{{ producto.7 }}</li>
+                <li><b>Periodicidad Mantenimiento: </b>{{ producto.8 }}</li>
+                <li><b>Programación Mantenimiento: </b>{{ producto.3 }}</li>
+                <li><b>Próximo Mantenimiento: </b>{{ producto.4 }}</li>
+                <li><b>Periodicidad Calibración: </b>{{ producto.20 }}</li>
+                <li><b>Programación Calibración: </b>{{ producto.5 }}</li>
+                <li><b>Próxima Calibración: </b>{{ producto.6 }}</li>
+                <li><b>Ubicación Original: </b>{{ producto.10 }}</li>
+                <li><b>Garantía Ingreso: </b>{{ producto.11 }}</li>
                 <!-- </ul> -->
             </div>
 
@@ -218,55 +219,55 @@
                     
                     <h2>Acciones</h2>
                     <div class="form-group">
-                        <label for="cod_articulo">Codigo Articulo</label>
+                        <b><label for="cod_articulo">Codigo Articulo</label></b>
                         <input type="text" id="cod_articulo" name="cod_articulo" value="{{ producto.1 }}"
                             class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="nombre_equipo">Nombre de equipo</label>
+                        <b><label for="nombre_equipo">Nombre de equipo</label></b>
                         <input type="text" id="nombre_equipo" name="nombre_equipo" value="{{ producto.2 }}"
                             class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="fecha_mantenimiento">Programación Mantenimiento</label>
+                        <b><label for="fecha_mantenimiento">Programación Mantenimiento</label></b>
                         <input type="date" id="fecha_mantenimiento" name="fecha_mantenimiento" value="{{ producto.3 }}"
                             class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="vencimiento_mantenimiento">Próximo Mantenimiento</label>
+                        <b><label for="vencimiento_mantenimiento">Próximo Mantenimiento</label></b>
                         <input type="date" id="vencimiento_mantenimiento" name="vencimiento_mantenimiento"
                             value="{{ producto.4 }}" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="fecha_calibracion">Programación Calibración</label>
+                        <b><label for="fecha_calibracion">Programación Calibración</label></b>
                         <input type="date" id="fecha_calibracion" name="fecha_calibracion" value="{{ producto.5 }}"
                             class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="vencimiento_calibracion">Próxima Calibración</label>
+                        <b><label for="vencimiento_calibracion">Próxima Calibración</label></b>
                         <input type="date" id="vencimiento_calibracion" name="vencimiento_calibracion"
                             value="{{ producto.6 }}" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="fecha_ingreso">Fecha Ingreso</label>
+                        <b><label for="fecha_ingreso">Fecha Ingreso</label></b>
                         <input type="date" id="fecha_ingreso" name="fecha_ingreso" value="{{ producto.7 }}"
                             class="form-control">
                     </div>
 
                     <div class="form-group">
-                        <label for="periodicidad">Periodicidad Mantenimiento</label>
+                        <b><label for="periodicidad">Periodicidad Mantenimiento</label></b>
                         <input type="text" id="periodicidad" name="periodicidad" value="{{ producto.8 }}"
                             class="form-control">
                     </div>
 
                     <div class="form-group">
-                        <label for="periodicidad_calibracion">Periodicidad Calibración</label>
+                        <b><label for="periodicidad_calibracion">Periodicidad Calibración</label></b>
                         <input type="text" id="periodicidad_calibracion" name="periodicidad_calibracion" value="{{ producto.20 }}"
                             class="form-control">
                     </div>
 
                     <div class="form-group">
-                        <label for="garantia">Garantía</label>
+                        <b><label for="garantia">Garantía</label></b>
                         <input type="text" id="garantia" name="garantia" value="{{ producto.11 }}"
                             class="form-control">
                     </div>

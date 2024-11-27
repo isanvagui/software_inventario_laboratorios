@@ -48,12 +48,12 @@
                         <thead>
                             <tr>
                                 <td>Código articulo</td>
+                                <td>Periodicidad Mantenimiento</td>
                                 <td>Programación Mantenimiento</td>
                                 <td>Próximo Mantenimiento</td>
+                                <td>Periodicidad Calibración</td>
                                 <td>Programación Calibración</td>
                                 <td>Próxima Calibración</td>
-                                <td>Periodicidad Mantenimiento</td>
-                                <td>Periodicidad Calibración</td>
                                 <td>Acción</td>
                             </tr>
                         </thead>
@@ -62,12 +62,12 @@
                             <tr>
                                 <form method="POST" action="{{ url_for('update_historial_fechas') }}">
                                     <td>{{ registro.cod_articulo}}</td>
+                                    <td><input type="text" name="periodicidad" value="{{ registro.periodicidad }}"></td>
                                     <td><input type="date" name="fecha_mantenimiento" value="{{ registro.fecha_mantenimiento }}"></td>
                                     <td><input type="date" name="vencimiento_mantenimiento" value="{{ registro.vencimiento_mantenimiento }}"></td>
+                                    <td><input type="text" name="periodicidad_calibracion" value="{{ registro.periodicidad_calibracion }}"></td>
                                     <td><input type="date" name="fecha_calibracion" value="{{ registro.fecha_calibracion }}"></td>
                                     <td><input type="date" name="vencimiento_calibracion" value="{{ registro.vencimiento_calibracion }}"></td>
-                                    <td><input type="text" name="periodicidad" value="{{ registro.periodicidad }}"></td>
-                                    <td><input type="text" name="periodicidad_calibracion" value="{{ registro.periodicidad_calibracion }}"></td>
                                     <input type="hidden" name="csrf_token" value="{{csrf_token()}}" />
                                     <td>
                                         <input type="hidden" name="cod_articulo" value="{{ registro.cod_articulo }}">

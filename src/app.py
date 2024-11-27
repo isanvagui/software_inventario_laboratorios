@@ -246,6 +246,7 @@ def ACTUALIZAR_DATOS_PROVEEDOR_SALUD(id):
 
 # ESTA FUNCIÓN ME LLEVA A OTRA VISTA PARA AGREGAR LOS NUEVOS PROVEEDORES
 @app.route('/agregarNuevoProveedor')
+@login_required
 def agregarNuevoProveedor():
     return render_template('agregarNuevoProveedor.html')
 
@@ -445,9 +446,9 @@ def AGREGAR_PRODUCTO_SALUD():
         # print(estado_equipo)
 
         # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
-        cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES ( %s, %s, %s, %s, %s, %s, %s)""", 
-                                                    (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
-        db.connection.commit()
+        # cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES ( %s, %s, %s, %s, %s, %s, %s)""", 
+        #                                             (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
+        # db.connection.commit()
 
         flash ('Equipo agregado satisfactoriamente', 'success')
         return redirect(url_for('indexSalud')) 
@@ -627,15 +628,15 @@ def insert_csv():
                     ),
                 )
 
-            # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
-            cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)""", 
-                                                        (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
-            db.connection.commit()
+            # # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
+            # cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)""", 
+            #                                             (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
+            # db.connection.commit()
 
         db.connection.commit()
         flash('Datos importados exitosamente', 'success')
         return redirect(url_for('indexSalud'))
-# ---------------------------FINALIZA INSERT MASIVA CSV DE SALUD-----------------------------
+# ---------------------------FINALIZA INSERT MASIVO CSV DE SALUD-----------------------------
 
 # ---------------------------INICIA ACTUALIZACIÓN MASIVA DE FECHAS DE MANTENIMIENTO, CALIBRACIÓN Y PERIODICIDAD EQUIPOS CSV DE SALUD-----------------------------
 @app.route('/updateDate_csv', methods=['POST'])
@@ -692,15 +693,15 @@ def updateDate_csv():
                                                      (fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion, cod_articulo))
                 db.connection.commit()
         
-                # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
-                cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)""", 
-                                                            (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
-                db.connection.commit()
+                # # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
+                # cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)""", 
+                #                                             (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
+                # db.connection.commit()
 
                 # Obtener hora actual del equipo
                 hora_actual = datetime.now()
                 
-                # PARA EL CHECKBOX DE CALIBRACIÓN
+                # PARA EL CHECKBOX DE MANTENIMIENTO
                 # checkbox_mantenimiento = 'Inactivo' # Valor predeterminado
 
                 
@@ -740,6 +741,7 @@ def updateDate_csv():
 
 # ---------------------------INICIA EXPORTACIÓN DE CSV DE EQUIPOS DE SALUD-----------------------------
 @app.route('/exportCsvsalud')
+@login_required
 def exportCsv():
     # Obtener los datos de la tabla indexssalud
     cur = db.connection.cursor()
@@ -752,7 +754,7 @@ def exportCsv():
 
     # Escribir los encabezados de las columnas
     writer.writerow(['Código articulo', 'Nombre Equipo', 'Periodicidad Mantenimiento', 'Inicio Mantenimiento', 'Vencimiento Mantenimiento', 'Periodicidad Calibración', 'Inicio Calibración', 'Vencimiento Calibración', 'Fecha Ingreso', 
-                      'Estado Equipo', 'Ubicación Original', 'Garantía', 'Críticos', 'Proveedor Responsable', 'Check Mantenimiento', 'Check Calibración', 'Especificaciones Instalación', 'Cuidados Básicos', ' Marca Equipo', 'Modelo Equipo', 'Serial Equipo'])
+                      'Estado Equipo', 'Ubicación Original', 'Garantía Ingreso', 'Críticos', 'Proveedor Responsable', 'Check Mantenimiento', 'Check Calibración', 'Especificaciones Instalación', 'Cuidados Básicos', ' Marca Equipo', 'Modelo Equipo', 'Serial Equipo'])
 
     # Escribir los registros de la tabla
     for registro in registros:
@@ -767,10 +769,11 @@ def exportCsv():
 
 # ---------------------------INICIA EXPORTACIÓN DE CSV DE EQUIPOS DE BAJA DE SALUD-----------------------------
 @app.route('/exportCsvSaludDeBaja')
+@login_required
 def exportCsvDeBaja():
-    # Obtener los datos de la tabla indexssalud
+    # Obtener los datos de la tabla equipossalud_debaja
     cur = db.connection.cursor()
-    cur.execute('SELECT cod_articulo, nombre_equipo, periodicidad, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad_calibracion, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, checkbox_mantenimiento, checkbox_calibracion, especificaciones_instalacion, cuidados_basicos, marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud FROM equipossalud_debaja')
+    cur.execute('SELECT cod_articulo, fecha_de_baja, nombre_equipo, periodicidad, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad_calibracion, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, especificaciones_instalacion, cuidados_basicos, marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud FROM equipossalud_debaja')
     registros = cur.fetchall()
 
     # Crear un archivo CSV en memoria
@@ -778,8 +781,8 @@ def exportCsvDeBaja():
     writer = csv.writer(si)
 
     # Escribir los encabezados de las columnas
-    writer.writerow(['Código articulo', 'Nombre Equipo', 'Periodicidad Mantenimiento', 'Inicio Mantenimiento', 'Vencimiento Mantenimiento', 'Periodicidad Calibración', 'Inicio Calibración', 'Vencimiento Calibración', 'Fecha Ingreso', 
-                     'Estado Equipo', 'Ubicación Original', 'Garantía', 'Críticos', 'Proveedor Responsable', 'Check Mantenimiento', 'Check Calibración', 'Especificaciones Instalación', 'Cuidados Básicos', ' Marca Equipo', 'Modelo Equipo', 'Serial Equipo'])
+    writer.writerow(['Código articulo', 'Fecha de Baja', 'Nombre Equipo', 'Periodicidad Mantenimiento', 'Inicio Mantenimiento', 'Vencimiento Mantenimiento', 'Periodicidad Calibración', 'Inicio Calibración', 'Vencimiento Calibración', 'Fecha Ingreso', 
+                     'Estado Equipo', 'Ubicación Original', 'Garantía Ingreso', 'Críticos', 'Proveedor Responsable', 'Especificaciones Instalación', 'Cuidados Básicos', 'Marca Equipo', 'Modelo Equipo', 'Serial Equipo'])
 
     # Escribir los registros de la tabla
     for registro in registros:
@@ -795,25 +798,44 @@ def exportCsvDeBaja():
 # ================================CHECKBOX PROGRAMACIÓN MANTENIMIENTO===============================
 @app.route('/checkbox_programacionMantenimiento', methods=['POST'])
 def checkbox_programacionMantenimiento():
+    data = request.get_json()
+    cod_articulo = data['productoId']
+    nuevo_estado = data['nuevoEstado']
+    CheckboxMantenimiento = data['CheckboxMantenimiento']
 
-    if request.method == 'POST':
-            data = request.get_json()
-            producto_id = data['productoId']
-            nuevo_estado = data['nuevoEstado']
-            name = data['name']
+    # Valores recibidos
+    periodicidad = data.get('periodicidadMantenimiento') or None
+    fecha_mantenimiento = data.get('fechaMantenimiento') or None
+    vencimiento_mantenimiento = data.get('vencimientoMantenimiento') or None
+    periodicidad_calibracion = data.get('periodicidadCalibracion') or None
+    fecha_calibracion = data.get('fechaCalibracion') or None
+    vencimiento_calibracion = data.get('vencimientoCalibracion') or None
 
-            cur = db.connection.cursor()
-            if name == "fecha_mantenimiento":
-                cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE id = %s', (nuevo_estado, producto_id))
+    cur = db.connection.cursor()
 
-            elif name == "fecha_calibracion":
-                cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE id = %s', (nuevo_estado, producto_id))
-            db.connection.commit()
-            # print("hola",data)
-            # return redirect(url_for('indexSalud'))
-            return jsonify({'message': 'Estado actualizado correctamente'})
+    try:
+        if CheckboxMantenimiento == "fecha_mantenimiento":
+            # Actualizar el estado del checkbox en indexssalud
+            cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE cod_articulo = %s', (nuevo_estado, cod_articulo))
+            if nuevo_estado == 'Activo':
+                # Insertar en historial_fechas respetando valores NULL
+                cur.execute('''INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)''',
+                                                            (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, " ", " ", periodicidad, " "))
+                
+        elif CheckboxMantenimiento == "fecha_calibracion":
+            # Actualizar el estado del checkbox en indexssalud
+            cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE cod_articulo = %s', (nuevo_estado, cod_articulo))
+            if nuevo_estado == 'Activo':
+                # Insertar en historial_fechas respetando valores NULL
+                cur.execute('''INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)''',
+                                                            (cod_articulo, " ", " ", fecha_calibracion, vencimiento_calibracion, " ", periodicidad_calibracion))
+        db.connection.commit()
+        return jsonify({'success': True, 'message': 'Estado actualizado y fechas guardadas correctamente.'})
 
-    return jsonify({'error': 'Método no permitido'}), 405
+    except Exception as e:
+        db.connection.rollback()
+        return jsonify({'success': False, 'message': f'Error: {str(e)}'})
+
 # ======================================================================================================
 
 # ================================CHECKBOX PROGRAMACIÓN FECHA DE CALIBRACIÓN===============================
@@ -866,7 +888,6 @@ def update_estado_equipo():
             flash('Debe ingresar las fechas de inicio y vencimiento de mantenimiento.', 'error')
             return redirect(url_for('indexSalud'))
 
-        # PARA EL CHECKBOX DE CALIBRACIÓN
         fecha_calibracion = request.form ['fecha_calibracion']
         vencimiento_calibracion = request.form ['vencimiento_calibracion']
 
@@ -885,9 +906,12 @@ def update_estado_equipo():
         garantia = request.form ['garantia']
         criticos = request.form ['criticos']
         proveedor_responsable = request.form ['proveedor_responsable']
-        # especificaiones_instalacion = request.form ['especificaiones_instalacion']
+        especificaciones_instalacion = request.form ['especificaciones_instalacion']
+        cuidados_basicos = request.form ['cuidados_basicos']
         periodicidad_calibracion = request.form ['periodicidad_calibracion']
-
+        marca_equipo_salud = request.form ['marca_equipo_salud']
+        modelo_equipo_salud = request.form ['modelo_equipo_salud']
+        serial_equipo_salud = request.form ['serial_equipo_salud']
         cur = db.connection.cursor()
 
         # Obtener la ruta de la imagen desde la tabla indexssalud
@@ -897,12 +921,7 @@ def update_estado_equipo():
 
         if nuevo_estado == 'DE BAJA':
             # Actualizar el estado y marcar como dado de baja en indexssalud
-            cur.execute(
-                """UPDATE indexssalud 
-                   SET estado_equipo = %s, enable = 0 and de_baja = 1 
-                   WHERE cod_articulo = %s""", 
-                (nuevo_estado, cod_articulo)
-            )
+            cur.execute("""UPDATE indexssalud SET estado_equipo = %s, enable = 0 and de_baja = 1 WHERE cod_articulo = %s""", (nuevo_estado, cod_articulo))
 
             # Verificar si el equipo ya está en equipossalud_debaja
             cur.execute('SELECT * FROM equipossalud_debaja WHERE cod_articulo = %s', (cod_articulo,))
@@ -910,11 +929,10 @@ def update_estado_equipo():
 
             # Insertar el equipo en equipossalud_debaja si no existe
             if not equipo_existente:
-                cur.execute(
-                    """INSERT INTO equipossalud_debaja 
-                    (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso,
-                    periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, imagen, periodicidad_calibracion) 
-                    VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                cur.execute("""INSERT INTO equipossalud_debaja (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso,
+                                                                periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, imagen, especificaciones_instalacion, cuidados_basicos,
+                                                                periodicidad_calibracion, marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud, fecha_de_baja) 
+                                                                VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                     (
                         cod_articulo,
                         nombre_equipo,
@@ -931,11 +949,15 @@ def update_estado_equipo():
                         proveedor_responsable,
                         color,
                         filepath_to_db,
-                        # especificaiones_instalacion,
-                        periodicidad_calibracion
+                        especificaciones_instalacion,
+                        cuidados_basicos,
+                        periodicidad_calibracion,
+                        marca_equipo_salud,
+                        modelo_equipo_salud,
+                        serial_equipo_salud,
+                        hora_actual
                     ),
                 )
-        
         else:
             # Actualiza el estado si no está dado de baja
             cur.execute('UPDATE indexssalud SET estado_equipo = %s WHERE cod_articulo = %s', (nuevo_estado, cod_articulo))
@@ -943,7 +965,7 @@ def update_estado_equipo():
         db.connection.commit()
         flash('Estado del equipo actualizado correctamente', 'success')
         return redirect(url_for('indexSalud'))
-
+# =======================================//=======================================================
 
 # ESTA FUNCIÓN ME LLEVA A OTRA VISTA TRAYENDO LOS PARAMETROS DE AGREGAR PARA DESPUES PODER ACTUALIZAR EN LA SIGUIENTE FUNCIÓN. LAS DOS SE COMPLEMENTAN
 @app.route('/edit_productoSalud/<id>/<vista>', methods=['GET'])
@@ -1020,14 +1042,14 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
         
         cur = db.connection.cursor() 
 
-        # Obtener las fechas actuales antes de actualizar
-        cur.execute('SELECT fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion FROM indexssalud WHERE id = %s', [id])
-        fechas_actuales = cur.fetchone()
+        # # Obtener las fechas actuales antes de actualizar
+        # cur.execute('SELECT fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion FROM indexssalud WHERE id = %s', [id])
+        # fechas_actuales = cur.fetchone()
 
-        fecha_mantenimiento_actual = fechas_actuales[0]
-        vencimiento_mantenimiento_actual = fechas_actuales[1]
-        fecha_calibracion_actual = fechas_actuales[2]
-        vencimiento_calibracion_actual = fechas_actuales[3]
+        # fecha_mantenimiento_actual = fechas_actuales[0]
+        # vencimiento_mantenimiento_actual = fechas_actuales[1]
+        # fecha_calibracion_actual = fechas_actuales[2]
+        # vencimiento_calibracion_actual = fechas_actuales[3]
 
         cur.execute(
             """ UPDATE indexssalud SET cod_articulo = %s, nombre_equipo = %s, fecha_mantenimiento = %s, vencimiento_mantenimiento = %s, fecha_calibracion = %s, vencimiento_calibracion = %s, fecha_ingreso = %s, periodicidad = %s, garantia = %s, color = %s, especificaciones_instalacion = %s, cuidados_basicos = %s, periodicidad_calibracion = %s WHERE id = %s""",
@@ -1050,16 +1072,16 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
         )
         db.connection.commit()
 
-        # Verificar si alguna de las fechas ingresadas es diferente de las almacenadas
-        if (fecha_mantenimiento.date() != fecha_mantenimiento_actual or 
-            vencimiento_mantenimiento.date() != vencimiento_mantenimiento_actual or 
-            fecha_calibracion != fecha_calibracion_actual or 
-            vencimiento_calibracion != vencimiento_calibracion_actual):
+        # # Verificar si alguna de las fechas ingresadas es diferente de las almacenadas
+        # if (fecha_mantenimiento.date() != fecha_mantenimiento_actual or 
+        #     vencimiento_mantenimiento.date() != vencimiento_mantenimiento_actual or 
+        #     fecha_calibracion != fecha_calibracion_actual or 
+        #     vencimiento_calibracion != vencimiento_calibracion_actual):
 
-            # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
-            cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)""", 
-                                                        (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
-            db.connection.commit()
+        #     # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
+        #     cur.execute("""INSERT INTO historial_fechas (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion) VALUES (%s, %s, %s, %s, %s, %s, %s)""", 
+        #                                                 (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion))
+        #     db.connection.commit()
 
         flash('Equipo actualizado satisfactorimanete', 'success')
         return redirect(url_for('indexSalud')) 
@@ -1071,9 +1093,8 @@ def historialFechas(cod_articulo):
     # print(cod_articulo)
     cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
     # cur.execute("""SELECT * FROM historial_fechas WHERE cod_articulo = %s ORDER BY fecha_mantenimiento DESC""", [cod_articulo])
-    cur.execute("""SELECT id, cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, 
-                fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion 
-                FROM historial_fechas WHERE cod_articulo = %s ORDER BY fecha_mantenimiento DESC""", [cod_articulo])
+    cur.execute("""SELECT id, cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, 
+                          periodicidad_calibracion FROM historial_fechas WHERE cod_articulo = %s ORDER BY fecha_mantenimiento DESC""", [cod_articulo])
     historial = cur.fetchall()
     print(historial)
     return render_template('historialFechas.html', historial=historial)
@@ -1130,11 +1151,8 @@ def update_historial_fechas():
 
         # También actualizar en indexssalud
         cur.execute("""
-            UPDATE indexssalud SET fecha_mantenimiento = %s, vencimiento_mantenimiento = %s,
-                fecha_calibracion = %s, vencimiento_calibracion = %s,
-                periodicidad = %s, periodicidad_calibracion = %s, color = %s
-            WHERE cod_articulo = %s
-        """, (fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion, color, cod_articulo))
+            UPDATE indexssalud SET fecha_mantenimiento = %s, vencimiento_mantenimiento = %s, fecha_calibracion = %s, vencimiento_calibracion = %s, periodicidad = %s, periodicidad_calibracion = %s, color = %s WHERE cod_articulo = %s""", 
+                                  (fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, periodicidad, periodicidad_calibracion, color, cod_articulo))
         
         db.connection.commit()
         flash('Historial y registro principal actualizados correctamente', 'success')
@@ -1160,6 +1178,7 @@ def equiposDeBajaSalud():
 
 # FUNCIÓN ELIMINAR PARA INDEXSSALUD
 @app.route('/delete_productoSalud/<string:id>')
+@login_required
 def ELIMINAR_CONTACTO_SALUD(id):
     cur = db.connection.cursor()
     # cur.execute('DELETE FROM indexssalud WHERE id = {0}'.format(id))

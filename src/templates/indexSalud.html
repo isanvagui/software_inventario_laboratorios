@@ -211,15 +211,31 @@
                                     <td>{{ producto.cod_articulo }}</td>
                                     <td>{{ producto.nombre_equipo }}</td>
                                     <td>{{ producto.periodicidad }}</td>
-                                    <td>{{ producto.fecha_mantenimiento }}
-                                        <input type="checkbox" name="fecha_mantenimiento" 
-                                        data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
-                                        {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}>
+                                    <td>
+                                        {{ producto.fecha_mantenimiento }}
+                                        <input 
+                                            type="checkbox" 
+                                            CheckboxMantenimiento="fecha_mantenimiento" 
+                                            data-producto-id="{{ producto.cod_articulo }}" 
+                                            data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
+                                            data-periodicidad-mantenimiento="{{ producto.periodicidad or '' }}" 
+                                            data-fecha-mantenimiento="{{ producto.fecha_mantenimiento or '' }}" 
+                                            data-vencimiento-mantenimiento="{{ producto.vencimiento_mantenimiento or '' }}" 
+                                           
+                                            {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}
+                                        >
                                     </td>
                                     <td>{{ producto.periodicidad_calibracion }}</td>
                                     <td>{{ producto.fecha_calibracion }}
-                                        <input type="checkbox" name="fecha_calibracion"
-                                            data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}"
+                                        <input 
+                                            type="checkbox" 
+                                            CheckboxMantenimiento="fecha_calibracion"
+                                            data-producto-id="{{ producto.cod_articulo }}" 
+                                            data-estado-inicial="{{ producto.checkbox_calibracion }}"
+                                            data-periodicidad-calibracion="{{ producto.periodicidad_calibracion or '' }}" 
+                                            data-fecha-calibracion="{{ producto.fecha_calibracion or '' }}" 
+                                            data-vencimiento-calibracion="{{ producto.vencimiento_calibracion or '' }}" 
+                                            
                                             {% if producto.checkbox_calibracion=='Activo' %}checked{% endif %}>
                                     </td>
                                     <td>{{ producto.fecha_ingreso }}</td>
@@ -242,7 +258,12 @@
                                             <input type="hidden" name="criticos" value="{{ producto.criticos }}">
                                             <input type="hidden" name="proveedor_responsable" value="{{ producto.proveedor_responsable }}">
                                             <input type="hidden" name="filepath_to_db" value="{{ producto.filepath_to_db }}">
+                                            <input type="hidden" name="especificaciones_instalacion" value="{{ producto.especificaciones_instalacion }}">
+                                            <input type="hidden" name="cuidados_basicos" value="{{ producto.cuidados_basicos }}">
                                             <input type="hidden" name="periodicidad_calibracion" value="{{ producto.periodicidad_calibracion }}">
+                                            <input type="hidden" name="marca_equipo_salud" value="{{ producto.marca_equipo_salud }}">
+                                            <input type="hidden" name="modelo_equipo_salud" value="{{ producto.modelo_equipo_salud }}">
+                                            <input type="hidden" name="serial_equipo_salud" value="{{ producto.serial_equipo_salud }}">
 
                                             <select name="nuevo_estado_equipo" id="estadoEquipoSelect">
                                                 {% for estadoEquipo in estadoEquipos %}
@@ -258,9 +279,9 @@
                                     <td>{{ producto.garantia }}</td>
                                     <td>
                                         {% if producto.criticos == "si" %}
-                                        <i class="bi bi-radioactive"></i>
-                                        {% else %}
                                         <i class="bi bi-shield-check"></i>
+                                        {% else %}
+                                        <i class="bi bi-dash-circle fs-2"></i>
                                         {% endif %}
                                     </td>
                                     <td>
