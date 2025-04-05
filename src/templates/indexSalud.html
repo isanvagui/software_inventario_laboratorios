@@ -147,7 +147,7 @@
                 </div>
             </div>
 
-            <!-- New form for insertding CSV -->
+            <!-- New form for inserting CSV -->
             <div class="card-equipos-masivos" id="formContain" style="display: none;">
                 <form action="/insert_csv" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
@@ -216,7 +216,7 @@
                                         <input 
                                             type="checkbox" 
                                             CheckboxMantenimiento="fecha_mantenimiento" 
-                                            data-producto-id="{{ producto.cod_articulo }}" 
+                                            data-producto-id="{{ producto.cod_articulo }}"
                                             data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
                                             data-periodicidad-mantenimiento="{{ producto.periodicidad or '' }}" 
                                             data-fecha-mantenimiento="{{ producto.fecha_mantenimiento or '' }}" 
@@ -226,7 +226,8 @@
                                         >
                                     </td>
                                     <td>{{ producto.periodicidad_calibracion }}</td>
-                                    <td>{{ producto.fecha_calibracion }}
+                                    <td>
+                                        {{ producto.fecha_calibracion }}
                                         <input 
                                             type="checkbox" 
                                             CheckboxMantenimiento="fecha_calibracion"
@@ -412,5 +413,7 @@
 <script>
     var csrf_token = "{{ csrf_token() }}";
 </script>
+
+
 
 {% endblock %}

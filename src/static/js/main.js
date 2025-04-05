@@ -14,7 +14,7 @@ document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], i
         const nuevoEstado = this.checked ? 'Activo' : 'Inactivo';
 
         // Confirmar con el usuario antes de enviar la solicitud
-        if (confirm(`¿Cambiar el estado de ${CheckboxMantenimiento} del equipo ${productoId} a ${nuevoEstado}?`)) {
+        if (confirm(`¿Cambiar el estado del equipo ${productoId} a ${nuevoEstado}?`)) {
             // Enviar solicitud POST para actualizar el estado y guardar en el historial
             fetch('/checkbox_programacionMantenimiento', {
                 method: "POST",
@@ -42,7 +42,13 @@ document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], i
                         alert("Fechas guardadas en el historial.");
                     }
                 } else {
-                    alert("Error al actualizar el estado o guardar en el historial.");
+
+                    if (data.message && data.message.includes("Faltan menos de 30 días")) {
+                        alert(data.message);
+                        this.checked = false;
+                    } else {
+                        alert(data.message || "Error al actualizar el estado o guardar en el historial.");
+                    }
                     this.checked = estadoInicial === 'Activo';
                 }
             })
