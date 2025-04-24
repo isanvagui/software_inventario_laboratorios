@@ -517,7 +517,7 @@ def insert_csv():
                 return redirect(url_for('indexSalud'))
             
             # Obtener la ruta de la imagen desde la carpeta Imagenes
-            imagen_descargas_path = os.path.join(os.path.expanduser('~'), 'C:/Users/1058912992/Pictures', imagen) # Especificarle a la profe,que me puede compartir todas la simagenes yo las subo a la carpeta y de esta forma si se podria guardar masivamente
+            imagen_descargas_path = os.path.join(os.path.dirname(__file__), 'static', 'fotos', imagen) # Especificarle a la profe,que me puede compartir todas la simagenes yo las subo a la carpeta y de esta forma si se podria guardar masivamente
             # Verificar si el archivo existe en Imagenes
             if not os.path.isfile(imagen_descargas_path):
                 flash(f'La imagen {imagen} no se encontró en la carpeta de imagenes.', 'error') #
