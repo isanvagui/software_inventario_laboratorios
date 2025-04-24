@@ -23,7 +23,7 @@ from models.entities.User import User
 from flask import Flask, render_template, request, jsonify 
 
 app = Flask(__name__)
-app.config.from_object(config['development'])
+app.config.from_object(config['production'])
 
 # Donde configuro mi clave
 app.config['SECRET_KEY'] = 'mysecretkey'
