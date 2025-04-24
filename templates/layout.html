@@ -23,8 +23,26 @@
 
     <!-- Siempre visibles -->
     <a href="{{ url_for('home') }}" data-icon="🏠"> Inicio</a>
+
+    <!-- Si estamos en /home para administrador-->
+    {% if request.path == url_for('home') %}
+      {% if current_user.rol == 'admin' %}
+        <a href="{{ url_for('indexSalud') }}" data-icon="👩🏻‍⚕️"> Salud</a>
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👨🏻‍🍳"> Gastronomía</a>
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="🏅"> LACMA</a>
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👷🏼‍♂️"> Arquitectura</a>
+      {% elif current_user.rol == 'salud' %}
+        <a href="{{ url_for('indexSalud') }}" data-icon="👩🏻‍⚕️"> Salud</a>
+      {% elif current_user.rol == 'gastronomia' %}
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👨🏻‍🍳"> Gastronomía</a>
+      {% elif current_user.rol == 'lacma' %}
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="🏅"> LACMA</a>
+      {% elif current_user.rol == 'arquitectura' %}
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👷🏼‍♂️"> Arquitectura</a>
+      {% endif %}
+    {% endif %}
     
-    <!-- Botones condicionales -->
+    <!-- Si estamos en módulo SALUD -->
     {% if request.path == url_for('indexSalud') %}
       <a href="{{ url_for('agregarNuevoProveedor') }}" data-icon="🚚"> Agregar Proveedor</a>
       <a id="toggleFormBtn" class="btn-indexSalud" data-icon="➕"> Agregar Equipo Manual</a>
@@ -33,19 +51,16 @@
       <a href="{{ url_for('equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
       <a href="{{ url_for('exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
       <a href="{{ url_for('exportCsvDeBaja') }}" data-icon="📂"> Exportar Equipos De Baja</a>
-      {% elif request.path == url_for('agregarNuevoProveedor') %}
-        <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Salud</a>
-    {% elif request.path == url_for('indexGastronomia') %}
-      <a href="{{ url_for('home') }}" data-icon="📄"> Modulos</a>
-    {% else %}
-      <a href="{{ url_for('indexGastronomia') }}" data-icon="👨🏻‍🍳"> Gastronomia</a>
-      <a href="{{ url_for('indexSalud') }}" data-icon="👩🏻‍⚕️"> Salud</a>
-      <a href="{{ url_for('indexGastronomia') }}" data-icon="🏅"> LACMA</a>
-      <a href="{{ url_for('indexGastronomia') }}" data-icon="👷🏼‍♂️"> Arquitectura</a>
+    {% elif request.path == url_for('agregarNuevoProveedor') %}
+      <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Salud</a>
+    {% elif request.path == url_for('equiposDeBajaSalud') %}
+      <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Salud</a>  
     {% endif %}
     
+
+
     <a class="navbar-brand"></a>
-    
+
     <!-- Cerrar sesión -->
     <a href="{{ url_for('logout') }}" data-icon="🔒" class="logout"> Cerrar Sesión</a>
   </div>
@@ -62,29 +77,29 @@
   <script>
     // JavaScript para el colapso del sidebar
     function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar.classList.toggle('expanded'); // Alterna la clase expanded
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('expanded'); // Alterna la clase expanded
     }
 
     // Añadir evento para expandir el sidebar al pasar el mouse
     const sidebar = document.getElementById("sidebar");
     sidebar.addEventListener("mouseenter", () => {
-        sidebar.classList.add("expanded"); // Expande al hacer hover
+      sidebar.classList.add("expanded"); // Expande al hacer hover
     });
 
     sidebar.addEventListener("mouseleave", () => {
-        sidebar.classList.remove("expanded"); // Colapsa al salir
+      sidebar.classList.remove("expanded"); // Colapsa al salir
     });
 
     // Mostrar el texto de los enlaces al expandir
     sidebar.addEventListener("mouseenter", () => {
-        const links = sidebar.querySelectorAll('a');
-        links.forEach(link => link.classList.add('visible')); // Añade clase para mostrar texto
+      const links = sidebar.querySelectorAll('a');
+      links.forEach(link => link.classList.add('visible')); // Añade clase para mostrar texto
     });
 
     sidebar.addEventListener("mouseleave", () => {
-        const links = sidebar.querySelectorAll('a');
-        links.forEach(link => link.classList.remove('visible')); // Remueve clase para ocultar texto
+      const links = sidebar.querySelectorAll('a');
+      links.forEach(link => link.classList.remove('visible')); // Remueve clase para ocultar texto
     });
 
   </script>

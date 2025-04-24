@@ -23,7 +23,7 @@ from models.entities.User import User
 from flask import Flask, render_template, request, jsonify 
 
 app = Flask(__name__)
-app.config.from_object(config['production'])
+app.config.from_object(config['development'])
 
 # Donde configuro mi clave
 app.config['SECRET_KEY'] = 'mysecretkey'
@@ -63,10 +63,21 @@ def login():
         # print(request.form['password'])
         user = User(0, request.form['username'], request.form['password'])
         logged_user = ModelUser.login(db, user)
+        
         if logged_user != None:
             if logged_user.password:
                 login_user(logged_user)
-                return redirect(url_for('home'))
+
+                if logged_user.rol == 'salud':
+                    return redirect(url_for('indexSalud'))
+                elif logged_user.rol == 'gastronomia':
+                    return redirect(url_for('indexGastronomia'))
+                elif logged_user.rol == 'admin':
+                    return redirect(url_for('home'))
+                else:
+                    flash('Rol no autorizado')
+                    return redirect(url_for('login'))
+
             else:
                 flash("Contraseña incorrecta...")
                 return render_template('auth/login.html')
@@ -476,7 +487,7 @@ def insert_csv():
         cur = db.connection.cursor()
 
         # Definir la carpeta de destino para las imágenes 
-        fotos_folder = os.path.join(os.getcwd(), 'src', 'static', 'fotos')
+        fotos_folder = os.path.join(os.path.dirname(__file__), 'static', 'fotos')
         
         for row in csv_reader:
             cod_articulo = row[0]
@@ -516,25 +527,15 @@ def insert_csv():
                 flash(f'El código de equipo {cod_articulo} ya existe', 'error')
                 return redirect(url_for('indexSalud'))
             
-            # Obtener la ruta de la imagen desde la carpeta Imagenes
-            imagen_descargas_path = os.path.join(os.path.dirname(__file__), 'static', 'fotos', imagen) # Especificarle a la profe,que me puede compartir todas la simagenes yo las subo a la carpeta y de esta forma si se podria guardar masivamente
-            # Verificar si el archivo existe en Imagenes
-            if not os.path.isfile(imagen_descargas_path):
-                flash(f'La imagen {imagen} no se encontró en la carpeta de imagenes.', 'error') #
+            # Ruta de la imagen (verifica existencia)
+            imagen_path = os.path.join(fotos_folder, imagen)
+            if not os.path.isfile(imagen_path):
+                flash(f'La imagen {imagen} no se encontró en la carpeta static/fotos.', 'error')
                 return redirect(url_for('indexSalud'))
 
-            # Mover la imagen a la carpeta de fotos en el proyecto
+            # No copiar imagen si ya está donde debe estar
             nombre_imagen_seguro = secure_filename(imagen)
-            imagen_destino_path = os.path.join(fotos_folder, nombre_imagen_seguro)
-
-            try:
-                shutil.copy(imagen_descargas_path, imagen_destino_path)
-            except Exception as e:
-                flash(f'Error al mover la imagen {imagen}: {e}', 'error')
-                return redirect(url_for('indexSalud'))
-
-            # Definir la ruta relativa para guardar en la base de datos
-            ruta_imagen_db = f'fotos/{nombre_imagen_seguro}'
+            ruta_imagen_db = f'fotos/{nombre_imagen_seguro}'  # Ruta que se guarda en la DB
 
             # Valor prederteminado para el checkbox_mantenimiento
             checkbox_mantenimiento = 'Inactivo'
