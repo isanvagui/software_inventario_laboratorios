@@ -66,7 +66,17 @@ def login():
         if logged_user != None:
             if logged_user.password:
                 login_user(logged_user)
-                return redirect(url_for('home'))
+
+                if logged_user.rol == 'salud':
+                    return redirect(url_for('indexSalud'))
+                elif logged_user.rol == 'gastronomia':
+                    return redirect(url_for('indexGastronomia'))
+                elif logged_user.rol == 'admin':
+                    return redirect(url_for('home'))
+                else:
+                    flash('Rol no autorizado')
+                    return redirect(url_for('login'))
+
             else:
                 flash("Contraseña incorrecta...")
                 return render_template('auth/login.html')
