@@ -24,24 +24,35 @@
     <!-- Siempre visibles -->
     <a href="{{ url_for('home') }}" data-icon="🏠"> Inicio</a>
     
-    <!-- Botones condicionales -->
+    <!-- Si estamos en /home para administrador-->
+    {% if request.path == url_for('home') %}
+      {% if current_user.rol == 'admin' %}
+        <a href="{{ url_for('indexSalud') }}" data-icon="👩🏻‍⚕️"> Salud</a>
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👨🏻‍🍳"> Gastronomía</a>
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="🏅"> LACMA</a>
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👷🏼‍♂️"> Arquitectura</a>
+      {% elif current_user.rol == 'salud' %}
+        <a href="{{ url_for('indexSalud') }}" data-icon="👩🏻‍⚕️"> Salud</a>
+      {% elif current_user.rol == 'gastronomia' %}
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👨🏻‍🍳"> Gastronomía</a>
+      {% elif current_user.rol == 'lacma' %}
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="🏅"> LACMA</a>
+      {% elif current_user.rol == 'arquitectura' %}
+        <a href="{{ url_for('indexGastronomia') }}" data-icon="👷🏼‍♂️"> Arquitectura</a>
+      {% endif %}
+    {% endif %}
+
+    <!-- Si estamos en módulo SALUD -->
     {% if request.path == url_for('indexSalud') %}
       <a href="{{ url_for('agregarNuevoProveedor') }}" data-icon="🚚"> Agregar Proveedor</a>
       <a id="toggleFormBtn" class="btn-indexSalud" data-icon="➕"> Agregar Equipo Manual</a>
-      <a id="toggleForm" class="btn-indexSalud" data-icon="📩"> Agregar Equipos Masivos .CSV</a>
-      <a id="toggleFor" class="btn-indexSalud" data-icon="🔁"> Actualizar Fechas Masivas .CSV</a>
       <a href="{{ url_for('equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
       <a href="{{ url_for('exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
       <a href="{{ url_for('exportCsvDeBaja') }}" data-icon="📂"> Exportar Equipos De Baja</a>
-      {% elif request.path == url_for('agregarNuevoProveedor') %}
-        <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Salud</a>
-    {% elif request.path == url_for('indexGastronomia') %}
-      <a href="{{ url_for('home') }}" data-icon="📄"> Modulos</a>
-    {% else %}
-      <a href="{{ url_for('indexGastronomia') }}" data-icon="👨🏻‍🍳"> Gastronomia</a>
-      <a href="{{ url_for('indexSalud') }}" data-icon="👩🏻‍⚕️"> Salud</a>
-      <a href="{{ url_for('indexGastronomia') }}" data-icon="🏅"> LACMA</a>
-      <a href="{{ url_for('indexGastronomia') }}" data-icon="👷🏼‍♂️"> Arquitectura</a>
+    {% elif request.path == url_for('agregarNuevoProveedor') %}
+      <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Salud</a>
+    {% elif request.path == url_for('equiposDeBajaSalud') %}
+      <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Salud</a> 
     {% endif %}
     
     <a class="navbar-brand"></a>

@@ -76,7 +76,7 @@ def login():
                 else:
                     flash('Rol no autorizado')
                     return redirect(url_for('login'))
-
+                
             else:
                 flash("Contraseña incorrecta...")
                 return render_template('auth/login.html')
