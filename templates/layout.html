@@ -43,9 +43,12 @@
     {% endif %}
 
     <!-- Si estamos en módulo SALUD -->
+    <!-- Si estamos en módulo SALUD -->
     {% if request.path == url_for('indexSalud') %}
       <a href="{{ url_for('agregarNuevoProveedor') }}" data-icon="🚚"> Agregar Proveedor</a>
       <a id="toggleFormBtn" class="btn-indexSalud" data-icon="➕"> Agregar Equipo Manual</a>
+      <a id="toggleForm" class="btn-indexSalud" data-icon="📩"> Agregar Equipos Masivos .CSV</a>
+      <a id="toggleFor" class="btn-indexSalud" data-icon="🔁"> Actualizar Fechas Masivas .CSV</a>
       <a href="{{ url_for('equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
       <a href="{{ url_for('exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
       <a href="{{ url_for('exportCsvDeBaja') }}" data-icon="📂"> Exportar Equipos De Baja</a>
