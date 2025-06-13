@@ -809,8 +809,8 @@ def checkbox_programacionMantenimiento():
     CheckboxMantenimiento = data['CheckboxMantenimiento']
 
     # Valores recibidos
-    nombre_equipo = data['nombreEquipo']
-    ubicacion_original = data['ubicacionOriginal']
+    nombre_equipo = data.get['nombreEquipo']
+    ubicacion_original = data.get['ubicacionOriginal']
     periodicidad = data.get('periodicidadMantenimiento') or None
     fecha_mantenimiento = data.get('fechaMantenimiento') or None
     vencimiento_mantenimiento = data.get('vencimientoMantenimiento') or None
