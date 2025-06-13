@@ -19,7 +19,7 @@ body {
 
 /* Ancho del sidebar expandido */
 .sidebar.expanded {
-    width: 250px; /* Ancho del sidebar expandido */
+    width: 320px; /* Ancho del sidebar expandido */
 }
 
 /* Estilo para los enlaces */

@@ -23,7 +23,7 @@ from models.entities.User import User
 from flask import Flask, render_template, request, jsonify 
 
 app = Flask(__name__)
-app.config.from_object(config['production'])
+app.config.from_object(config['development'])
 
 # Donde configuro mi clave
 app.config['SECRET_KEY'] = 'mysecretkey'
@@ -333,21 +333,25 @@ def AGREGAR_PRODUCTO_SALUD():
         vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
         checkbox_mantenimiento = 'Inactivo' # Valor predeterminado
         
-        # Obtener hora actual del equipo
-        hora_actual = datetime.now().date()
-        color = 'verde'
+        # # Obtener hora actual del equipo
+        # hora_actual = datetime.now().date()
+        # color = 'verde'
 
-        if  vencimiento_mantenimiento:
+        # if  vencimiento_mantenimiento:
 
-            vencimiento_mant = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d').date()
-            if vencimiento_mant < hora_actual + timedelta(days=0):
-                color = 'purple'  # Falta menos de un mes
-            elif vencimiento_mant <= hora_actual + timedelta(days=30):
-                color = 'red'  # Falta menos de tres meses
-            elif vencimiento_mant <= hora_actual + timedelta(days=90):
-                color = 'yellow'  # Falta menos de tres meses
-        else:
-            flash('Debe ingresar las fechas de mantenimiento.', 'error')
+        #     vencimiento_mant = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d').date()
+        #     if vencimiento_mant < hora_actual + timedelta(days=0):
+        #         color = 'purple'  # Falta menos de un mes
+        #     elif vencimiento_mant <= hora_actual + timedelta(days=30):
+        #         color = 'red'  # Falta menos de tres meses
+        #     elif vencimiento_mant <= hora_actual + timedelta(days=90):
+        #         color = 'yellow'  # Falta menos de tres meses
+        # else:
+        #     flash('Debe ingresar las fechas de mantenimiento.', 'error')
+        #     return redirect(url_for('indexSalud'))
+        if not vencimiento_mantenimiento:
+            flash('Debe ingresar la fecha de vencimiento de mantenimiento.', 'error')
+            print ("Color semaforo:", vencimiento_mantenimiento)
             return redirect(url_for('indexSalud'))
         
 
@@ -415,7 +419,7 @@ def AGREGAR_PRODUCTO_SALUD():
                     garantia,
                     criticos,
                     proveedor_responsable,
-                    color,
+                    # color,
                     checkbox_mantenimiento,
                     checkbox_calibracion,
                     filepath_to_db,
@@ -448,7 +452,7 @@ def AGREGAR_PRODUCTO_SALUD():
                     garantia,
                     criticos,
                     proveedor_responsable,
-                    color,
+                    # color,
                     checkbox_mantenimiento,
                     checkbox_calibracion,
                     filepath_to_db,
@@ -539,21 +543,25 @@ def insert_csv():
             # Valor prederteminado para el checkbox_mantenimiento
             checkbox_mantenimiento = 'Inactivo'
 
-            # Obtener hora actual del equipo
-            hora_actual = datetime.now().date()
-            color = 'verde'
+            # # Obtener hora actual del equipo
+            # hora_actual = datetime.now().date()
+            # color = 'verde'
 
-            if  vencimiento_mantenimiento:
+            # if  vencimiento_mantenimiento:
                 
-                vencimiento_mant = datetime.strptime(vencimiento_mantenimiento, '%Y/%m/%d').date()
-                if vencimiento_mant < hora_actual + timedelta(days=0):
-                    color = 'purple'  # Falta menos de un mes
-                elif vencimiento_mant <= hora_actual + timedelta(days=30):
-                    color = 'red'  # Falta menos de tres meses
-                elif vencimiento_mant <= hora_actual + timedelta(days=90):
-                    color = 'yellow'  # Falta menos de tres meses
-            else:
+            #     vencimiento_mant = datetime.strptime(vencimiento_mantenimiento, '%Y/%m/%d').date()
+            #     if vencimiento_mant < hora_actual + timedelta(days=0):
+            #         color = 'purple'  # Falta menos de un mes
+            #     elif vencimiento_mant <= hora_actual + timedelta(days=30):
+            #         color = 'red'  # Falta menos de tres meses
+            #     elif vencimiento_mant <= hora_actual + timedelta(days=90):
+            #         color = 'yellow'  # Falta menos de tres meses
+            # else:
+            #     flash('Debe ingresar las fechas de mantenimiento.', 'error')
+            #     return redirect(url_for('indexSalud'))
+            if not vencimiento_mantenimiento:
                 flash('Debe ingresar las fechas de mantenimiento.', 'error')
+                print ("Color semaforo:", vencimiento_mantenimiento)
                 return redirect(url_for('indexSalud'))
 
             # PARA EL CHECKBOX Y SEMAFORO DE CALIBRACIÓN
@@ -589,7 +597,7 @@ def insert_csv():
                         marca_equipo_salud,
                         modelo_equipo_salud,
                         serial_equipo_salud,
-                        color,
+                        # color,
                         checkbox_mantenimiento,
                         checkbox_calibracion,
                         fecha_de_baja,
@@ -623,7 +631,7 @@ def insert_csv():
                         marca_equipo_salud,
                         modelo_equipo_salud,
                         serial_equipo_salud,
-                        color,
+                        # color,
                         checkbox_mantenimiento,
                         checkbox_calibracion,
                         fecha_de_baja,
@@ -655,12 +663,13 @@ def updateDate_csv():
         # Leer cada fila y actualizar las fechas
         for row in csv_reader:
             cod_articulo = row[0]
-            periodicidad = row[1]
-            fecha_mantenimiento = datetime.strptime(row[2], '%Y/%m/%d')
-            vencimiento_mantenimiento = datetime.strptime(row[3], '%Y/%m/%d')
-            periodicidad_calibracion = row[4] if row[4] else 0
-            fecha_calibracion = datetime.strptime(row[5], '%Y/%m/%d') if row[5] else None
-            vencimiento_calibracion = datetime.strptime(row[6], '%Y/%m/%d') if row[6] else None
+            nombre_equipo = row[1]
+            periodicidad = row[2]
+            fecha_mantenimiento = datetime.strptime(row[3], '%Y/%m/%d')
+            vencimiento_mantenimiento = datetime.strptime(row[4], '%Y/%m/%d')
+            periodicidad_calibracion = row[5] if row[5] else 0
+            fecha_calibracion = datetime.strptime(row[6], '%Y/%m/%d') if row[6] else None
+            vencimiento_calibracion = datetime.strptime(row[7], '%Y/%m/%d') if row[7] else None
 
             # Verificar si el cod_articulo existe en la tabla indexssalud y obtiene las fechas actuales antes de actualizar
             cur = db.connection.cursor()
@@ -686,8 +695,8 @@ def updateDate_csv():
 
                 # Actualizar las fechas en la tabla indexssalud
                 cur = db.connection.cursor()
-                cur.execute("""UPDATE indexssalud SET periodicidad = %s,fecha_mantenimiento = %s, vencimiento_mantenimiento = %s, periodicidad_calibracion = %s, fecha_calibracion = %s, vencimiento_calibracion = %s WHERE cod_articulo = %s""",
-                                                     (periodicidad, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad_calibracion, fecha_calibracion, vencimiento_calibracion, cod_articulo))
+                cur.execute("""UPDATE indexssalud SET periodicidad = %s, nombre_equipo = %s, fecha_mantenimiento = %s, vencimiento_mantenimiento = %s, periodicidad_calibracion = %s, fecha_calibracion = %s, vencimiento_calibracion = %s WHERE cod_articulo = %s""",
+                                                     (periodicidad, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad_calibracion, fecha_calibracion, vencimiento_calibracion, cod_articulo))
                 db.connection.commit()
         
                 # # Solo inserta en el historial si hubo cambios en las fechas de matenimiento y calibración
@@ -794,11 +803,14 @@ def exportCsvDeBaja():
 @app.route('/checkbox_programacionMantenimiento', methods=['POST'])
 def checkbox_programacionMantenimiento():
     data = request.get_json()
+    print("Datos recibidos en el backend:", data)
     cod_articulo = data['productoId']
     nuevo_estado = data['nuevoEstado']
     CheckboxMantenimiento = data['CheckboxMantenimiento']
 
     # Valores recibidos
+    nombre_equipo = data['nombreEquipo']
+    ubicacion_original = data['ubicacionOriginal']
     periodicidad = data.get('periodicidadMantenimiento') or None
     fecha_mantenimiento = data.get('fechaMantenimiento') or None
     vencimiento_mantenimiento = data.get('vencimientoMantenimiento') or None
@@ -818,32 +830,42 @@ def checkbox_programacionMantenimiento():
             if dias_restantes_mantenimiento is not None and dias_restantes_mantenimiento < 30:
                 # Forzar estado "Inactivo" si faltan menos de 30 días
                 nuevo_estado = "Inactivo"
-                mensaje_adicional = "El checkbox de mantenimiento no se puede activar porque faltan menos de 30 días para el vencimiento."
+                return jsonify({
+                    'success': False,
+                    'message': "El checkbox de Mantenimiento no se puede activar porque faltan menos de 30 días para el vencimiento.",
+                    'codigo': 'MENOS_30_DIAS'
+                })
             else:
-                mensaje_adicional = "Estado del checkbox de mantenimiento actualizado correctamente."
+                nuevo_estado = "Activo"
+                mensaje_adicional = "Fechas guardadas en el historial."
 
             # Actualizar estado en base de datos
             cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE cod_articulo = %s', (nuevo_estado, cod_articulo))
             if nuevo_estado == 'Activo':
                 # Insertar en historial_fechas respetando valores NULL
-                cur.execute('''INSERT INTO historial_mantenimiento_salud (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad) VALUES ( %s, %s, %s, %s)''',
-                                                                         (cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad))
+                cur.execute('''INSERT INTO historial_mantenimiento_salud (cod_articulo, nombre_equipo, ubicacion_original, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad) VALUES ( %s, %s, %s, %s, %s, %s)''',
+                                                                         (cod_articulo, nombre_equipo, ubicacion_original, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad))
         # Lógica automática para checkbox_calibracion
         elif CheckboxMantenimiento == "fecha_calibracion":
             dias_restantes_calibracion = (datetime.strptime(vencimiento_calibracion, "%Y-%m-%d") - hoy).days if vencimiento_calibracion else None
             if dias_restantes_calibracion is not None and dias_restantes_calibracion < 30:
                 # Forzar estado "Inactivo" si faltan menos de 30 días
                 nuevo_estado = "Inactivo"
-                mensaje_adicional = "El checkbox de calibración no se puede activar porque faltan menos de 30 días para el vencimiento."
+                return jsonify({
+                    'success': False,
+                    'message': "El checkbox de Calibración no se puede activar porque faltan menos de 30 días para el vencimiento.",
+                    'codigo': 'MENOS_30_DIAS'
+                })
             else:
-                mensaje_adicional = "Estado del checkbox de calibración actualizado correctamente."
+                nuevo_estado = "Activo"
+                mensaje_adicional = "Fechas guardadas en el historial."
 
             # Actualizar estado en la tabla index
             cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE cod_articulo = %s', (nuevo_estado, cod_articulo))
             if nuevo_estado == 'Activo':
                 # Insertar en historial_fechas respetando valores NULL
-                cur.execute('''INSERT INTO historial_calibracion_salud (cod_articulo, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion) VALUES ( %s, %s, %s, %s)''',
-                                                                       (cod_articulo, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion))
+                cur.execute('''INSERT INTO historial_calibracion_salud (cod_articulo, nombre_equipo, ubicacion_original, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion) VALUES ( %s, %s, %s, %s, %s, %s)''',
+                                                                       (cod_articulo, nombre_equipo, ubicacion_original, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion))
 
         db.connection.commit()
         return jsonify({'success': True, 'message': mensaje_adicional})
@@ -1001,7 +1023,7 @@ def GET_PRODUCTO_SALUD(id, vista):
     cur.execute("""SELECT * FROM historial_calibracion_salud WHERE cod_articulo = %s ORDER BY fecha_calibracion DESC""", [cod_articulo])
     historial_calibracion = cur.fetchall()
 
-    # Combinar historial para enviar al template (si lo necesitas despu�s)
+    # Combinar historial para enviar al template (si lo necesitas despues)
     historial = {
         'mantenimiento': historial_mantenimiento,
         'calibracion': historial_calibracion
@@ -1080,12 +1102,12 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
 def historialFechas(cod_articulo):
     cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
     try:
-        cur.execute("""SELECT id, cod_articulo, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad 
+        cur.execute("""SELECT id, cod_articulo, nombre_equipo, ubicacion_original, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad 
                     FROM historial_mantenimiento_salud WHERE cod_articulo = %s ORDER BY fecha_mantenimiento ASC""",
                     [cod_articulo])
         mantenimiento = cur.fetchall()
 
-        cur.execute("""SELECT id, cod_articulo, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion 
+        cur.execute("""SELECT id, cod_articulo, nombre_equipo, ubicacion_original, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion 
                     FROM historial_calibracion_salud WHERE cod_articulo = %s ORDER BY fecha_calibracion ASC""",
                     [cod_articulo])
         calibracion = cur.fetchall()

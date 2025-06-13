@@ -54,7 +54,7 @@
                                     </div>
 
                                     <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Programación Mantenimiento</label>
+                                        <label style="color: darkgray">Mantenimiento Actual</label>
                                         <input type="date" name="fecha_mantenimiento" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
@@ -62,7 +62,7 @@
                                         <input type="date" name="vencimiento_mantenimiento" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <label style="color: darkgray">Programación Calibración</label>
+                                        <label style="color: darkgray">Calibración Actual</label>
                                         <input type="date" name="fecha_calibracion" class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
@@ -77,7 +77,10 @@
 
                                     <div class="col-md-6 form-group">
                                         <label for="estado_equipo">Estado Equipo</label>
-                                        <select name="estado_equipo" class="form-control">
+                                        <select name="estado_equipo" class="form-control" required>
+                                            <!-- Opción inicial -->
+                                            <option value="" disabled selected>Seleccione Estado</option>
+                                            <!-- Opciones que se encuentran en la DB -->
                                             {% for estadoEquipo in estadoEquipos %}
                                             <option value="{{ estadoEquipo.estado_equipo }}">{{ estadoEquipo.estado_equipo }}</option>
                                             {% endfor %}
@@ -86,7 +89,10 @@
 
                                     <div class="col-md-6 form-group">
                                         <label for="ubicacion_original">Ubicación Original</label>
-                                        <select name="ubicacion_original" class="form-control">
+                                        <select name="ubicacion_original" class="form-control" required>
+                                            <!-- Opción inicial -->
+                                            <option value="" disabled selected>Seleccione Ubicación</option>
+                                            <!-- Opciones que se encuentran en la DB -->
                                             {% for ubicacionEquipo in ubicacionEquipos %}
                                             <option value="{{ ubicacionEquipo.ubicacion_original }}">{{ ubicacionEquipo.ubicacion_original }}</option>
                                             {% endfor %}
@@ -95,7 +101,10 @@
 
                                     <div class="col-md-6 form-group">
                                         <label for="proveedor_responsable">Proveedor Responsable</label>
-                                        <select name="proveedor_responsable" class="form-control">
+                                        <select name="proveedor_responsable" class="form-control" required>
+                                            <!-- Opción inicial -->
+                                            <option value="" disabled selected>Seleccione Proveedor</option>
+                                            <!-- Opciones que se encuentran en la DB -->
                                             {% for proveedor in proveedores %}
                                             <option value="{{ proveedor.id }}">{{ proveedor.nombre_empresa }}</option>
                                             {% endfor %}
@@ -175,7 +184,7 @@
                     <!---------------------- es solo esta linea------------------------->
                     <div class="form-group">
                         <center>
-                            <button type="submit" class="btn-indexSalud">Actulizar fechas</button>
+                            <button type="submit" class="btn-indexSalud">Actualizar fechas</button>
                         </center>
                     </div>
                 </form>
@@ -192,9 +201,9 @@
                                     <td>Codigo Articulo</td>
                                     <td>Nombre de equipo</td>
                                     <td>Periodicidad mantenimineto (Meses)</td>
-                                    <td>Programación mantenimiento</td>
+                                    <td>Mantenimiento actual</td>
                                     <td>Periodicidad calibración (Meses)</td>
-                                    <td>Programación calibración</td>
+                                    <td>Calibración actual</td>
                                     <td>Fecha ingreso</td>
                                     <td>Estado equipo</td>
                                     <td>Ubicación original</td>
@@ -210,13 +219,24 @@
                                 <tr>
                                     <td>{{ producto.cod_articulo }}</td>
                                     <td>{{ producto.nombre_equipo }}</td>
+                                    <!-- <td>{{ producto.ubicacion_original }}</td> -->
                                     <td>{{ producto.periodicidad }}</td>
+
                                     <td>
-                                        {{ producto.fecha_mantenimiento }}
+                                        <span>{{ producto.fecha_mantenimiento }}</span>
+
+                                        <input type="hidden"
+                                            name="vencimiento_mantenimiento"
+                                            class="form-control fecha-vencimiento"
+                                            value="{{ producto.vencimiento_mantenimiento or '' }}"
+                                            data-producto-id="{{ producto.cod_articulo }}">
+
                                         <input 
                                             type="checkbox" 
                                             CheckboxMantenimiento="fecha_mantenimiento" 
                                             data-producto-id="{{ producto.cod_articulo }}"
+                                            data-nombre-equipo="{{ producto.nombre_equipo }}"
+                                            data-ubicacion-original="{{ producto.ubicacion_original }}"
                                             data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
                                             data-periodicidad-mantenimiento="{{ producto.periodicidad or '' }}" 
                                             data-fecha-mantenimiento="{{ producto.fecha_mantenimiento or '' }}" 
@@ -227,11 +247,20 @@
                                     </td>
                                     <td>{{ producto.periodicidad_calibracion }}</td>
                                     <td>
-                                        {{ producto.fecha_calibracion }}
+                                        <span>{{ producto.fecha_calibracion }}</span>
+
+                                        <input type="hidden"
+                                            name="vencimiento_calibracion"
+                                            class="form-control fecha-vencimiento-calibracion"
+                                            value="{{ producto.vencimiento_calibracion or '' }}"
+                                            data-producto-id="{{ producto.cod_articulo }}">
+
                                         <input 
                                             type="checkbox" 
                                             CheckboxMantenimiento="fecha_calibracion"
                                             data-producto-id="{{ producto.cod_articulo }}" 
+                                            data-nombre-equipo="{{ producto.nombre_equipo }}"
+                                            data-ubicacion-original="{{ producto.ubicacion_original }}"
                                             data-estado-inicial="{{ producto.checkbox_calibracion }}"
                                             data-periodicidad-calibracion="{{ producto.periodicidad_calibracion or '' }}" 
                                             data-fecha-calibracion="{{ producto.fecha_calibracion or '' }}" 
@@ -292,9 +321,10 @@
                                             </a>
                                         </div>
                                     </td>
-                                    <td class="semaforo"
+                                    <!-- <td class="semaforo"
                                         style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'purple' %}purple{% elif producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
-                                    </td>
+                                    </td> -->
+                                    <td class="semaforo" data-vencimiento="{{ producto.vencimiento_mantenimiento }}"></td>
                                     <td>
                                         <div class="btn-eliminar">
                                             <!-- <a href="/edit_productoSalud/{{producto.id}}"
@@ -393,7 +423,7 @@
     });
 </script>
 
-<!-- Scripts para actulizar fechas equipos masivas .CSV -->
+<!-- Scripts para actualizar fechas equipos masivas .CSV -->
 <script>
     document.getElementById('toggleFor').addEventListener('click', function () {
         var formContai = document.getElementById('formContai');
@@ -404,9 +434,41 @@
             toggleBtn.textContent = ' Ocultar fechas CSV';
         } else {
             formContai.style.display = 'none';
-            toggleBtn.textContent = ' Actulizar Fechas CSV';
+            toggleBtn.textContent = ' Actualizar Fechas CSV';
         }
     });
+</script>
+
+<!-- script para actualizar semaforo de la tabla indexSalud.html -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const semaforos = document.querySelectorAll('.semaforo');
+
+    semaforos.forEach(el => {
+        const fechaVencimiento = new Date(el.getAttribute('data-vencimiento'));
+        const hoy = new Date();
+        const diffDias = Math.ceil((fechaVencimiento - hoy) / (1000 * 60 * 60 * 24));
+        let color = "green";
+
+        if (diffDias < 0) {
+            color = 'purple';
+        } else if (diffDias <= 30) {
+            color= 'red';
+        } else if (diffDias <= 90) {
+            color = 'yellow';
+        } else {
+            color = 'green';
+        }
+
+        el.style.backgroundColor = color;
+        el.style.width = "45px";
+        el.style.height = "45px";
+        el.style.borderRadius = "50%";           // 🔵 Hace el div completamente redondo
+        el.style.display = "inline-block";
+        el.style.border = "1px solid #333";      // 🔲 Borde opcional para mejor visibilidad
+        el.title = `Vence en ${diffDias} días`;
+    });
+});
 </script>
 
 <!-- Scripts para el checkbox (Para activar o desactivar manualmente desde la tabla.) -->

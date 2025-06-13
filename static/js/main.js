@@ -5,6 +5,8 @@ document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], i
         const productoId = this.getAttribute('data-producto-id');
         const estadoInicial = this.getAttribute('data-estado-inicial');
         const CheckboxMantenimiento = this.getAttribute('CheckboxMantenimiento');
+        const nombreEquipo = this.getAttribute('data-nombre-equipo');
+        const ubicacionOriginal = this.getAttribute('data-ubicacion-original');
         const periodicidadMantenimiento = this.getAttribute('data-periodicidad-mantenimiento');
         const fechaMantenimiento = this.getAttribute('data-fecha-mantenimiento');
         const vencimientoMantenimiento = this.getAttribute('data-vencimiento-mantenimiento');
@@ -26,6 +28,8 @@ document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], i
                     productoId: productoId,
                     nuevoEstado: nuevoEstado,
                     CheckboxMantenimiento: CheckboxMantenimiento,
+                    nombreEquipo: nombreEquipo,
+                    ubicacionOriginal: ubicacionOriginal,
                     periodicidadMantenimiento: periodicidadMantenimiento,
                     fechaMantenimiento: fechaMantenimiento,
                     vencimientoMantenimiento: vencimientoMantenimiento,
@@ -37,13 +41,10 @@ document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], i
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log(`Estado de ${CheckboxMantenimiento} del equipo ${productoId} actualizado a ${nuevoEstado}`);
-                    if (nuevoEstado === 'Activo') {
-                        alert("Fechas guardadas en el historial.");
-                    }
+                    alert(data.message || "Fechas guardadas en el historial.");
+                    this.checked = nuevoEstado === 'Activo';
                 } else {
-
-                    if (data.message && data.message.includes("Faltan menos de 30 días")) {
+                    if (data.codigo === 'MENOS_30_DIAS') {
                         alert(data.message);
                         this.checked = false;
                     } else {
@@ -52,6 +53,7 @@ document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], i
                     this.checked = estadoInicial === 'Activo';
                 }
             })
+
             .catch(error => {
                 console.error('Error en la solicitud:', error);
                 this.checked = estadoInicial === 'Activo';
@@ -61,4 +63,53 @@ document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], i
             this.checked = estadoInicial === 'Activo';
         }
     });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('input[CheckboxMantenimiento="fecha_mantenimiento"], input[CheckboxMantenimiento="fecha_calibracion"]').forEach(function(checkbox) {
+        const tipo = checkbox.getAttribute('CheckboxMantenimiento');
+        const estadoInicial = checkbox.getAttribute('data-estado-inicial');
+        const vencimiento = checkbox.getAttribute('data-vencimiento-mantenimiento') || checkbox.getAttribute('data-vencimiento-calibracion');
+
+        if (estadoInicial === 'Activo' && vencimiento) {
+            const diasRestantes = calcularDiasRestantes(vencimiento);
+
+            if (diasRestantes < 30) {
+                checkbox.checked = false;
+                checkbox.setAttribute('data-estado-inicial', 'Inactivo');
+
+                fetch('/checkbox_programacionMantenimiento', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrf_token
+                    },
+                    body: JSON.stringify({
+                        productoId: checkbox.getAttribute('data-producto-id'),
+                        nuevoEstado: 'Inactivo',
+                        CheckboxMantenimiento: tipo,
+                        nombreEquipo: checkbox.getAttribute('data-nombre-equipo'),
+                        ubicacionOriginal: checkbox.getAttribute('data-ubicacion-original'),
+                        periodicidadMantenimiento: checkbox.getAttribute('data-periodicidad-mantenimiento'),
+                        fechaMantenimiento: checkbox.getAttribute('data-fecha-mantenimiento'),
+                        vencimientoMantenimiento: checkbox.getAttribute('data-vencimiento-mantenimiento'),
+                        periodicidadCalibracion: checkbox.getAttribute('data-periodicidad-calibracion'),
+                        fechaCalibracion: checkbox.getAttribute('data-fecha-calibracion'),
+                        vencimientoCalibracion: checkbox.getAttribute('data-vencimiento-calibracion')
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Desactivado automáticamente:", data.message);
+                });
+            }
+        }
+    });
+
+    function calcularDiasRestantes(fechaStr) {
+        const hoy = new Date();
+        const fecha = new Date(fechaStr);
+        const diff = fecha - hoy;
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    }
 });

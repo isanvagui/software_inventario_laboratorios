@@ -170,10 +170,10 @@
                 <li><b>Fecha de Baja: </b>{{ producto.24 }}</li>
                 <li><b>Fecha Ingreso: </b>{{ producto.7 }}</li>
                 <li><b>Periodicidad Mantenimiento: </b>{{ producto.8 }}</li>
-                <li><b>Programación Mantenimiento: </b>{{ producto.3 }}</li>
+                <li><b>Mantenimiento Actual: </b>{{ producto.3 }}</li>
                 <li><b>Próximo Mantenimiento: </b>{{ producto.4 }}</li>
                 <li><b>Periodicidad Calibración: </b>{{ producto.20 }}</li>
-                <li><b>Programación Calibración: </b>{{ producto.5 }}</li>
+                <li><b>Calibración Actual: </b>{{ producto.5 }}</li>
                 <li><b>Próxima Calibración: </b>{{ producto.6 }}</li>
                 <li><b>Ubicación Original: </b>{{ producto.10 }}</li>
                 <li><b>Garantía Ingreso: </b>{{ producto.11 }}</li>
@@ -229,31 +229,6 @@
                         <input type="text" id="nombre_equipo" name="nombre_equipo" value="{{ producto.2 }}"
                             class="form-control">
                     </div>
-                    <div class="form-group">
-                        <b><label for="fecha_mantenimiento">Programación Mantenimiento</label></b>
-                        <input type="date" id="fecha_mantenimiento" name="fecha_mantenimiento" value="{{ producto.3 }}"
-                            class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <b><label for="vencimiento_mantenimiento">Próximo Mantenimiento</label></b>
-                        <input type="date" id="vencimiento_mantenimiento" name="vencimiento_mantenimiento"
-                            value="{{ producto.4 }}" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <b><label for="fecha_calibracion">Programación Calibración</label></b>
-                        <input type="date" id="fecha_calibracion" name="fecha_calibracion" value="{{ producto.5 }}"
-                            class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <b><label for="vencimiento_calibracion">Próxima Calibración</label></b>
-                        <input type="date" id="vencimiento_calibracion" name="vencimiento_calibracion"
-                            value="{{ producto.6 }}" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <b><label for="fecha_ingreso">Fecha Ingreso</label></b>
-                        <input type="date" id="fecha_ingreso" name="fecha_ingreso" value="{{ producto.7 }}"
-                            class="form-control">
-                    </div>
 
                     <div class="form-group">
                         <b><label for="periodicidad">Periodicidad Mantenimiento</label></b>
@@ -262,8 +237,36 @@
                     </div>
 
                     <div class="form-group">
+                        <b><label for="fecha_mantenimiento">Mantenimiento Actual</label></b>
+                        <input type="date" id="fecha_mantenimiento" name="fecha_mantenimiento" value="{{ producto.3 }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <b><label for="vencimiento_mantenimiento">Próximo Mantenimiento</label></b>
+                        <input type="date" id="vencimiento_mantenimiento" name="vencimiento_mantenimiento"
+                            value="{{ producto.4 }}" class="form-control">
+                    </div>
+
+                    <div class="form-group">
                         <b><label for="periodicidad_calibracion">Periodicidad Calibración</label></b>
                         <input type="text" id="periodicidad_calibracion" name="periodicidad_calibracion" value="{{ producto.20 }}"
+                            class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <b><label for="fecha_calibracion">Calibración Actual</label></b>
+                        <input type="date" id="fecha_calibracion" name="fecha_calibracion" value="{{ producto.5 }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <b><label for="vencimiento_calibracion">Próxima Calibración</label></b>
+                        <input type="date" id="vencimiento_calibracion" name="vencimiento_calibracion"
+                            value="{{ producto.6 }}" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <b><label for="fecha_ingreso">Fecha Ingreso</label></b>
+                        <input type="date" id="fecha_ingreso" name="fecha_ingreso" value="{{ producto.7 }}"
                             class="form-control">
                     </div>
 
