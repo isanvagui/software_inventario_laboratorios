@@ -59,59 +59,55 @@
                         </thead>
                         <tbody>
                             {% for registro in historial.mantenimiento %}
-                            <!-- <tr> -->
+                            <tr>
                                 <form method="POST" action="{{ url_for('update_historial_fechas') }}">
-                                    <tr>
-                                        <td>{{ registro.cod_articulo}}</td>
-                                        <td>
-                                            {{ registro.nombre_equipo }}
-                                            <input type="hidden" name="nombre_equipo" value="{{ registro.nombre_equipo }}">
-                                        </td>
-                                        <td>
-                                            {{ registro.ubicacion_original }}
-                                            <input type="hidden" name="ubicacion_original" value="{{ registro.ubicacion_original }}">
-                                        </td>
-                                        <td>Mantenimiento</td>
-                                        <td><input type="text" name="periodicidad" value="{{ registro.periodicidad }}"></td>
-                                        <td><input type="date" name="fecha_mantenimiento" value="{{ registro.fecha_mantenimiento }}"></td>
-                                        <td><input type="date" name="vencimiento_mantenimiento" value="{{ registro.vencimiento_mantenimiento }}"></td>
-                                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}" />
-                                        <td>
-                                            <input type="hidden" name="cod_articulo" value="{{ registro.cod_articulo }}">
-                                            <input type="hidden" name="id" value="{{ registro.id }}">
-                                            <button type="submit" class="btn btn-update-data" onclick="confirmUpdate(this)">Guardar</button>
-                                        </td>
-                                    </tr>
+                                    <td>{{ registro.cod_articulo}}</td>
+                                    <td>
+                                        {{ registro.nombre_equipo }}
+                                        <input type="hidden" name="nombre_equipo" value="{{ registro.nombre_equipo }}">
+                                    </td>
+                                    <td>
+                                        {{ registro.ubicacion_original }}
+                                        <input type="hidden" name="ubicacion_original" value="{{ registro.ubicacion_original }}">
+                                    </td>
+                                    <td>Mantenimiento</td>
+                                    <td><input type="text" name="periodicidad" value="{{ registro.periodicidad }}"></td>
+                                    <td><input type="date" name="fecha_mantenimiento" value="{{ registro.fecha_mantenimiento }}"></td>
+                                    <td><input type="date" name="vencimiento_mantenimiento" value="{{ registro.vencimiento_mantenimiento }}"></td>
+                                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}" />
+                                    <td>
+                                        <input type="hidden" name="cod_articulo" value="{{ registro.cod_articulo }}">
+                                        <input type="hidden" name="id" value="{{ registro.id }}">
+                                        <button type="submit" class="btn btn-update-data" onclick="confirmUpdate(this)">Guardar</button>
+                                    </td>
                                 </form>
-                            <!-- </tr> -->
+                            </tr>
                             {% endfor %}
                             <!-- Mostrar registros de calibración -->
                             {% for registro in historial.calibracion %}
-                            
+                            <tr>
                                 <form method="POST" action="{{ url_for('update_historial_fechas_calibracion') }}">
-                                    <tr>
-                                        <td>{{ registro.cod_articulo}}</td>
-                                        <td>
-                                            {{ registro.nombre_equipo }}
-                                            <input type="hidden" name="nombre_equipo" value="{{ registro.nombre_equipo }}">
-                                        </td>
-                                        <td>
-                                            {{ registro.ubicacion_original }}
-                                            <input type="hidden" name="ubicacion_original" value="{{ registro.ubicacion_original }}">
-                                        </td>
-                                        <td>Calibracion</td> 
-                                        <td><input type="text" name="periodicidad_calibracion" value="{{ registro.periodicidad_calibracion }}"></td>
-                                        <td><input type="date" name="fecha_calibracion" value="{{ registro.fecha_calibracion }}"></td>
-                                        <td><input type="date" name="vencimiento_calibracion" value="{{ registro.vencimiento_calibracion }}"></td>
-                                        <input type="hidden" name="csrf_token" value="{{csrf_token()}}" />
-                                        <td>
-                                            <input type="hidden" name="cod_articulo" value="{{ registro.cod_articulo }}">
-                                            <input type="hidden" name="id" value="{{ registro.id }}">
-                                            <button type="submit" class="btn btn-update-data" onclick="confirmUpdate(this)">Guardar</button>
-                                        </td>
-                                    </tr>
+                                    <td>{{ registro.cod_articulo}}</td>
+                                    <td>
+                                        {{ registro.nombre_equipo }}
+                                        <input type="hidden" name="nombre_equipo" value="{{ registro.nombre_equipo }}">
+                                    </td>
+                                    <td>
+                                        {{ registro.ubicacion_original }}
+                                        <input type="hidden" name="ubicacion_original" value="{{ registro.ubicacion_original }}">
+                                    </td>
+                                    <td>Calibracion</td> 
+                                    <td><input type="text" name="periodicidad_calibracion" value="{{ registro.periodicidad_calibracion }}"></td>
+                                    <td><input type="date" name="fecha_calibracion" value="{{ registro.fecha_calibracion }}"></td>
+                                    <td><input type="date" name="vencimiento_calibracion" value="{{ registro.vencimiento_calibracion }}"></td>
+                                    <input type="hidden" name="csrf_token" value="{{csrf_token()}}" />
+                                    <td>
+                                        <input type="hidden" name="cod_articulo" value="{{ registro.cod_articulo }}">
+                                        <input type="hidden" name="id" value="{{ registro.id }}">
+                                        <button type="submit" class="btn btn-update-data" onclick="confirmUpdate(this)">Guardar</button>
+                                    </td>
                                 </form>
-                            
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>

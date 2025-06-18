@@ -335,7 +335,7 @@ def AGREGAR_PRODUCTO_SALUD():
         
         # # Obtener hora actual del equipo
         # hora_actual = datetime.now().date()
-        # color = 'verde'
+        color = 'verde'
 
         # if  vencimiento_mantenimiento:
 
@@ -419,7 +419,7 @@ def AGREGAR_PRODUCTO_SALUD():
                     garantia,
                     criticos,
                     proveedor_responsable,
-                    # color,
+                    color,
                     checkbox_mantenimiento,
                     checkbox_calibracion,
                     filepath_to_db,
@@ -452,7 +452,7 @@ def AGREGAR_PRODUCTO_SALUD():
                     garantia,
                     criticos,
                     proveedor_responsable,
-                    # color,
+                    color,
                     checkbox_mantenimiento,
                     checkbox_calibracion,
                     filepath_to_db,
@@ -545,7 +545,7 @@ def insert_csv():
 
             # # Obtener hora actual del equipo
             # hora_actual = datetime.now().date()
-            # color = 'verde'
+            color = 'verde'
 
             # if  vencimiento_mantenimiento:
                 
@@ -597,7 +597,7 @@ def insert_csv():
                         marca_equipo_salud,
                         modelo_equipo_salud,
                         serial_equipo_salud,
-                        # color,
+                        color,
                         checkbox_mantenimiento,
                         checkbox_calibracion,
                         fecha_de_baja,
@@ -631,7 +631,7 @@ def insert_csv():
                         marca_equipo_salud,
                         modelo_equipo_salud,
                         serial_equipo_salud,
-                        # color,
+                        color,
                         checkbox_mantenimiento,
                         checkbox_calibracion,
                         fecha_de_baja,
@@ -818,29 +818,26 @@ def checkbox_programacionMantenimiento():
     fecha_calibracion = data.get('fechaCalibracion') or None
     vencimiento_calibracion = data.get('vencimientoCalibracion') or None
 
+    # Fecha actual
+    hoy = datetime.now()
     cur = db.connection.cursor()
 
     try:
-        # Fecha actual
-        hoy = datetime.now()
-
         # Lógica automática para checkbox_mantenimiento
         if CheckboxMantenimiento == "fecha_mantenimiento":
-            dias_restantes_mantenimiento = ((datetime.strptime(vencimiento_mantenimiento, "%Y-%m-%d") - hoy).days if vencimiento_mantenimiento else None)
-            if dias_restantes_mantenimiento is not None and dias_restantes_mantenimiento < 30:
-                # Forzar estado "Inactivo" si faltan menos de 30 días
-                nuevo_estado = "Inactivo"
+            dias_restantes_mantenimiento = (datetime.strptime(vencimiento_mantenimiento, "%Y-%m-%d") - hoy).days if vencimiento_mantenimiento else None
+
+            # Forzar estado "Inactivo" si faltan menos de 30 días
+            if nuevo_estado == "Activo" and dias_restantes_mantenimiento is not None and dias_restantes_mantenimiento < 30:
                 return jsonify({
                     'success': False,
                     'message': "El checkbox de Mantenimiento no se puede activar porque faltan menos de 30 días para el vencimiento.",
                     'codigo': 'MENOS_30_DIAS'
                 })
-            else:
-                nuevo_estado = "Activo"
-                mensaje_adicional = "Fechas guardadas en el historial."
-
+            mensaje_confirmacion = "Fechas guardadas en el historial."
             # Actualizar estado en base de datos
             cur.execute('UPDATE indexssalud SET checkbox_mantenimiento = %s WHERE cod_articulo = %s', (nuevo_estado, cod_articulo))
+
             if nuevo_estado == 'Activo':
                 # Insertar en historial_fechas respetando valores NULL
                 cur.execute('''INSERT INTO historial_mantenimiento_salud (cod_articulo, nombre_equipo, ubicacion_original, fecha_mantenimiento, vencimiento_mantenimiento, periodicidad) VALUES ( %s, %s, %s, %s, %s, %s)''',
@@ -848,27 +845,25 @@ def checkbox_programacionMantenimiento():
         # Lógica automática para checkbox_calibracion
         elif CheckboxMantenimiento == "fecha_calibracion":
             dias_restantes_calibracion = (datetime.strptime(vencimiento_calibracion, "%Y-%m-%d") - hoy).days if vencimiento_calibracion else None
-            if dias_restantes_calibracion is not None and dias_restantes_calibracion < 30:
-                # Forzar estado "Inactivo" si faltan menos de 30 días
-                nuevo_estado = "Inactivo"
+            
+            # Forzar estado "Inactivo" si faltan menos de 30 días
+            if nuevo_estado == "Activo" and dias_restantes_calibracion is not None and dias_restantes_calibracion < 30:
                 return jsonify({
                     'success': False,
                     'message': "El checkbox de Calibración no se puede activar porque faltan menos de 30 días para el vencimiento.",
                     'codigo': 'MENOS_30_DIAS'
                 })
-            else:
-                nuevo_estado = "Activo"
-                mensaje_adicional = "Fechas guardadas en el historial."
-
+            mensaje_confirmacion = "Fechas guardadas en el historial."
             # Actualizar estado en la tabla index
             cur.execute('UPDATE indexssalud SET checkbox_calibracion = %s WHERE cod_articulo = %s', (nuevo_estado, cod_articulo))
+
             if nuevo_estado == 'Activo':
                 # Insertar en historial_fechas respetando valores NULL
                 cur.execute('''INSERT INTO historial_calibracion_salud (cod_articulo, nombre_equipo, ubicacion_original, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion) VALUES ( %s, %s, %s, %s, %s, %s)''',
                                                                        (cod_articulo, nombre_equipo, ubicacion_original, fecha_calibracion, vencimiento_calibracion, periodicidad_calibracion))
 
         db.connection.commit()
-        return jsonify({'success': True, 'message': mensaje_adicional})
+        return jsonify({'success': True, 'message': mensaje_confirmacion})
 
     except Exception as e:
         db.connection.rollback()
