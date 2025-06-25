@@ -476,101 +476,88 @@ def insert_csv():
     if request.method == 'POST':
         file = request.files['file']
         if not file:
-            flash('No selecciono ningun archivo')
+            flash('No seleccionó ningún archivo')
             return redirect(url_for('indexSalud'))
 
-        # Decodifica la fila
         file = TextIOWrapper(file, encoding='latin-1')
         csv_reader = csv.reader(file)
+        next(csv_reader)  # Saltar encabezado
 
-        # Salta el encabezado
-        next(csv_reader)
-
-        # Procesa las filas
         cur = db.connection.cursor()
-
-        # Definir la carpeta de destino para las imágenes 
         fotos_folder = os.path.join(os.path.dirname(__file__), 'static', 'fotos')
-        
+
+        codigos_duplicados = []
+        datos_validos = []
+
         for row in csv_reader:
             cod_articulo = row[0]
-            nombre_equipo = row[1] 
-            ubicacion_original = row[2]
-            estado_equipo = row[3] 
-            fecha_ingreso = row[4] 
-            garantia = row[5]
-            periodicidad = row[6] 
-            fecha_mantenimiento = row[7]
-            vencimiento_mantenimiento = row[8] 
-            periodicidad_calibracion = row[9]
-            fecha_calibracion = row[10] if row[10] else None
-            vencimiento_calibracion = row[11] if row[11] else None
-            criticos = row[12] 
-            proveedor_responsable = row[13] 
+
+            try:
+                cod_articulo = int(cod_articulo)
+            except ValueError:
+                flash(f'Código inválido: {cod_articulo}', 'error')
+                continue  # Salta esta fila
+
+            cur.execute("SELECT cod_articulo FROM indexssalud WHERE cod_articulo = %s", (cod_articulo,))
+            codigo_indexsalud = cur.fetchone()
+
+            cur.execute("SELECT cod_articulo FROM equipossalud_debaja WHERE cod_articulo = %s", (cod_articulo,))
+            codigo_debaja = cur.fetchone()
+
+            if codigo_indexsalud or codigo_debaja:
+                codigos_duplicados.append(str(cod_articulo))
+                continue  # Salta esta fila duplicada
+
+            # Verifica que la imagen exista
             imagen = row[14]
-            especificaciones_instalacion = row[15] 
-            cuidados_basicos = row[16] 
+            imagen_path = os.path.join(fotos_folder, imagen)
+            if not os.path.isfile(imagen_path):
+                flash(f'Imagen no encontrada: {imagen}', 'error')
+                continue  # Salta esta fila
+
+            # Validación básica de Mantenimiento Actual
+            if not row[7]:
+                flash(f'Equipo con código {cod_articulo} no tiene Mantenimiento Actual.', 'error')
+                continue
+            
+            # Validación básica de Vencimiento Mantenimiento
+            if not row[8]:
+                flash(f'Equipo con código {cod_articulo} no tiene Vencimiento Mantenimiento.', 'error')
+                continue
+
+            # Preparar fila válida para insertar luego
+            datos_validos.append(row)
+
+        # Ahora insertar solo los datos válidos
+        for row in datos_validos:
+            cod_articulo = int(row[0])
+            nombre_equipo = row[1]
+            ubicacion_original = row[2]
+            estado_equipo = row[3]
+            fecha_ingreso = row[4]
+            garantia = row[5]
+            periodicidad = row[6]
+            fecha_mantenimiento = row[7]
+            vencimiento_mantenimiento = row[8]
+            periodicidad_calibracion = row[9]
+            fecha_calibracion = row[10] or None
+            vencimiento_calibracion = row[11] or None
+            criticos = row[12]
+            proveedor_responsable = row[13]
+            imagen = row[14]
+            especificaciones_instalacion = row[15]
+            cuidados_basicos = row[16]
             marca_equipo_salud = row[17]
             modelo_equipo_salud = row[18]
             serial_equipo_salud = row[19]
 
-            # Validación de cod_articulo
-            try:
-                cod_articulo = int(cod_articulo)
-            except ValueError:
-                flash('Por favor ingresar solo números en el código del equipo', 'error')
-                return redirect(url_for('indexSalud'))
-            
-            # Consulta para verificar si el cod_articulo ya existe en la base de datos
-            cur = db.connection.cursor()
-            cur.execute("SELECT * FROM indexssalud WHERE cod_articulo = %s", (cod_articulo,))
-            existing_articulo = cur.fetchone()
-
-            if existing_articulo:
-                flash(f'El código de equipo {cod_articulo} ya existe', 'error')
-                return redirect(url_for('indexSalud'))
-            
-            # Ruta de la imagen (verifica existencia)
-            imagen_path = os.path.join(fotos_folder, imagen)
-            if not os.path.isfile(imagen_path):
-                flash(f'La imagen {imagen} no se encontró en la carpeta static/fotos.', 'error')
-                return redirect(url_for('indexSalud'))
-
-            # No copiar imagen si ya está donde debe estar
-            nombre_imagen_seguro = secure_filename(imagen)
-            ruta_imagen_db = f'fotos/{nombre_imagen_seguro}'  # Ruta que se guarda en la DB
-
-            # Valor prederteminado para el checkbox_mantenimiento
+            ruta_imagen_db = f'fotos/{secure_filename(imagen)}'
             checkbox_mantenimiento = 'Inactivo'
-
-            # # Obtener hora actual del equipo
-            # hora_actual = datetime.now().date()
+            checkbox_calibracion = 'Inactivo'
+            fecha_de_baja = date.today() if estado_equipo == "DE BAJA" else None
             color = 'verde'
 
-            # if  vencimiento_mantenimiento:
-                
-            #     vencimiento_mant = datetime.strptime(vencimiento_mantenimiento, '%Y/%m/%d').date()
-            #     if vencimiento_mant < hora_actual + timedelta(days=0):
-            #         color = 'purple'  # Falta menos de un mes
-            #     elif vencimiento_mant <= hora_actual + timedelta(days=30):
-            #         color = 'red'  # Falta menos de tres meses
-            #     elif vencimiento_mant <= hora_actual + timedelta(days=90):
-            #         color = 'yellow'  # Falta menos de tres meses
-            # else:
-            #     flash('Debe ingresar las fechas de mantenimiento.', 'error')
-            #     return redirect(url_for('indexSalud'))
-            if not vencimiento_mantenimiento:
-                flash('Debe ingresar las fechas de mantenimiento.', 'error')
-                print ("Color semaforo:", vencimiento_mantenimiento)
-                return redirect(url_for('indexSalud'))
-
-            # PARA EL CHECKBOX Y SEMAFORO DE CALIBRACIÓN
-            checkbox_calibracion = 'Inactivo' # Valor predeterminado
-            fecha_de_baja = date.today() if estado_equipo == "DE BAJA" else None
-
-            cur = db.connection.cursor()
             if estado_equipo == 'DE BAJA':
-
                 # Insertar en la tabla equipossalud_debaja
                 cur.execute("""INSERT INTO equipossalud_debaja (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, 
                                                                 periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, imagen, especificaciones_instalacion, cuidados_basicos, 
@@ -639,7 +626,14 @@ def insert_csv():
                 )
 
         db.connection.commit()
-        flash('Datos importados exitosamente', 'success')
+
+        if codigos_duplicados:
+            flash(f'Los siguientes códigos ya existen y no fueron insertados: {", ".join(codigos_duplicados)}', 'error')
+        if datos_validos:
+            flash(f'{len(datos_validos)} equipos importados exitosamente.', 'success')
+        else:
+            flash('No se importó ningún equipo.', 'error')
+
         return redirect(url_for('indexSalud'))
 # ---------------------------FINALIZA INSERT MASIVO CSV DE SALUD-----------------------------
 
@@ -895,7 +889,6 @@ def update_estado_equipo():
     if request.method == 'POST':
         producto_id = request.form['producto_id']
         nuevo_estado = request.form['nuevo_estado_equipo']
-
         cod_articulo = request.form ['cod_articulo']
         nombre_equipo = request.form ['nombre_equipo']
 
@@ -923,11 +916,25 @@ def update_estado_equipo():
             return redirect(url_for('indexSalud'))
         
         # PARA EL CHECKBOX DE CALIBRACIÓN
-        fecha_calibracion = request.form ['fecha_calibracion']
-        vencimiento_calibracion = request.form ['vencimiento_calibracion']
+        fecha_calibracion = request.form.get('fecha_calibracion', '') or None
+        vencimiento_calibracion = request.form.get('vencimiento_calibracion', '') or None
+       
+        # Convertir a objetos date solo si existen
+        if fecha_calibracion:
+            try:
+                fecha_calibracion = datetime.strptime(fecha_calibracion, '%Y-%m-%d').date()
+            except ValueError:
+                fecha_calibracion = None
+
+        if vencimiento_calibracion:
+            try:
+                vencimiento_calibracion = datetime.strptime(vencimiento_calibracion, '%Y-%m-%d').date()
+            except ValueError:
+                vencimiento_calibracion = None
+
         fecha_ingreso = request.form ['fecha_ingreso']
         periodicidad = request.form ['periodicidad']
-        estado_equipo = request.form ['estado_equipo']
+        estado_equipo= request.form ['estado_equipo']
         ubicacion_original = request.form ['ubicacion_original']
         garantia = request.form ['garantia']
         criticos = request.form ['criticos']
@@ -947,7 +954,7 @@ def update_estado_equipo():
 
         if nuevo_estado == 'DE BAJA':
             # Actualizar el estado y marcar como dado de baja en indexssalud
-            cur.execute("""UPDATE indexssalud SET estado_equipo = %s, enable = 0 and de_baja = 1 WHERE cod_articulo = %s""", (nuevo_estado, cod_articulo))
+            cur.execute("""UPDATE indexssalud SET estado_equipo = %s, enable = 0, de_baja = 1 WHERE cod_articulo = %s""", (nuevo_estado, cod_articulo))
 
             # Verificar si el equipo ya está en equipossalud_debaja
             cur.execute('SELECT * FROM equipossalud_debaja WHERE cod_articulo = %s', (cod_articulo,))
