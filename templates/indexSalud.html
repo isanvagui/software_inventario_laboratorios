@@ -10,7 +10,6 @@
 <div class="container-salud">
     <div class="container-indexSalud">
         <div class="row">
-            <!-- Formulario de ingreso -->
             <div class="col-md-12 mb-4">
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
@@ -33,7 +32,7 @@
                                 <!-- Aquí se ajusta el formulario para ser responsivo -->
                                 <div class="row">
                                     <div class="col-md-6 form-group">
-                                        <input type="text" name="cod_articulo" placeholder="Código Articulo"
+                                        <input type="text" name="cod_articulo" placeholder="Código Equipo"
                                             class="form-control">
                                     </div>
                                     <div class="col-md-6 form-group">
@@ -44,13 +43,13 @@
                                     <div class="col-md-6 form-group">
                                         <label style="color: darkgray; opacity: 0%;">.</label>
                                         <input type="text" name="periodicidad" placeholder="Periodicidad Mantenimiento"
-                                            class="form-control">
+                                            class="form-control" required>
                                     </div>
 
                                     <div class="col-md-6 form-group">
                                         <label style="color: darkgray; opacity: 0%;">.</label>
-                                        <input type="text" name="periodicidad_calibracion" placeholder="Periodicidad Calibración"
-                                            class="form-control">
+                                        <input type="text" name="periodicidad_calibracion" placeholder="Periodicidad Calibración (Si no existe ingresar 0) "
+                                            class="form-control" required>
                                     </div>
 
                                     <div class="col-md-6 form-group">
@@ -100,7 +99,7 @@
                                     </div>
 
                                     <div class="col-md-6 form-group">
-                                        <label for="proveedor_responsable">Proveedor Responsable</label>
+                                        <label for="proveedor_responsable">Proveedor de Venta</label>
                                         <select name="proveedor_responsable" class="form-control" required>
                                             <!-- Opción inicial -->
                                             <option value="" disabled selected>Seleccione Proveedor</option>
@@ -112,7 +111,7 @@
                                     </div>
 
                                     <div class="col-md-6 form-group">
-                                        <input type="text" name="garantia" placeholder="Garantía Ingreso" class="form-control">
+                                        <input type="text" name="garantia" placeholder="Garantía Ingreso" class="form-control" >
                                     </div>
 
                                     <div class="col-md-6 form-group">
@@ -173,45 +172,87 @@
                 </form>
             </div>
 
-            <!-- New form for uploading CSV -->
-            <div class="card-equipos-masivos" id="formContai" style="display: none;">
-                <form action="/updateDate_csv" method="POST" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <input type="file" name="file" accept=".csv" class="custom-file-input" required>
+            <!-- Botón para abrir el modal para actualizar fechas y gaurdar en el historial-->
+            <!-- <div class="mb-3">
+                <a id="toggleFor"
+                    class="btn-expand-icon"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalOpciones"
+                    title="Actualizar fechas masivas">
+                    🔁 <span class="text-label">Actualización masiva</span>
+                </a>
+            </div> -->
+
+            <!-- Modal Para Actualización de Fechas y Guardado de Historial-->
+            <div class="modal fade" id="modalOpciones" tabindex="-1" aria-labelledby="modalOpcionesLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                    
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalOpcionesLabel">Programar mantenimiento o calibración y guarda en historial</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                    <!------ linea de token es necesaria ya que el sistema lo solicita-->
-                    <input type="hidden" name="csrf_token" value="{{csrf_token() }}" />
-                    <!---------------------- es solo esta linea------------------------->
-                    <div class="form-group">
-                        <center>
-                            <button type="submit" class="btn-indexSalud">Actualizar fechas</button>
-                        </center>
+
+                    <div class="modal-body">
+                        <form id="form-checkbox-programacion" method="POST">
+                        <div class="row g-3">
+                            <!-- Selector de proveedor -->
+                            <div class="col-md-6">
+                            <label for="selectProveedor" class="form-label">Proveedor responsable</label>
+                            <select name="proveedor_id" id="selectProveedor" class="form-control" required>
+                                <option value="" disabled selected>Seleccione un proveedor</option>
+                                {% for proveedor in proveedores %}
+                                <option value="{{ proveedor.id }}">{{ proveedor.nombre_empresa }}</option>
+                                {% endfor %}
+                            </select>
+                            </div>
+
+                            <!-- Periodicidad -->
+                            <div class="col-md-3">
+                            <label for="nuevaPeriodicidad" class="form-label">Periodicidad (meses)</label>
+                            <input type="number" id="nuevaPeriodicidad" class="form-control" min="1" required>
+                            </div>
+
+                            <!-- Fecha -->
+                            <div class="col-md-3">
+                            <label for="nuevaFecha" class="form-label">Fecha de ejecución</label>
+                            <input type="date" id="nuevaFecha" class="form-control" required>
+                            </div>
+                        </div>
+                        </form>
                     </div>
-                </form>
+
+                    <div class="modal-footer">
+                        <button type="button" id="guardarSeleccionados" class="btn btn-tabla btn-lg"> Guardar seleccionados</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                    
+                    </div>
+                </div>
             </div>
 
 
             <!-- Tabla de visualización de productos -->
-            <div class="col-md-12">
+            <div class="col-md-14">
                 <div class="table-container">
                     <div class="table-responsive">
                         <table class="table table-striped table-bordered bg-white table-sm" id="tabla">
                             <thead>
                                 <tr>
-                                    <td>Codigo Articulo</td>
-                                    <td>Nombre de equipo</td>
-                                    <td>Periodicidad mantenimineto (Meses)</td>
-                                    <td>Mantenimiento actual</td>
-                                    <td>Periodicidad calibración (Meses)</td>
-                                    <td>Calibración actual</td>
-                                    <td>Fecha ingreso</td>
-                                    <td>Estado equipo</td>
-                                    <td>Ubicación original</td>
-                                    <td>Garantía ingreso</td>
+                                    <td>Codigo Equipo</td>
+                                    <td>Nombre de Equipo</td>
+                                    <td>Periodicidad Mantenimineto (Meses)</td>
+                                    <td>Mantenimiento Actual/Proximo</td> <!-- Evaluar la palabra actual por vigente -->
+                                    <td>Periodicidad Calibración (Meses)</td>
+                                    <td>Calibración Actual/Proxima</td>
+                                    <td>Fecha Ingreso</td>
+                                    <td>Estado Equipo</td>
+                                    <td>Ubicación Original</td>
+                                    <td>Garantía Ingreso</td>
                                     <td>Criticos</td>
-                                    <td>Proveedor responsable</td>
-                                    <td>Semaforo mantenimiento</td>
-                                    <td>Acción</td>
+                                    <td>Proveedor de Venta</td>
+                                    <td>Semaforo Mantenimiento</td>
+                                    <td>Acciones</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -224,15 +265,18 @@
 
                                     <td>
                                         <span>{{ producto.fecha_mantenimiento }}</span>
-
+                                        <br>
+                                        <br>
+                                        <span>{{ producto.vencimiento_mantenimiento }}</span>
                                         <input type="hidden"
-                                            name="vencimiento_mantenimiento"
+                                            name="seleccionMantenimiento"
                                             class="form-control fecha-vencimiento"
                                             value="{{ producto.vencimiento_mantenimiento or '' }}"
                                             data-producto-id="{{ producto.cod_articulo }}">
 
                                         <input 
                                             type="checkbox" 
+                                            class="form-check-input"
                                             CheckboxMantenimiento="fecha_mantenimiento" 
                                             data-producto-id="{{ producto.cod_articulo }}"
                                             data-nombre-equipo="{{ producto.nombre_equipo or '' }}"
@@ -241,22 +285,25 @@
                                             data-periodicidad-mantenimiento="{{ producto.periodicidad or '' }}" 
                                             data-fecha-mantenimiento="{{ producto.fecha_mantenimiento or '' }}" 
                                             data-vencimiento-mantenimiento="{{ producto.vencimiento_mantenimiento or '' }}" 
-                                           
+                                        
                                             {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}
                                         >
                                     </td>
                                     <td>{{ producto.periodicidad_calibracion }}</td>
                                     <td>
                                         <span>{{ producto.fecha_calibracion }}</span>
-
+                                        <br>
+                                        <br>
+                                        <span>{{ producto.vencimiento_calibracion }}</span>
                                         <input type="hidden"
-                                            name="vencimiento_calibracion"
+                                            name="seleccionCalibracion"
                                             class="form-control fecha-vencimiento-calibracion"
                                             value="{{ producto.vencimiento_calibracion or '' }}"
                                             data-producto-id="{{ producto.cod_articulo }}">
 
                                         <input 
                                             type="checkbox" 
+                                            class="form-check-input"
                                             CheckboxMantenimiento="fecha_calibracion"
                                             data-producto-id="{{ producto.cod_articulo }}" 
                                             data-nombre-equipo="{{ producto.nombre_equipo }}"
@@ -270,7 +317,7 @@
                                     </td>
                                     <td>{{ producto.fecha_ingreso }}</td>
                                     <td>
-                                        <form action="/update_estado_equipo" method="POST" id="estadoEquipoForm">
+                                        <form action="/update_estado_equipo" method="POST" id="estadoEquipoForm_{{ producto.id }}">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
                                             
                                             <input type="hidden" name="producto_id" value="{{ producto.id }}">
@@ -295,14 +342,35 @@
                                             <input type="hidden" name="modelo_equipo_salud" value="{{ producto.modelo_equipo_salud }}">
                                             <input type="hidden" name="serial_equipo_salud" value="{{ producto.serial_equipo_salud }}">
 
-                                            <select name="nuevo_estado_equipo" id="estadoEquipoSelect">
+                                            <!-- <select name="nuevo_estado_equipo" id="estadoEquipoSelect"> ASI ESTA ANTERIORMENTE
                                                 {% for estadoEquipo in estadoEquipos %}
                                                 <option value="{{ estadoEquipo.estado_equipo }}" {% if producto.estado_equipo == estadoEquipo.estado_equipo %}selected{% endif %}>
                                                     {{ estadoEquipo.estado_equipo }}
                                                 </option>
                                                 {% endfor %}
+                                            </select> -->
+                                            <input type="hidden" name="quien_entrega_equipo" id="nombreEntrega_{{ producto.id }}">
+                                            <input type="hidden" name="quien_recibe_equipo" id="nombreRecibe_{{ producto.id }}">
+                                            <input type="hidden" name="ubicacion_destino_laboratorio" id="ubicacionDestino_{{ producto.id }}">
+                                            <input type="hidden" name="fecha_prestamo_equipo" id="fechaPrestamo_{{ producto.id }}">
+                                            <input type="hidden" name="fecha_entrega_equipo" id="fechaEntrega_{{ producto.id }}">
+                                            
+                                            <select name="nuevo_estado_equipo" id="estadoEquipoSelect_{{ producto.id }}" onchange="estadoEquipoChange(this, {{ producto.id }})">
+                                                {% for estadoEquipo in estadoEquipos %}
+                                                    <option value="{{ estadoEquipo.estado_equipo }}" {% if producto.estado_equipo == estadoEquipo.estado_equipo %}selected{% endif %}>
+                                                        {{ estadoEquipo.estado_equipo }}
+                                                    </option>
+                                                {% endfor %}
                                             </select>
-                                            <!-- <button type="submit" name="guardar_estado" class="btn-indexSalud">Guardar</button> -->
+                                            <br>
+                                            <br>
+                                            {% if producto.estado_equipo == 'PRÉSTAMO' and producto.enable == 1 %}
+                                                <div class="btn-eliminar">
+                                                    <a href="/prestamos_equipos_salud/{{ producto.cod_articulo }}" class="btn btn-tabla btn-lg">
+                                                        <FONT SIZE=3>datos</FONT>
+                                                    </a>
+                                                </div>
+                                            {% endif %}
                                         </form>
                                     </td>
                                     <td>{{ producto.ubicacion_original }}</td>
@@ -321,16 +389,9 @@
                                             </a>
                                         </div>
                                     </td>
-                                    <!-- <td class="semaforo"
-                                        style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'purple' %}purple{% elif producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
-                                    </td> -->
                                     <td class="semaforo" data-vencimiento="{{ producto.vencimiento_mantenimiento }}"></td>
                                     <td>
                                         <div class="btn-eliminar">
-                                            <!-- <a href="/edit_productoSalud/{{producto.id}}"
-                                                class="btn btn-secondary btn-sm">
-                                                <FONT SIZE=2>Editar/Ver hoja de vida</FONT>
-                                            </a> -->
                                             <a href="{{ url_for('GET_PRODUCTO_SALUD', id=producto['id'], vista='indexSalud') }}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
                                         </div>
                                         <br>
@@ -346,7 +407,57 @@
                         </table>
                     </div>
                 </div>
+            </div>   
+            <!-- Modal de Préstamo -->
+            <div class="modal fade" id="modalPrestamo" tabindex="-1" aria-labelledby="modalPrestamoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalPrestamoLabel">Detalles del préstamo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" onclick="cerrarModal()"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form id="formPrestamo">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                        <label for="inputEntrega" class="form-label">Quien Entrega Equipo:</label>
+                        <input type="text" class="form-control" id="inputEntrega" required>
+                        </div>
+
+                        <div class="col-md-6">
+                        <label for="inputRecibe" class="form-label">Quien Recibe Equipo:</label>
+                        <input type="text" class="form-control" id="inputRecibe" required>
+                        </div>
+
+                        <div class="col-md-6">
+                        <label for="inputUbicacionDestino" class="form-label">Ubicación de Destino:</label>
+                        <input type="text" class="form-control" id="inputUbicacionDestino" required>
+                        </div>
+
+                        <div class="col-md-3">
+                        <label for="inputFechaPrestamo" class="form-label">Fecha de Préstamo:</label>
+                        <input type="date" class="form-control" id="inputFechaPrestamo" required>
+                        </div>
+
+                        <div class="col-md-3">
+                        <label for="inputFechaEntrega" class="form-label">Fecha de Devolución:</label>
+                        <input type="date" class="form-control" id="inputFechaEntrega" required>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="guardarSeleccionados" class="btn btn-tabla btn-lg" onclick="guardarPrestamo()">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"onclick="cerrarModal()">Cerrar</button>
+                </div>
+
+                </div>
             </div>
+            </div>
+         
         </div>
     </div>
 </div>
@@ -367,7 +478,83 @@
 </script>
 
 <!-- script para mostrar alerta al cambiar de estado de equipo -->
-<script>
+ <script>
+    let currentEquipoId = null;
+
+    function estadoEquipoChange(select, id) {
+        
+        const confirmar = confirm("¿Está seguro de cambiar el estado del equipo?");
+        if (!confirmar) {
+            // Si cancela, recarga la página para revertir el cambio visual en el <select>
+            location.reload();
+            return;
+        }
+        
+        if (select.value === 'PRÉSTAMO') {
+            currentEquipoId = id;
+            let modal = new bootstrap.Modal(document.getElementById('modalPrestamo'));
+            modal.show();
+        } else {
+            // Si no es préstamo, enviar directamente el formulario
+            document.getElementById('estadoEquipoForm_' + id).submit();
+        }
+    }
+
+    function guardarPrestamo() {
+        const quienEntrega = document.getElementById('inputEntrega').value;
+        const quienRecibe = document.getElementById('inputRecibe').value;
+        const ubicacionDestino = document.getElementById('inputUbicacionDestino').value;
+        const fechaPrestamo = document.getElementById('inputFechaPrestamo').value;
+        const fechaEntrega = document.getElementById('inputFechaEntrega').value;
+
+        if (!quienEntrega) {
+            alert('Ingresar el nombre de la persona que entrega el equipo');
+            return;
+        }
+
+        if (!quienRecibe) {
+            alert('Ingresar el nombre de la persona que recibe el equipo');
+            return;
+        }
+
+        if (!ubicacionDestino) {
+            alert('Ingresar la ubicación de destino del equipo');
+            return;
+        }
+
+        if (!fechaPrestamo) {
+            alert('Ingresar fecha de prestamo del equipo');
+            return;
+        }
+
+        if (!fechaEntrega) {
+            alert('Ingresar fecha de entrega del equipo');
+            return;
+        }
+
+        document.getElementById('nombreEntrega_' + currentEquipoId).value = quienEntrega;
+        document.getElementById('nombreRecibe_' + currentEquipoId).value = quienRecibe;
+        document.getElementById('ubicacionDestino_' + currentEquipoId).value = ubicacionDestino;
+        document.getElementById('fechaPrestamo_' + currentEquipoId).value = fechaPrestamo;
+        document.getElementById('fechaEntrega_' + currentEquipoId).value = fechaEntrega;
+
+        function cerrarModal() {
+        const modalEl = document.getElementById('modalPrestamo');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    }
+
+        document.getElementById('estadoEquipoForm_' + currentEquipoId).submit();
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalPrestamo').style.display = 'none';
+    }
+</script>
+
+<!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Selecciona todos los selects de estado
         var selectsEstado = document.querySelectorAll('select[name="nuevo_estado_equipo"]');
@@ -389,7 +576,7 @@
             });
         });
     });
-</script>
+</script> -->
 
 <!-- Scripts para el ocultar el formulario -->
 <script>
@@ -423,19 +610,13 @@
     });
 </script>
 
-<!-- Scripts para actualizar fechas equipos masivas .CSV -->
+<!-- Scripts para actualizar fechas masivamente  -->
 <script>
-    document.getElementById('toggleFor').addEventListener('click', function () {
-        var formContai = document.getElementById('formContai');
-        var toggleBtn = document.getElementById('toggleFor');
-
-        if (formContai.style.display === 'none' || formContai.style.display === '') {
-            formContai.style.display = 'block';
-            toggleBtn.textContent = ' Ocultar fechas CSV';
-        } else {
-            formContai.style.display = 'none';
-            toggleBtn.textContent = ' Actualizar Fechas CSV';
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     });
 </script>
 
