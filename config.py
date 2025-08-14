@@ -27,3 +27,10 @@ config = {
     'development': DevelopmentConfig,
     'production': ProductionConfig
 }
+
+class EmailConfig():
+    # Configuración del correo de notificaciones
+    SMTP_SERVER = "smtp.gmail.com"
+    SMTP_PORT = 587
+    SMTP_USER = "notificaciones.laboratorios@iu.colmayor.edu.co"  # Correo que envía
+    SMTP_PASSWORD = "wvdb lnpx euql cwuw"  # Usa una contraseña de aplicación de Gmail
