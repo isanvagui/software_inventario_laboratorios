@@ -21,8 +21,9 @@
                                     <th>Codigo de Equipo</th>
                                     <!-- <th title="Fecha de ingreso del equipo a la institución">Fecha ingreso</th> -->
                                     <th>Nombre de Equipo</th>
-                                    <th>Entregado por</th>
-                                    <th>Recibido por</th>
+                                    <th>Laboratorista que entrego</th>
+                                    <th>Laboratorista que recibio</th>
+                                    <th>Prestado por</th>
                                     <th>Correo Receptor</th>
                                     <th>Ubicación Original</th>
                                     <th>Ubicación de Destino</th>
@@ -37,7 +38,8 @@
                                 <tr>
                                     <td>{{ producto.cod_articulo }}</td>
                                     <td>{{ producto.nombre_equipo }}</td>
-                                    <td>{{ producto.quien_entrega_equipo }}</td>
+                                    <td>{{ producto.usuario_logueado_nombre }}</td>
+                                    <td>{{ producto.quien_recibe_equipo_devuelto }}</td>
                                     <td>{{ producto.quien_recibe_equipo }}</td>
                                     <td>{{ producto.email_receptor}}</td>
                                     <td>{{ producto.ubicacion_original }}</td>

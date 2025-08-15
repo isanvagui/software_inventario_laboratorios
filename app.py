@@ -1053,8 +1053,8 @@ def update_estado_equipo():
         cur = db.connection.cursor()
         cur.execute("SELECT fullname, username FROM user WHERE id = %s", (current_user.id,))
         result = cur.fetchone()
-        quien_entrega_equipo = result[0] if result else None
-        email_entrega = result[1] if result else None
+        usuario_logueado_nombre = result[0] if result else None
+        usuario_logueado_email  = result[1] if result else None
 
         quien_recibe_equipo = request.form.get('quien_recibe_equipo')
         email_receptor = request.form.get('email_receptor')
@@ -1171,42 +1171,34 @@ def update_estado_equipo():
         fecha_prestamo = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         # --- 1. Si se está devolviendo un equipo ---
-        prestamo_activo = None
         if nuevo_estado != 'PRÉSTAMO':
-            cur_dict = db.connection.cursor(MySQLdb.cursors.DictCursor)
-            cur_dict.execute("""
-                SELECT id_prestamos,
-                    quien_entrega_equipo,
-                    quien_recibe_equipo,
-                    email_receptor
+            cur.execute("""
+                SELECT id_prestamos, quien_recibe_equipo, email_receptor
                 FROM prestamos_equiposalud
                 WHERE cod_articulo = %s AND enable_prestamos = 1
                 ORDER BY id_prestamos DESC
                 LIMIT 1
             """, (cod_articulo,))
-            prestamo_activo = cur_dict.fetchone()
+            prestamo_activo = cur.fetchone()
 
-            # Cerrar préstamo (enable_prestamos = 0)
+            # Cerrar préstamo y registrar quien lo recibe devuelto
             cur.execute("""
                 UPDATE prestamos_equiposalud
                 SET enable_prestamos = 0,
-                    fecha_entrega_equipo = %s
+                    fecha_entrega_equipo = %s,
+                    quien_recibe_equipo_devuelto = %s
                 WHERE cod_articulo = %s AND enable_prestamos = 1
-            """, (fecha_prestamo, cod_articulo,))
+            """, (fecha_prestamo, usuario_logueado_nombre, cod_articulo))
             cerrados = cur.rowcount
 
-            # Si realmente se actualizó algo → enviar correo de devolución
             if prestamo_activo and cerrados > 0:
-                devuelto_nombre = prestamo_activo ['quien_recibe_equipo']
-                devuelto_email = prestamo_activo ['email_receptor']
-
                 send_devolucion_notification_html(
                     equipo_nombre=nombre_equipo,
                     codigo_equipo=cod_articulo,
-                    quien_devuelve=devuelto_nombre,        # Quien entregó originalmente ahora recibe
-                    quien_recibe=quien_entrega_equipo,     # Usuario logueado ahora recibe
-                    email_entrega=email_entrega,           # Email usuario logueado
-                    email_recibe=devuelto_email,           # Email receptor original
+                    quien_devuelve=prestamo_activo[1],        # Quien recibió el préstamo originalmente
+                    quien_recibe=usuario_logueado_nombre,     # Usuario logueado recibe la devolución
+                    email_entrega=usuario_logueado_email,     # Email usuario logueado
+                    email_recibe=prestamo_activo[2],          # Email receptor original
                     fecha_entrega=fecha_prestamo
                 )
 
@@ -1219,35 +1211,34 @@ def update_estado_equipo():
 
         # --- 3. Si es un nuevo préstamo ---
         if nuevo_estado == 'PRÉSTAMO':
+            ubicacion_original = request.form.get('ubicacion_original')
             cur.execute("""
                 INSERT INTO prestamos_equiposalud (
-                    cod_articulo, nombre_equipo, quien_entrega_equipo, quien_recibe_equipo,
+                    cod_articulo, nombre_equipo, usuario_logueado_nombre, quien_recibe_equipo,
                     ubicacion_original, ubicacion_destino_laboratorio, fecha_prestamo_equipo,
-                    fecha_entrega_equipo, email_receptor, enable_prestamos
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, NULL, %s, 1)
+                    fecha_entrega_equipo, email_receptor, quien_recibe_equipo_devuelto, enable_prestamos
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, NULL, %s, NULL, 1)
             """, (
                 cod_articulo,
                 nombre_equipo,
-                quien_entrega_equipo,
+                usuario_logueado_nombre,
                 quien_recibe_equipo,
                 ubicacion_original,
                 ubicacion_destino_laboratorio,
                 fecha_prestamo,
-                # fecha_entrega_equipo,
                 email_receptor
             ))
 
             send_prestamo_notification_html(
                 cod_articulo,
                 nombre_equipo,
-                quien_entrega_equipo,
+                usuario_logueado_nombre,
                 ubicacion_original,
-                email_entrega,
+                usuario_logueado_email,
                 quien_recibe_equipo,
                 ubicacion_destino_laboratorio,
                 email_receptor,
-                fecha_prestamo,
-                None
+                fecha_prestamo
             )
 
         db.connection.commit()
@@ -1282,7 +1273,7 @@ def historial_prestamo_salud():
         cur.execute(
             """
             SELECT cod_articulo, nombre_equipo, ubicacion_original, ubicacion_destino_laboratorio, 
-                   quien_recibe_equipo, quien_entrega_equipo, fecha_prestamo_equipo, fecha_entrega_equipo, email_receptor, enable_prestamos
+                   quien_recibe_equipo, usuario_logueado_nombre, fecha_prestamo_equipo, fecha_entrega_equipo, email_receptor, quien_recibe_equipo_devuelto, enable_prestamos
             FROM prestamos_equiposalud
             ORDER BY cod_articulo ASC
         """,   

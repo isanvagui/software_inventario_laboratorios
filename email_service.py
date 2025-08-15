@@ -64,7 +64,7 @@ def send_email_with_logo(subject, body_html, recipients):
 
 def send_prestamo_notification_html(
     cod_articulo, nombre_equipo, quien_entrega, ubicacion_original, email_entrega,
-    quien_recibe, ubicacion_destino, email_recibe, fecha_prestamo, fecha_entrega
+    quien_recibe, ubicacion_destino, email_recibe, fecha_prestamo
 ):
     """
     Construye el HTML del préstamo y lo envía a ambas partes.

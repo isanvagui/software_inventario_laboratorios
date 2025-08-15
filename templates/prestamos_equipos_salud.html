@@ -50,7 +50,7 @@
                 </tr>
                 <tr>
                     <th>Entregado por</th>
-                    <td>{{ prestamo_equipo.quien_entrega_equipo }}</td>
+                    <td>{{ prestamo_equipo.usuario_logueado_nombre }}</td>
                 </tr>
                 <tr>
                     <th>Recibido por</th>
@@ -59,14 +59,6 @@
                 <tr>
                     <th>Correo Receptor</th>
                     <td>{{ prestamo_equipo.email_receptor }}</td>
-                </tr>
-                <tr>
-                    <th>Quien Entrega</th>
-                    <td>{{ prestamo_equipo.quien_entrega_equipo }}</td>
-                </tr>
-                <tr>
-                    <th>Quien Recibe</th>
-                    <td>{{ prestamo_equipo.quien_recibe_equipo }}</td>
                 </tr>
                 <tr>
                     <th>Ubicación Original</th>
@@ -80,10 +72,10 @@
                     <th>Fecha del Préstamo</th>
                     <td>{{ prestamo_equipo.fecha_prestamo_equipo }}</td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <th>Fecha de Devolución</th>
                     <td>{{ prestamo_equipo.fecha_entrega_equipo }}</td>
-                </tr>
+                </tr> -->
                 <!-- Agrega más campos si deseas -->
             </tbody>
         </table>
