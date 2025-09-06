@@ -334,7 +334,7 @@
                                             <input type="hidden" name="garantia" value="{{ producto.garantia }}">
                                             <input type="hidden" name="criticos" value="{{ producto.criticos }}">
                                             <input type="hidden" name="proveedor_responsable" value="{{ producto.proveedor_responsable }}">
-                                            <input type="hidden" name="filepath_to_db" value="{{ producto.filepath_to_db }}">
+                                            <input type="hidden" name="filepath_to_db_img" value="{{ producto.filepath_to_db_img }}">
                                             <input type="hidden" name="especificaciones_instalacion" value="{{ producto.especificaciones_instalacion }}">
                                             <input type="hidden" name="cuidados_basicos" value="{{ producto.cuidados_basicos }}">
                                             <input type="hidden" name="periodicidad_calibracion" value="{{ producto.periodicidad_calibracion }}">
@@ -394,12 +394,59 @@
                                         <div class="btn-eliminar">
                                             <a href="{{ url_for('GET_PRODUCTO_SALUD', id=producto['id'], vista='indexSalud') }}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
                                         </div>
-                                        <br>
+                                        <!-- <br>
                                         <div class="btn-eliminar">
-                                            <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-tabla btn-lg" >
-                                                <FONT SIZE=3>Eliminar</FONT>
+                                            <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-tabla btn-sm" >
+                                                <FONT SIZE=2>Eliminar</FONT>
                                             </a>
-                                        </div>
+                                        </div> -->
+                                        <br>
+                                        <form action="{{ url_for('subir_imagen', id_producto=producto.id) }}" 
+                                            method="POST" enctype="multipart/form-data" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+                                            <!-- Input oculto -->
+                                            <input type="file" name="imagen_producto" 
+                                                id="file-input-{{ producto.id }}" 
+                                                style="display:none;" 
+                                                onchange="this.form.submit()">
+
+                                            <!-- Botón que abre el explorador de archivos -->
+                                            <div class="btn-eliminar">
+                                                <button type="button" class="btn btn-tabla btn-sm"
+                                                        onclick="document.getElementById('file-input-{{ producto.id }}').click();">
+                                                    Subir_imagen
+                                                </button>
+                                            </div> 
+                                        </form>
+                                        
+                                        <br>
+                                        <form action="{{ url_for('subir_pdf', id_producto=producto.id) }}" 
+                                            method="POST" enctype="multipart/form-data" style="display:inline;">
+                                            <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
+
+                                            <input type="file" name="pdf_salud" 
+                                                id="pdf-input-{{ producto.id }}" 
+                                                style="display:none;" 
+                                                onchange="this.form.submit()">
+                                            
+                                            <div class="btn-eliminar">
+                                                <button type="button" class="btn btn-secondary btn-sm"
+                                                        onclick="document.getElementById('pdf-input-{{ producto.id }}').click();">
+                                                        Subir guia
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <br>
+                                        <!-- Botón para ver PDF GUIA -->
+                                        {% if producto.pdf_salud %}
+                                            <a href="{{ url_for('static', filename=producto.pdf_salud) }}" 
+                                            target="_blank" 
+                                            class="btn btn-tabla btn-sm">
+                                                Ver guia
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">SIN GUIA</span>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -459,7 +506,7 @@
 <script>
     $("#tabla").DataTable({
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
         }
     }
 

@@ -152,7 +152,7 @@ table.dataTable {
     
 }
 #tabla {
-    font-size: 14.7px; /* Mueve el margen de la tabla */
+    font-size: 14.4px; /* Mueve el margen de la tabla */
     min-height: 300px; /* Altura mínima para evitar que sea demasiado corta */
     max-height: 900px; /* Limitar la altura si el contenido es demasiado largo */
     overflow-y: auto; /* Añadir barra de desplazamiento vertical si es necesario */

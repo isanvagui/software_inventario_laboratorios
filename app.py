@@ -1,6 +1,15 @@
 import csv
-from io import TextIOWrapper, StringIO
+from io import TextIOWrapper, StringIO, BytesIO
+
+# librerias e importaciones para excel
 import io
+from flask import request, jsonify, send_file, current_app
+from openpyxl import load_workbook
+from openpyxl.styles import Alignment
+# Importacion del link OneDrive MANTENIEMIENTO desde el archivo config
+from config import LinkOneDriveMantenimiento
+# Importacion del link OneDrive CALIBRACION desde el archivo config
+from config import LinkOneDriveCalibracion
 
 from flask import Flask, render_template, request, redirect, url_for, flash, Response
 from flask_mysqldb import MySQL,MySQLdb
@@ -43,6 +52,13 @@ csrf = CSRFProtect(app)
 db = MySQL(app)
 login_manager_app = LoginManager(app)
 
+@app.context_processor
+def link_onedrive_mantenimiento():
+    return dict(onedrive_link_mantenimiento=LinkOneDriveMantenimiento.ONEDRIVE_LINK_MANTENIMIENTO)
+
+@app.context_processor
+def link_onedrive_calibracion():
+    return dict(onedrive_link_calibracion=LinkOneDriveCalibracion.ONEDRIVE_LINK_CALIBRACION)
 
 @login_manager_app.user_loader
 def load_user(id):
@@ -400,9 +416,9 @@ def AGREGAR_PRODUCTO_SALUD():
         if file:
             filename = secure_filename(file.filename)
             # Ruta relativa para guardar en la base de datos
-            filepath_to_db = os.path.join('fotos', filename).replace("\\", "/")
+            filepath_to_db_img = os.path.join('fotos', filename).replace("\\", "/")
             # Ruta absoluta para guardar f�sicamente en disco
-            ruta_absoluta = os.path.join(app.root_path, 'static', filepath_to_db)
+            ruta_absoluta = os.path.join(app.root_path, 'static', filepath_to_db_img)
             #Guarda imagen
             file.save(ruta_absoluta)
 
@@ -438,7 +454,7 @@ def AGREGAR_PRODUCTO_SALUD():
                     color,
                     checkbox_mantenimiento,
                     checkbox_calibracion,
-                    filepath_to_db,
+                    filepath_to_db_img,
                     especificaciones_instalacion,
                     cuidados_basicos,
                     periodicidad_calibracion,
@@ -471,20 +487,89 @@ def AGREGAR_PRODUCTO_SALUD():
                     color,
                     checkbox_mantenimiento,
                     checkbox_calibracion,
-                    filepath_to_db,
+                    filepath_to_db_img,
                     especificaciones_instalacion,
                     cuidados_basicos,
                     periodicidad_calibracion,
                     marca_equipo_salud,
                     modelo_equipo_salud,
                     serial_equipo_salud
-                    
+
                 ),
             )
         db.connection.commit()
 
         flash ('Equipo agregado satisfactoriamente', 'success')
         return redirect(url_for('indexSalud')) 
+    
+# ---------------------------FUNCION PARA CARGAR IMAGEN DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_IMAGEN-----------------------------  
+@app.route('/subir_imagen/<int:id_producto>', methods=['POST'])
+def subir_imagen(id_producto):
+    if 'imagen_producto' not in request.files:
+        flash('No se seleccionó ningún archivo', 'error')
+        return redirect(url_for('indexSalud'))
+
+    file = request.files['imagen_producto']
+    if file.filename == '':
+        flash('Por favor seleccione un archivo válido', 'error')
+        return redirect(url_for('indexSalud'))
+
+    if file:
+        filename = secure_filename(file.filename)
+        filepath_to_db_img = os.path.join('fotos', filename).replace("\\", "/")
+        ruta_absoluta = os.path.join(app.root_path, 'static', filepath_to_db_img)
+
+        # Guardar en disco
+        file.save(ruta_absoluta)
+
+        # Actualizar en BD
+        cur = db.connection.cursor()
+        cur.execute("""
+            UPDATE indexssalud 
+            SET imagen = %s 
+            WHERE id = %s
+        """, (filepath_to_db_img, id_producto))
+        db.connection.commit()
+        cur.close()
+
+        flash('Imagen cargada correctamente', 'success')
+        return redirect(url_for('indexSalud'))
+
+# ---------------------------FUNCION PARA CARGAR PDFS DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_GUIA---------------------------- 
+@app.route('/subir_pdf/<int:id_producto>', methods=['POST'])
+def subir_pdf(id_producto):
+    if 'pdf_salud' not in request.files:
+        flash('No se seleccionó ningún archivo', 'error')
+        return redirect(url_for('indexSalud'))
+
+    file = request.files['pdf_salud']
+    if file.filename == '':
+        flash('Por favor seleccione un archivo válido', 'error')
+        return redirect(url_for('indexSalud'))
+
+    # Validar extensión
+    if not file.filename.lower().endswith('.pdf'):
+        flash('Solo se permiten archivos PDF', 'error')
+        return redirect(url_for('indexSalud'))
+
+    # Guardar archivo
+    filename = secure_filename(file.filename)
+    filepath_to_db_pdf = os.path.join('pdf', filename).replace("\\", "/")
+    ruta_absoluta = os.path.join(app.root_path, 'static', filepath_to_db_pdf)
+    file.save(ruta_absoluta)
+
+    # Actualizar en BD (columna ejemplo: pdf_salud)
+    cur = db.connection.cursor()
+    cur.execute("""
+        UPDATE indexssalud 
+        SET pdf_salud = %s 
+        WHERE id = %s
+    """, (filepath_to_db_pdf, id_producto))
+    db.connection.commit()
+    cur.close()
+
+    flash('Guia cargada correctamente', 'success')
+    return redirect(url_for('indexSalud'))
 
 # ---------------------------INICIA INSERT MASIVO DE EQUIPOS CSV DE SALUD-----------------------------
 @app.route('/insert_csv', methods=['POST'])
@@ -806,35 +891,76 @@ def exportCsv():
     return salida
 # ---------------------------FINALIZA EXPORTACIÓN DE CSV DE EQUIPOS DE SALUD-----------------------------
 
-# ---------------------------INICIA EXPORTACIÓN DE CSV DE EQUIPOS DE BAJA DE SALUD-----------------------------
-@app.route('/exportCsvSaludDeBaja')
+# ---------------------------INICIA EXPORTACIÓN DE FORMATO EXCEL DE EQUIPOS DE BAJA DE SALUD-----------------------------
+@app.route('/exportExcelSaludDeBaja', methods=['POST'])
 @login_required
-def exportCsvDeBaja():
-    # Obtener los datos de la tabla equipossalud_debaja
-    cur = db.connection.cursor()
-    cur.execute("""SELECT i.cod_articulo, i.fecha_de_baja, i.nombre_equipo, i.periodicidad, i.fecha_mantenimiento, i.vencimiento_mantenimiento, i.periodicidad_calibracion, 
-                    i.fecha_calibracion, i.vencimiento_calibracion, i.fecha_ingreso, i.estado_equipo, i.ubicacion_original, i.garantia, i.criticos, 
-                    p.nombre_empresa AS proveedor_responsable, i.especificaciones_instalacion, i.cuidados_basicos, i.marca_equipo_salud, i.modelo_equipo_salud, i.serial_equipo_salud 
-                    FROM equipossalud_debaja i LEFT JOIN datosproveedorsalud p ON i.proveedor_responsable = p.id""")
-    registros = cur.fetchall()
+def exportExcelDeBaja():
+    try:
+        # 1) Validar JSON/csrf
+        if not request.is_json:
+            return jsonify({"error": "El cuerpo de la petición debe ser JSON"}), 400
 
-    # Crear un archivo CSV en memoria
-    si = StringIO()
-    writer = csv.writer(si)
+        data = request.get_json(silent=True) or {}
+        equipos = data.get('equipos') or []
 
-    # Escribir los encabezados de las columnas
-    writer.writerow(['Código articulo', 'Fecha de Baja', 'Nombre Equipo', 'Periodicidad Mantenimiento', 'Inicio Mantenimiento', 'Vencimiento Mantenimiento', 'Periodicidad Calibración', 'Inicio Calibración', 'Vencimiento Calibración', 'Fecha Ingreso', 
-                     'Estado Equipo', 'Ubicación Original', 'Garantía Ingreso', 'Críticos', 'Proveedor Responsable', 'Especificaciones Instalación', 'Cuidados Básicos', 'Marca Equipo', 'Modelo Equipo', 'Serial Equipo'])
+        if not isinstance(equipos, list) or not equipos:
+            return jsonify({"error": "No se enviaron equipos"}), 400
 
-    # Escribir los registros de la tabla
-    for registro in registros:
-        writer.writerow(registro)
+        # 2) Ubicar plantilla
+        plantilla_path = os.path.join(current_app.root_path, "static", "img", "INFORME_TECNICO_BAJAS.xlsx")
+        if not os.path.exists(plantilla_path):
+            return jsonify({"error": f"No se encontró la plantilla en {plantilla_path}"}), 400
 
-    # Preparar el archivo CSV para su descarga
-    salida = Response(si.getvalue().encode('utf-8-sig'), mimetype='text/csv')
-    salida.headers['Content-Disposition'] = 'attachment; filename=equiposSaludDeBaja.csv'
+        # 3) Cargar plantilla
+        wb = load_workbook(plantilla_path)
+        ws = wb.active  # Ajusta a wb['NombreHoja'] si tu hoja no es la activa
 
-    return salida
+        # 4) Escribir datos desde fila 12 (debajo de los títulos)
+        start_row = 12
+
+        # Helper: verificar si un rango ya está fusionado
+        def is_merged(ws, coord: str) -> bool:
+            return any(str(r) == coord for r in ws.merged_cells.ranges)
+
+        for idx, equipo in enumerate(equipos, start=start_row):
+            placa = (equipo.get("cod_articulo") or "").strip()
+            cantidad = 1
+            nombre = (equipo.get("nombre_equipo") or "").strip()
+
+            # Columna A → PLACA
+            ws[f"A{idx}"].value = placa
+                       
+            # Columna B → CANTIDAD
+            ws[f"B{idx}"].value = cantidad
+
+            # Columnas C-G → DESCRIPCIÓN DEL BIEN (escribir en C, y fusionar sólo si hace falta)
+            merge_coord = f"C{idx}:G{idx}"
+            if not is_merged(ws, merge_coord):
+                try:
+                    ws.merge_cells(merge_coord)
+                except ValueError:
+                    # Si ya está fusionado por plantilla o solapa, lo ignoramos
+                    pass
+
+            ccell = ws[f"C{idx}"]
+            ccell.value = nombre
+            ccell.alignment = Alignment(wrap_text=True, vertical="top")
+
+        # 5) Enviar archivo
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        return send_file(
+            output,
+            as_attachment=True,
+            download_name="equipos_baja.xlsx",
+            mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    except Exception as e:
+        current_app.logger.exception("Error generando Excel")
+        return jsonify({"error": str(e)}), 400
 # ---------------------------FINALIZA EXPORTACIÓN DE CSV DE EQUIPOS DE EQUIPOS DE BAJA DE SALUD-----------------------------
 
 # ================================CHECKBOX PROGRAMACIÓN MANTENIMIENTO===============================
@@ -1123,7 +1249,7 @@ def update_estado_equipo():
         # Obtener la ruta de la imagen desde la tabla indexssalud
         cur.execute('SELECT imagen FROM indexssalud WHERE cod_articulo = %s', (cod_articulo,))
         imagen_result = cur.fetchone()
-        filepath_to_db = imagen_result[0] if imagen_result else None
+        filepath_to_db_img = imagen_result[0] if imagen_result else None
 
         if nuevo_estado == 'DE BAJA':
             # Actualizar el estado y marcar como dado de baja en indexssalud
@@ -1154,7 +1280,7 @@ def update_estado_equipo():
                         criticos,
                         proveedor_responsable,
                         color,
-                        filepath_to_db,
+                        filepath_to_db_img,
                         especificaciones_instalacion,
                         cuidados_basicos,
                         periodicidad_calibracion,

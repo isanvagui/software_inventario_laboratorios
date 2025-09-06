@@ -66,7 +66,10 @@
 // });
 // ==================================================================================================
 // Actualizar masivamente desde los checkbox y boton guardar historial
-document.getElementById('guardarSeleccionados').addEventListener('click', function () {
+const btnGuardar = document.getElementById('guardarSeleccionados');
+
+if (btnGuardar) {
+    btnGuardar.addEventListener('click', function () {
     const proveedorId = document.getElementById('selectProveedor').value;
     const nuevaFecha = document.getElementById('nuevaFecha').value;
     const nuevaPeriodicidad = document.getElementById('nuevaPeriodicidad').value
@@ -129,6 +132,7 @@ document.getElementById('guardarSeleccionados').addEventListener('click', functi
     })
     .catch(error => console.error(error));
 });
+}
 // ===========================================================
 
 document.addEventListener('DOMContentLoaded', function () {

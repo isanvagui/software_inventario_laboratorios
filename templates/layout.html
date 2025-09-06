@@ -57,11 +57,11 @@
       <a href="{{ url_for('equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
       <a href="{{ url_for('historial_prestamo_salud')}}" data-icon="🕒"> Historial de Prestamos</a>
       <a href="{{ url_for('exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
-      <a href="{{ url_for('exportCsvDeBaja') }}" data-icon="📂"> Exportar Equipos De Baja</a>
     {% elif request.path == url_for('agregarNuevoProveedor') %}
       <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Ciencias de la Salud</a>
     {% elif request.path == url_for('equiposDeBajaSalud') %}
       <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Ciencias de la Salud</a>
+      <a href="{{ url_for('exportExcelDeBaja') }}" data-icon="📂"  id="btnExportarBaja"> Exportar Equipos De Baja</a>
     {% elif request.path == url_for('historial_prestamo_salud') %}
       <a href="{{ url_for('indexSalud') }}" data-icon="👨🏻‍🍳"> Ciencias de la Salud</a> 
     {% endif %}
@@ -80,9 +80,8 @@
     </div>
   </div>
 
-  <!-- JavaScript para el colapso del sidebar -->
+  <!-- Script para el colapso del sidebar -->
   <script>
-    // JavaScript para el colapso del sidebar
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         sidebar.classList.toggle('expanded'); // Alterna la clase expanded
@@ -110,6 +109,67 @@
     });
 
   </script>
+
+<!-- // Script para el boton Exportar equipos de baja -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnExportarBaja");
+  if (!btn) return;
+
+  btn.addEventListener("click", async (e) => {
+    e.preventDefault();
+
+    const seleccionados = [];
+    document.querySelectorAll(".equipo-checkbox:checked").forEach(chk => {
+      seleccionados.push({
+        cod_articulo: chk.dataset.codigo,
+        nombre_equipo: chk.dataset.nombre
+      });
+    });
+
+    if (seleccionados.length === 0) {
+      alert("Seleccione al menos un equipo");
+      return;
+    }
+    if (seleccionados.length > 20) {
+      alert("No puede seleccionar más de 20 equipos a la vez");
+      return;
+    }
+
+    try {
+      const resp = await fetch("{{ url_for('exportExcelDeBaja') }}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": typeof csrf_token !== "undefined" ? csrf_token : ""
+        },
+        body: JSON.stringify({ equipos: seleccionados })
+      });
+
+      if (!resp.ok) {
+        const ct = resp.headers.get("content-type") || "";
+        if (ct.includes("application/json")) {
+          const j = await resp.json();
+          throw new Error(j.error || "Error al generar Excel");
+        }
+        throw new Error("Error al generar Excel");
+      }
+
+      const blob = await resp.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "equipos_baja.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert(err.message || "Error al generar Excel");
+    }
+  });
+});
+</script>
 
   <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"

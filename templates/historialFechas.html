@@ -55,7 +55,7 @@
                                 <!-- <td>Actual</td> -->
                                 <th>Fecha de Ejecución</th>
                                 <th>Datos Proveedor</th>
-                                <!-- <th>Acción</th> -->
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,8 +79,8 @@
                                     <td>
                                         {% if registro.id_proveedor_responsable %}
                                         <div class="btn-eliminar">
-                                            <a href="{{ url_for('datosProveedorSalud', id=registro.id_proveedor_responsable) }}" class="btn btn-update-data btn-lg">
-                                                <FONT SIZE=3>datos</FONT>
+                                            <a href="{{ url_for('datosProveedorSalud', id=registro.id_proveedor_responsable) }}" class="btn btn-update-data btn-sm">
+                                                <FONT SIZE=2>datos</FONT>
                                             </a>
                                         </div>
                                         {% else %}
@@ -94,6 +94,14 @@
                                         <input type="hidden" name="id" value="{{ registro.id }}">
                                         <button type="submit" class="btn btn-update-data" onclick="confirmUpdate(this)">Guardar</button>
                                     </td> -->
+                                    <td>
+                                        <div class="btn-eliminar">
+                                            <!-- <button type="button" class="btn btn-update-data btn-sm" onclick="confirmUpdate(this)">Ver reportes</button> -->
+                                            <a href="{{ onedrive_link_mantenimiento }}" target="_blank" class="btn btn-update-data btn-sm">
+                                                REPORTES MTTO
+                                            </a>
+                                        </div>
+                                    </td>
                                 </tr>    
                             </form>
                             {% endfor %}
@@ -117,8 +125,8 @@
                                     <td>
                                         {% if registro.id_proveedor_responsable %}
                                         <div class="btn-eliminar"> 
-                                            <a href="{{ url_for('datosProveedorSalud', id=registro.id_proveedor_responsable) }}" class="btn btn-update-data btn-lg">
-                                                <FONT SIZE=3>datos</FONT>
+                                            <a href="{{ url_for('datosProveedorSalud', id=registro.id_proveedor_responsable) }}"  class="btn btn-update-data btn-sm"">
+                                                <FONT SIZE=2>datos</FONT>
                                             </a> 
                                         </div>
                                         {% else %}
@@ -133,6 +141,14 @@
                                         <input type="hidden" name="id" value="{{ registro.id }}">
                                         <button type="submit" class="btn btn-update-data" onclick="confirmUpdate(this)">Guardar</button>
                                     </td> -->
+                                    <td>
+                                        <div class="btn-eliminar">
+                                            <!-- <button type="button" class="btn btn-update-data btn-sm" onclick="confirmUpdate(this)">Ver reportes</button> -->
+                                            <a href="{{ onedrive_link_calibracion }}" target="_blank" class="btn btn-update-data btn-sm">
+                                                REPORTES CAL
+                                            </a>
+                                        </div>
+                                    </td>
                                 </tr>    
                             </form>                            
                             {% endfor %}

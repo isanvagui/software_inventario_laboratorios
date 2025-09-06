@@ -22,42 +22,29 @@
                                     <th title="Fecha de ingreso del equipo a la institución">Fecha ingreso</th>
                                     <th>Fecha de baja</th>
                                     <th>Nombre de equipo</th>
-                                    <!-- <td>Periodicidad mantenimineto (Meses)</td> -->
-                                    <!-- <td>Mantenimiento actual</td> -->
-                                    <!-- <td>Periodicidad calibración (Meses)</td> -->
-                                    <!-- <td>Calibración actual</td> -->
-                                    
                                     <th>Estado equipo</th>
                                     <th>Ubicación original</th>
-                                    <!-- <td>Garantía ingreso</td> -->
-                                    <!-- <td>Criticos</td> -->
-                                    <th>Proveedor responsable</th>
-                                    <!-- <td>Semaforo mantenimiento</td> -->
+                                    <th>Proveedor de Venta</th>
                                     <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for producto in equipos_de_baja %}
                                 <tr>
-                                    <td>{{ producto.cod_articulo }}</td>
+                                    <td>
+                                        <input 
+                                            type="checkbox" 
+                                            class="equipo-checkbox"
+                                            data-codigo="{{ producto.cod_articulo }}" 
+                                            data-nombre="{{ producto.nombre_equipo }}">
+
+                                        <span>{{ producto.cod_articulo }}</span>
+                                    </td>
+                                    
                                     <td>{{ producto.fecha_ingreso }}</td>
                                     <td>{{ producto.fecha_de_baja }}</td>
                                     <td>{{ producto.nombre_equipo }}</td>
-                                    <!-- <td>{{ producto.periodicidad }}</td> -->
-                                    <!-- <td>{{ producto.fecha_mantenimiento }} -->
-                                        <!-- <input type="checkbox" name="fecha_mantenimiento" 
-                                        data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_mantenimiento }}" 
-                                        {% if producto.checkbox_mantenimiento == 'Activo' %}checked{% endif %}> -->
-                                    <!-- </td> -->
 
-                                    <!-- <td>{{ producto.periodicidad_calibracion }}</td> -->
-                                    
-                                    <!-- <td>{{ producto.fecha_calibracion }} -->
-                                        <!-- <input type="checkbox" name="fecha_calibracion"
-                                            data-producto-id="{{ producto.id }}" data-estado-inicial="{{ producto.checkbox_calibracion }}"
-                                            {% if producto.checkbox_calibracion=='Activo' %}checked{% endif %}> -->
-                                    <!-- </td> -->
-                                    
                                     <td>
                                         <form action="/update_estado_equipo" method="POST">
                                             <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
@@ -68,18 +55,10 @@
                                                 </option>
                                                 {% endfor %}
                                             </select>
-                                            <!-- <button type="submit" name="guardar_estado" class="btn-indexSalud">Guardar</button> -->
                                         </form>
                                     </td>
                                     <td>{{ producto.ubicacion_original }}</td>
-                                    <!-- <td>{{ producto.garantia }}</td> -->
-                                    <!-- <td>
-                                        {% if producto.criticos == "si" %}
-                                        <i class="bi bi-shield-check"></i>
-                                        {% else %}
-                                        <i class="bi bi-dash-circle fs-2"></i>
-                                        {% endif %}
-                                    </td> -->
+
                                     <td>
                                         <div class="btn-eliminar">
                                             <a href="/datosProveedorSalud/{{ producto.proveedor_responsable }}" class="btn btn-tabla btn-lg">
@@ -87,24 +66,17 @@
                                             </a>
                                         </div>
                                     </td>
-                                    <!-- <td class="semaforo"
-                                        style="width: 50px; border-radius: 50%; height: 50px; background-color: {% if producto.color == 'purple' %}purple{% elif producto.color == 'red' %}red{% elif producto.color == 'yellow' %}yellow{% else %}green{% endif %}">
-                                    </td> -->
+
                                     <td>
                                         <div class="text-center mt-2">
                                             <a href="{{ url_for('GET_PRODUCTO_SALUD', id=producto['id'], vista='equiposDeBajaSalud') }}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
                                         </div>
-                                        <!-- <br>
-                                        <div class="btn-eliminar">
-                                            <a href="/delete_productoSalud/{{producto.id}}" class="btn btn-tabla btn-lg" >
-                                                <FONT SIZE=3>Eliminar</FONT>
-                                            </a>
-                                        </div> -->
+
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
-                        </table>
+                        </table>                         
                     </div>
                 </div>
             </div>
@@ -119,12 +91,16 @@
 <script>
     $("#tabla").DataTable({
         "language": {
-            "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            "url": "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
         }
     }
 
     );
 
+</script>
+
+<script>
+  const csrf_token = "{{ csrf_token() }}";
 </script>
 
 {% endblock %}
