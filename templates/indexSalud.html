@@ -139,8 +139,15 @@
                                     </div>
 
                                     <div class="col-md-6 form-group">
-                                        <br>
-                                        <input type="file" name="imagen_producto" class="custom-file-input" style="padding: 20px; margin-left: -15px;">
+                                        <!-- Subir Imagen -->
+                                        <label for="imagen_producto" class="btn btn-secondary">Subir Imagen</label>
+                                        <input type="file" id="imagen_producto" name="imagen_producto" class="d-none" >
+                                        <span id="nombre-imagen" class="text-muted"></span>
+
+                                        <!-- Subir Guía PDF -->
+                                        <label for="guia_pdf" class="btn btn-secondary">Subir Guía</label>
+                                        <input type="file" id="guia_pdf" name="guia_pdf" class="d-none">
+                                        <span id="nombre-pdf" class="text-muted"></span>
                                     </div>
 
                                 </div>

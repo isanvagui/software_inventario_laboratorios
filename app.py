@@ -407,20 +407,42 @@ def AGREGAR_PRODUCTO_SALUD():
 
         # Manejo de la imagen
         if 'imagen_producto' not in request.files:
-            flash('No existe archivo')
+            flash('No existe archivo de imagen.', 'error')
             return redirect(url_for('indexSalud'))
+
         file = request.files['imagen_producto']
+
         if file.filename == '':
-            flash('Por favor seleccione el archivo')
+            flash('Por favor seleccione un archivo de imagen.', 'error')
             return redirect(url_for('indexSalud'))
-        if file:
-            filename = secure_filename(file.filename)
-            # Ruta relativa para guardar en la base de datos
-            filepath_to_db_img = os.path.join('fotos', filename).replace("\\", "/")
-            # Ruta absoluta para guardar f�sicamente en disco
-            ruta_absoluta = os.path.join(app.root_path, 'static', filepath_to_db_img)
-            #Guarda imagen
-            file.save(ruta_absoluta)
+
+        # Validar extensión de imagen
+        extensiones_permitidas_img = ('.png', '.jpg', '.jpeg')
+        if not file.filename.lower().endswith(extensiones_permitidas_img):
+            flash(f'Formato de imagen no permitido. Solo se permiten: {", ".join(extensiones_permitidas_img)}', 'error')
+            return redirect(url_for('indexSalud'))
+
+        # Guardar imagen
+        filename = secure_filename(file.filename)
+        filepath_to_db_img = os.path.join('fotos', filename).replace("\\", "/")
+        ruta_absoluta = os.path.join(app.root_path, 'static', filepath_to_db_img)
+        file.save(ruta_absoluta)
+
+        # Manejo del PDF
+        filepath_to_db_pdf = None
+        if 'guia_pdf' in request.files:
+            file_pdf = request.files['guia_pdf']
+            if file_pdf and file_pdf.filename != '':
+                # Validar extensión del PDF
+                if not file_pdf.filename.lower().endswith('.pdf'):
+                    flash('Formato no permitido. Solo se aceptan archivos PDF.', 'error')
+                    return redirect(url_for('indexSalud'))
+
+        # Guardar PDF
+        filename_pdf = secure_filename(file_pdf.filename)
+        filepath_to_db_pdf = os.path.join('pdf', filename_pdf).replace("\\", "/")
+        ruta_absoluta_pdf = os.path.join(app.root_path, 'static', filepath_to_db_pdf)
+        file_pdf.save(ruta_absoluta_pdf)
 
         especificaciones_instalacion = request.form ['especificaciones_instalacion']
         cuidados_basicos = request.form ['cuidados_basicos']
@@ -469,7 +491,7 @@ def AGREGAR_PRODUCTO_SALUD():
             # Guardar en la tabla de equipos de indexssalud
             cur.execute("""INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad,
                            estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, checkbox_mantenimiento, checkbox_calibracion, imagen, especificaciones_instalacion, cuidados_basicos,
-                           periodicidad_calibracion, marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                           periodicidad_calibracion, marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud, pdf_salud) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (
                     cod_articulo,
                     nombre_equipo,
@@ -493,7 +515,8 @@ def AGREGAR_PRODUCTO_SALUD():
                     periodicidad_calibracion,
                     marca_equipo_salud,
                     modelo_equipo_salud,
-                    serial_equipo_salud
+                    serial_equipo_salud,
+                    filepath_to_db_pdf
 
                 ),
             )
@@ -512,6 +535,11 @@ def subir_imagen(id_producto):
     file = request.files['imagen_producto']
     if file.filename == '':
         flash('Por favor seleccione un archivo válido', 'error')
+        return redirect(url_for('indexSalud'))
+    
+    # Validar extensión
+    if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+        flash('Solo se permiten archivos PNG, JPG', 'error')
         return redirect(url_for('indexSalud'))
 
     if file:
