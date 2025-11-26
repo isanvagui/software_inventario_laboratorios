@@ -74,7 +74,7 @@
         <div class="right-column">
             <div class="section">
                 <center><h2>Agregar proveedor</h2></center>
-                <form action="{{ url_for('main.AGREGAR_DATOS_PROVEEDOR_SALUD') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ url_for('inventario.AGREGAR_DATOS_PROVEEDOR_SALUD') }}" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="telefono_empresa">Telefono empresa</label>
                         <input type="text" name="telefono_empresa" class="form-control" required>
@@ -107,7 +107,7 @@
                             </button>
                     </center>
                     <div class="btn-eliminar">
-                        <center><a class="btn btn-proveedor btn-lg" href="{{ url_for('main.index_modulo', modulo='modulo') }}">
+                        <center><a class="btn btn-proveedor btn-lg" href="{{ url_for('inventario.index_modulo', modulo='modulo') }}">
                                     <FONT SIZE=3>regresar</FONT>
                                 </a>
                         </center>

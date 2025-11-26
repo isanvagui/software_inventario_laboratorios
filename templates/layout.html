@@ -22,21 +22,21 @@
     </div>
 
     <!-- Siempre visibles -->
-    <a href="{{ url_for('main.home') }}" data-icon="🏠"> Inicio</a>
+    <a href="{{ url_for('inventario.home') }}" data-icon="🏠"> Inicio</a>
     
     <!-- Si estamos en /home para administrador-->
     {% if current_user.rol == 'admin' %}
-      <a href="{{ url_for('main.index_modulo', modulo='salud') }}">👩🏻‍⚕️ Ciencias de la Salud</a>
-      <a href="{{ url_for('main.index_modulo', modulo='gastronomia') }}">👨🏻‍🍳 Gastronomía</a>
-      <a href="{{ url_for('main.index_modulo', modulo='lacma') }}">🏅 LACMA</a>
-      <a href="{{ url_for('main.index_modulo', modulo='arquitectura') }}">👷🏼‍♂️ Arquitectura e Ingeniería</a>
+      <a href="{{ url_for('inventario.index_modulo', modulo='salud') }}">👩🏻‍⚕️ Ciencias de la Salud</a>
+      <a href="{{ url_for('inventario.index_modulo', modulo='gastronomia') }}">👨🏻‍🍳 Gastronomía</a>
+      <a href="{{ url_for('inventario.index_modulo', modulo='lacma') }}">🏅 LACMA</a>
+      <a href="{{ url_for('inventario.index_modulo', modulo='arquitectura') }}">👷🏼‍♂️ Arquitectura e Ingeniería</a>
       
 
     {% elif current_user.rol == 'salud' %}
-      <a href="{{ url_for('main.index_modulo', modulo='salud') }}">👩🏻‍⚕️ Ciencias de la Salud</a>
-      {% if request.path == url_for('main.index_modulo', modulo='salud') %}
-        {% elif request.path == url_for('main.equiposDeBajaSalud') %}
-        <a href="{{ url_for('main.exportExcelDeBaja') }}" data-icon="📂"  id="btnExportarBaja"> Exportar Equipos De Baja</a>
+      <a href="{{ url_for('inventario.index_modulo', modulo='salud') }}">👩🏻‍⚕️ Ciencias de la Salud</a>
+      {% if request.path == url_for('inventario.index_modulo', modulo='salud') %}
+        {% elif request.path == url_for('inventario.equiposDeBajaSalud') %}
+        <a href="{{ url_for('inventario.exportExcelDeBaja') }}" data-icon="📂"  id="btnExportarBaja"> Exportar Equipos De Baja</a>
       {% endif %}
 
     {% elif current_user.rol == 'gastronomia' %}
@@ -55,8 +55,8 @@
 
 
     <!-- Si estamos en modulo SALUD -->
-    {% if request.path == url_for('main.index_modulo', modulo='salud') %}
-      <a href="{{ url_for('main.agregarNuevoProveedor') }}" data-icon="🚚"> Agregar Proveedor</a>
+    {% if request.path == url_for('inventario.index_modulo', modulo='salud') %}
+      <a href="{{ url_for('inventario.agregarNuevoProveedor') }}" data-icon="🚚"> Agregar Proveedor</a>
       <a id="toggleFormBtn" class="btn-indexSalud" data-icon="➕"> Agregar Equipo Manual</a>
       <a id="toggleForm" class="btn-indexSalud" data-icon="📩"> Agregar Equipos Masivos .CSV</a>
       <a id="toggleFor"
@@ -66,14 +66,14 @@
           title="Actualizar fechas y guarda en historial" data-icon="🔁">
            Actualización Masiva
       </a>
-      <a href="{{ url_for('main.equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
-      <a href="{{ url_for('main.historial_prestamo_salud')}}" data-icon="🕒"> Historial de Prestamos</a>
-      <a href="{{ url_for('main.exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
+      <a href="{{ url_for('inventario.equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
+      <a href="{{ url_for('inventario.historial_prestamo_salud')}}" data-icon="🕒"> Historial de Prestamos</a>
+      <a href="{{ url_for('inventario.exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
     {% endif %}
 
     <!-- Si estamos en modulo GASTRONOMIA -->
-    {% if request.path == url_for('main.index_modulo', modulo='gastronomia') %}
-      <a href="{{ url_for('main.agregarNuevoProveedor') }}" data-icon="🚚"> Agregar Proveedor</a>
+    {% if request.path == url_for('inventario.index_modulo', modulo='gastronomia') %}
+      <a href="{{ url_for('inventario.agregarNuevoProveedor') }}" data-icon="🚚"> Agregar Proveedor</a>
       <a id="toggleFormBtn" class="btn-indexSalud" data-icon="➕"> Agregar Equipo Manual</a>
       <a id="toggleForm" class="btn-indexSalud" data-icon="📩"> Agregar Equipos Masivos .CSV</a>
       <a id="toggleFor"
@@ -83,16 +83,16 @@
           title="Actualizar fechas y guarda en historial" data-icon="🔁">
            Actualización Masiva
       </a>
-      <a href="{{ url_for('main.equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
-      <a href="{{ url_for('main.historial_prestamo_salud')}}" data-icon="🕒"> Historial de Prestamos</a>
-      <a href="{{ url_for('main.exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
+      <a href="{{ url_for('inventario.equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
+      <a href="{{ url_for('inventario.historial_prestamo_salud')}}" data-icon="🕒"> Historial de Prestamos</a>
+      <a href="{{ url_for('inventario.exportCsv') }}" data-icon="📄"> Exportar Equipos Activos</a>
 
     {% endif %}
     
     <a class="navbar-brand"></a>
     
     <!-- Cerrar sesión -->
-    <a href="{{ url_for('main.logout') }}" data-icon="🔒" class="logout"> Cerrar Sesión</a>
+    <a href="{{ url_for('inventario.logout') }}" data-icon="🔒" class="logout"> Cerrar Sesión</a>
   </div>
 
   <!-- Contenido principal -->
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const resp = await fetch("{{ url_for('main.exportExcelDeBaja') }}", {
+      const resp = await fetch("{{ url_for('inventario.exportExcelDeBaja') }}", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-  <script type="text/javascript" src="{{url_for('static', filename='js/main.js')}}"></script>
+  <script type="text/javascript" src="{{url_for('static', filename='js/inventario.js')}}"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
     integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
     crossorigin="anonymous"></script>

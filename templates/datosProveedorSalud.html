@@ -126,7 +126,7 @@
         <div class="right-column">
             <div class="section">
                 <center><h2>Datos proveedor</h2></center>
-                <form action="{{ url_for('main.ACTUALIZAR_DATOS_PROVEEDOR_SALUD', id=proveedor.id) }}" method="POST">
+                <form action="{{ url_for('inventario.ACTUALIZAR_DATOS_PROVEEDOR_SALUD', id=proveedor.id) }}" method="POST">
                     <div class="form-group">
                         <label for="telefono_empresa">Telefono empresa</label>
                         <input type="text" id="telefono_empresa" name="telefono_empresa" value="{{ proveedor.telefono_empresa }}" class="form-control">
@@ -156,7 +156,7 @@
                     <center><button type="submit" style="margin: 20px" class="btn btn-update-proveedor btn-lg"><FONT SIZE=3>actualizar</FONT></button></center>
                     
                     <div class="btn-eliminar">
-                        <center><a class="btn btn-update-proveedor btn-lg" href="{{ url_for('main.index_modulo', modulo='modulo') }}">
+                        <center><a class="btn btn-update-proveedor btn-lg" href="{{ url_for('inventario.index_modulo', modulo='modulo') }}">
                                     <FONT SIZE=3>regresar</FONT>
                                 </a>
                         </center>

@@ -101,7 +101,7 @@ def login():
 # @login_required
 def logout():
     logout_user()
-    return redirect(url_for('main.login'))
+    return redirect(url_for('inventario.login'))
 
 @bp.route('/home')
 @login_required
@@ -186,7 +186,7 @@ def ACTUALIZAR_DATOS_PROVEEDOR_SALUD(id):
                                                       (telefono_empresa, nombre_empresa, nombre_contacto, correo, cargo_contacto, ciudad, id))
         db.connection.commit()
     flash('Datos actualizados satisfactorimanete', 'success')
-    return redirect(url_for('main.datosProveedorSalud', id = id))
+    return redirect(url_for('inventario.datosProveedorSalud', id = id))
 
 # ESTA FUNCIÓN ME LLEVA A OTRA VISTA PARA AGREGAR LOS NUEVOS PROVEEDORES
 @bp.route('/agregarNuevoProveedor')
@@ -214,7 +214,7 @@ def AGREGAR_DATOS_PROVEEDOR_SALUD():
                                                      (telefono_empresa, nombre_empresa, nombre_contacto, correo, cargo_contacto, ciudad))
         db.connection.commit()
     flash ('Datos agregados satisfactoriamente', 'success')
-    return redirect(url_for('main.agregarNuevoProveedor')) 
+    return redirect(url_for('inventario.agregarNuevoProveedor')) 
 
 # ---------------------------FUNCIÓN PARA EL MANEJO DE LOS MODULOS-----------------------------
 @bp.route('/<modulo>')
@@ -224,7 +224,7 @@ def index_modulo(modulo):
     
     if modulo not in modulos_validos:
         # flash("Modulo no válido", "error")
-        return redirect(url_for('main.home'))  # <-- redirige al home si no existe
+        return redirect(url_for('inventario.home'))  # <-- redirige al home si no existe
     
     cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
@@ -288,7 +288,7 @@ def AGREGAR_PRODUCTO_SALUD(modulo):
 
         if existing_articulo:
             flash(f'El código de equipo {cod_articulo} ya existe', 'error')
-            return redirect(url_for('main.index_modulo', modulo=modulo))
+            return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
         # PARA EL CHECKBOX Y SEMAFORO DE MANTENIMIENTO
         fecha_mantenimiento = request.form ['fecha_mantenimiento']
@@ -326,7 +326,7 @@ def AGREGAR_PRODUCTO_SALUD(modulo):
         # Validación de fecha_ingreso
         if not fecha_ingreso or fecha_ingreso.strip() == '':
             flash('Verifique la fecha de ingreso. El campo no puede estar vacío.', 'error')
-            return redirect(url_for('main.index_modulo', modulo=modulo))
+            return redirect(url_for('inventario.index_modulo', modulo=modulo))
         
         periodicidad = request.form ['periodicidad']
         # Validación de periodicidad
@@ -334,7 +334,7 @@ def AGREGAR_PRODUCTO_SALUD(modulo):
             periodicidad = int (periodicidad)
         except ValueError:
             flash('Por favor ingresar solo números en la periodicidad del equipo', 'error')
-            return redirect(url_for('main.index_modulo', modulo=modulo))
+            return redirect(url_for('inventario.index_modulo', modulo=modulo))
         
         estado_equipo = request.form ['estado_equipo']
         ubicacion_original = request.form ['ubicacion_original']
@@ -345,19 +345,19 @@ def AGREGAR_PRODUCTO_SALUD(modulo):
         # Manejo de la imagen
         if 'imagen_producto' not in request.files:
             flash('No existe archivo de imagen.', 'error')
-            return redirect(url_for('main.index_modulo', modulo=modulo))
+            return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
         file = request.files['imagen_producto']
 
         if file.filename == '':
             flash('Por favor seleccione un archivo de imagen.', 'error')
-            return redirect(url_for('main.index_modulo', modulo=modulo))
+            return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
         # Validar extensión de imagen
         extensiones_permitidas_img = ('.png', '.jpg', '.jpeg')
         if not file.filename.lower().endswith(extensiones_permitidas_img):
             flash(f'Formato de imagen no permitido. Solo se permiten: {", ".join(extensiones_permitidas_img)}', 'error')
-            return redirect(url_for('main.index_modulo', modulo=modulo))
+            return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
         # Guardar imagen
         filename = secure_filename(file.filename)
@@ -373,7 +373,7 @@ def AGREGAR_PRODUCTO_SALUD(modulo):
                 # Validar extensión del PDF
                 if not file_pdf.filename.lower().endswith('.pdf'):
                     flash('Formato no permitido. Solo se aceptan archivos PDF.', 'error')
-                    return redirect(url_for('main.index_modulo', modulo=modulo))
+                    return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
         # Guardar PDF
         filename_pdf = secure_filename(file_pdf.filename)
@@ -462,7 +462,7 @@ def AGREGAR_PRODUCTO_SALUD(modulo):
         db.connection.commit()
 
         flash (f"Equipo agregado correctamente al módulo {modulo}", "success")
-        return redirect(url_for('main.index_modulo', modulo=modulo)) 
+        return redirect(url_for('inventario.index_modulo', modulo=modulo)) 
     
 # ---------------------------FUNCION PARA CARGAR IMAGEN DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_IMAGEN-----------------------------  
 @bp.route('/subir_imagen/<int:id_producto>', methods=['POST'])
@@ -500,7 +500,7 @@ def subir_imagen(id_producto):
         cur.close()
 
         flash('Imagen cargada correctamente', 'success')
-        return redirect(url_for('main.index_modulo', modulo='modulo'))
+        return redirect(url_for('inventario.index_modulo', modulo='modulo'))
 
 # ---------------------------FUNCION PARA CARGAR PDFS DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_GUIA---------------------------- 
 @bp.route('/subir_pdf/<int:id_producto>', methods=['POST'])
@@ -536,7 +536,7 @@ def subir_pdf(id_producto):
     cur.close()
 
     flash('Guia cargada correctamente', 'success')
-    return redirect(url_for('main.index_modulo', modulo='modulo'))
+    return redirect(url_for('inventario.index_modulo', modulo='modulo'))
 
 # ---------------------------INICIA INSERT MASIVO DE EQUIPOS CSV DE SALUD-----------------------------
 # ---------------------------INSERT MASIVO DE EQUIPOS CSV DE SALUD----------------------
@@ -546,7 +546,7 @@ def insert_csv(modulo):
     file = request.files.get('file')
     if not file or file.filename == '':
         flash('No seleccionó ningún archivo', 'error')
-        return redirect(url_for('main.index_modulo', modulo=modulo))
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
     # Cursor normal
     cur = db.connection.cursor()
@@ -808,7 +808,7 @@ def insert_csv(modulo):
         flash('No se importó ningún equipo.', 'error')
 
     # Redirigir al módulo correcto (no al literal 'modulo')
-    return redirect(url_for('main.index_modulo', modulo=modulo))
+    return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
 # ---------------------------FINALIZA INSERT MASIVO CSV DE SALUD-----------------------------
 
@@ -1427,7 +1427,7 @@ def update_estado_equipo(modulo):
         db.connection.commit()
         cur.close()
         flash('Estado del equipo actualizado correctamente', 'success')
-        return redirect(url_for('main.index_modulo', modulo='modulo'))
+        return redirect(url_for('inventario.index_modulo', modulo='modulo'))
 # =======================================//=======================================================
 # FUNCIÓN PARA MOSTRAR LOS DATOS DE LOS EQUIPOS QUE SE ENCUENTRAN PRESTADOS
 @bp.route('/prestamos_equipos_salud/<cod_articulo>')
@@ -1441,7 +1441,7 @@ def prestamos_equipos_salud(cod_articulo):
 
     if not prestamo_equipo:
         flash('No se encontraron datos para este equipo.', 'warning')
-        return redirect(url_for('main.index_modulo'))
+        return redirect(url_for('inventario.index_modulo'))
 
     return render_template('prestamos_equipos_salud.html', prestamo_equipo=prestamo_equipo)
 # =====================================================================================================
@@ -1531,7 +1531,7 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
                 color = 'yellow'  # Falta menos de tres meses
         else:
             flash('Debe ingresar las fechas de mantenimiento.', 'error')
-            return redirect(url_for('main.index_modulo'))
+            return redirect(url_for('inventario.index_modulo'))
         
         fecha_calibracion = request.form.get('fecha_calibracion') or None
         vencimiento_calibracion = request.form.get('vencimiento_calibracion') or None
@@ -1569,7 +1569,7 @@ def ACTUALIZAR_PRODUCTO_SALUD(id):
         db.connection.commit()
 
         flash('Equipo actualizado satisfactoriamente', 'success')
-        return redirect(url_for('main.index_modulo', modulo='modulo')) 
+        return redirect(url_for('inventario.index_modulo', modulo='modulo')) 
 
 # HISTORIAL FECHAS MANTENIMIENTO Y CALIBRACIÓN
 @bp.route('/historialFechas/<cod_articulo>')
