@@ -108,7 +108,7 @@ if (btnGuardar) {
         return;
     }
 
-    fetch('/guardar_historial_masivo', {
+    fetch('/inventario-laboratorios/guardar_historial_masivo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

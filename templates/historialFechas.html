@@ -60,7 +60,7 @@
                         </thead>
                         <tbody>
                             {% for registro in historial.mantenimiento %}                            
-                            <form method="POST" action="{{ url_for('update_historial_fechas') }}">
+                            <form method="POST" action="{{ url_for('main.update_historial_fechas') }}">
                                 <tr>
                                     <td>{{ registro.cod_articulo}}</td>
                                     <td>
@@ -79,7 +79,7 @@
                                     <td>
                                         {% if registro.id_proveedor_responsable %}
                                         <div class="btn-eliminar">
-                                            <a href="{{ url_for('datosProveedorSalud', id=registro.id_proveedor_responsable) }}" class="btn btn-update-data btn-sm">
+                                            <a href="{{ url_for('main.datosProveedorSalud', id=registro.id_proveedor_responsable) }}" class="btn btn-update-data btn-sm">
                                                 <FONT SIZE=2>datos</FONT>
                                             </a>
                                         </div>
@@ -125,7 +125,7 @@
                                     <td>
                                         {% if registro.id_proveedor_responsable %}
                                         <div class="btn-eliminar"> 
-                                            <a href="{{ url_for('datosProveedorSalud', id=registro.id_proveedor_responsable) }}"  class="btn btn-update-data btn-sm"">
+                                            <a href="{{ url_for('main.datosProveedorSalud', id=registro.id_proveedor_responsable) }}"  class="btn btn-update-data btn-sm"">
                                                 <FONT SIZE=2>datos</FONT>
                                             </a> 
                                         </div>
@@ -158,7 +158,7 @@
             </div>
 
             <div class="btn-eliminar">
-                <center><a class="btn btn-update-data btn-lg" href="{{ url_for('indexSalud') }}">
+                <center><a class="btn btn-update-data btn-lg" href="{{ url_for('main.index_modulo', modulo='modulo') }}">
                             <FONT SIZE=3>regresar</FONT>
                         </a>
                 </center>

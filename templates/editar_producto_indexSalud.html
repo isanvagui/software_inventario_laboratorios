@@ -188,7 +188,7 @@
                 {%if historial %}
                 <td>
                     <div class="btn-eliminar">
-                        <center><a href="{{url_for('historialFechas', cod_articulo = cod_articulo) }}" class="btn btn-hv btn-lg">
+                        <center><a href="{{url_for('main.historialFechas', cod_articulo = cod_articulo) }}" class="btn btn-hv btn-lg">
                                     <FONT SIZE=3>VER HISTORIAL</FONT>
                                 </a>
                         </center>
@@ -201,7 +201,7 @@
 
             <div class="section">
 
-                <form action="/actualizarSalud/{{ producto.0 }}" method="POST">
+                <form action="{{ url_for('main.ACTUALIZAR_PRODUCTO_SALUD', id=producto.0) }}" method="POST">
                     
                     <div class="section">
                         <h2>Especificaciones de instalación</h2>
@@ -280,7 +280,7 @@
                     </div>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <center><button type="submit" style="margin: 20px" class="btn btn-hv btn-lg"><FONT SIZE=3>actualizar</FONT></button></center>
-                    <div class="btn-eliminar"><center><a class="btn btn-hv btn-lg" href="{{ url_for('indexSalud') }}"><FONT SIZE=3>regresar</FONT></a></center></div>
+                    <div class="btn-eliminar"><center><a class="btn btn-hv btn-lg" href="{{ url_for('main.index_modulo', modulo='modulo') }}"><FONT SIZE=3>regresar</FONT></a></center></div>
                 </form>
             </div>
         </div>

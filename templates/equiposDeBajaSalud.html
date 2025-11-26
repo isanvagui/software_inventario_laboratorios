@@ -61,7 +61,7 @@
 
                                     <td>
                                         <div class="btn-eliminar">
-                                            <a href="/datosProveedorSalud/{{ producto.proveedor_responsable }}" class="btn btn-tabla btn-lg">
+                                            <a href="{{ url_for('main.datosProveedorSalud', id=producto.proveedor_responsable) }}" class="btn btn-tabla btn-lg">
                                                 <FONT SIZE=3>datos</FONT>
                                             </a>
                                         </div>
@@ -69,7 +69,7 @@
 
                                     <td>
                                         <div class="text-center mt-2">
-                                            <a href="{{ url_for('GET_PRODUCTO_SALUD', id=producto['id'], vista='equiposDeBajaSalud') }}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
+                                            <a href="{{ url_for('main.GET_PRODUCTO_SALUD', id=producto['id'], vista='equiposDeBajaSalud') }}" class="btn btn-secondary btn-sm"><FONT SIZE=2>Editar/Ver hoja de vida</FONT></a>
                                         </div>
 
                                     </td>

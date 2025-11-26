@@ -14,10 +14,10 @@ class User(UserMixin):
     @classmethod
     def check_password(self, hashed_password, password):
         return check_password_hash(hashed_password, password)
-    
+        
 # print(generate_password_hash ("Medellin2024"))
 
-#(,generate_password_hash) Esta linea la pego en la primer linea despues de (check_password_hash) seguido por la coma
+#(,generate_password_hash) Esta linea la pego en la primer linea despues de (from werkzeug.security import check_password_hash)
 # LUEGO
 # print(generate_password_hash ("Medellin2024")) esta linea se utiliza para crear nuevos usuarios, donde la contraseña se define dentro 
 # de las comillas e iria al final del codigo
