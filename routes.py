@@ -43,7 +43,7 @@ from email_devolucion import send_devolucion_notification_html
 from extensions import db, login_manager
 
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('inventario', __name__)
 
 @bp.context_processor
 def link_onedrive_mantenimiento():
@@ -70,7 +70,7 @@ def evita_cache(response):
 @bp.route('/')
 # @login_required
 def index():
-    return redirect(url_for('main.login'))
+    return redirect(url_for('inventario.login'))
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -84,9 +84,9 @@ def login():
                 login_user(logged_user)
 
                 if logged_user.rol in ['salud', 'gastronomia', 'lacma', 'arquitectura', 'tecnologia']:
-                    return redirect(url_for('main.index_modulo', modulo=logged_user.rol))
+                    return redirect(url_for('inventario.index_modulo', modulo=logged_user.rol))
                 elif logged_user.rol == 'admin':
-                    return redirect(url_for('main.home'))
+                    return redirect(url_for('inventario.home'))
                 else:
                     flash('Rol no autorizado')
                     return redirect(url_for('login'))

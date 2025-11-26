@@ -55,7 +55,7 @@ app.config['UPLOAD_FOLDER'] = 'static/fotos'
 csrf.init_app(app)
 db.init_app(app)
 login_manager.init_app (app)
-login_manager.login_view = "main.login"
+login_manager.login_view = "inventario.login"
 
 def status_401(error):
     return redirect(url_for('login'))
