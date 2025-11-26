@@ -43,7 +43,7 @@ from email_devolucion import send_devolucion_notification_html
 from extensions import db, login_manager
 
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('inventario', __name__)
 
 @bp.context_processor
 def link_onedrive_mantenimiento():
@@ -70,7 +70,7 @@ def evita_cache(response):
 @bp.route('/')
 # @login_required
 def index():
-    return redirect(url_for('main.login'))
+    return redirect(url_for('inventario.login'))
 
 
 @bp.route('/login', methods=['GET', 'POST'])
@@ -101,7 +101,7 @@ def login():
 # @login_required
 def logout():
     logout_user()
-    return redirect(url_for('main.login'))
+    return redirect(url_for('inventario.login'))
 
 @bp.route('/home')
 @login_required
