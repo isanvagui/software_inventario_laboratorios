@@ -505,19 +505,25 @@ def subir_imagen(id_producto):
 # ---------------------------FUNCION PARA CARGAR PDFS DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_GUIA---------------------------- 
 @bp.route('/subir_pdf/<int:id_producto>', methods=['GET', 'POST'])
 def subir_pdf(id_producto):
+
+    # ---- GET ----
+    if request.method == 'GET':
+        flash("Debe seleccionar un archivo PDF.", "warning")
+        return redirect(url_for('inventario.index_modulo', modulo="salud"))
+
+    # ---- POST ----
     if 'pdf_salud' not in request.files:
         flash('No se seleccionó ningún archivo', 'error')
-        return redirect(url_for('inventario.index_modulo'))
+        return redirect(url_for('inventario.index_modulo', modulo="salud"))
 
     file = request.files['pdf_salud']
     if file.filename == '':
         flash('Por favor seleccione un archivo válido', 'error')
-        return redirect(url_for('inventario.index_modulo'))
+        return redirect(url_for('inventario.index_modulo', modulo="salud"))
 
-    # Validar extensión
     if not file.filename.lower().endswith('.pdf'):
         flash('Solo se permiten archivos PDF', 'error')
-        return redirect(url_for('inventario.index_modulo'))
+        return redirect(url_for('inventario.index_modulo', modulo="salud"))
 
     # Guardar archivo
     filename = secure_filename(file.filename)
@@ -525,7 +531,6 @@ def subir_pdf(id_producto):
     ruta_absoluta = os.path.join(bp.root_path, 'static', filepath_to_db_pdf)
     file.save(ruta_absoluta)
 
-    # Actualizar en BD (columna ejemplo: pdf_salud)
     cur = db.connection.cursor()
     cur.execute("""
         UPDATE indexssalud 
@@ -535,8 +540,9 @@ def subir_pdf(id_producto):
     db.connection.commit()
     cur.close()
 
-    flash('Guia cargada correctamente', 'success')
-    return redirect(url_for('inventario.index_modulo', modulo='modulo'))
+    flash('Guía cargada correctamente', 'success')
+    return redirect(url_for('inventario.index_modulo', modulo="modulo"))
+
 
 # ---------------------------INICIA INSERT MASIVO DE EQUIPOS CSV DE SALUD-----------------------------
 # ---------------------------INSERT MASIVO DE EQUIPOS CSV DE SALUD----------------------
