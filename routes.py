@@ -264,6 +264,7 @@ def index_modulo(modulo):
 #     return render_template('indexSalud.html', indexssalud=data, proveedores=proveedores, estadoEquipos=estadoEquipos, ubicacionEquipos=ubicacionEquipos)
 
 @bp.route('/<modulo>/add_productoSalud', methods=['POST'])
+@login_required
 def AGREGAR_PRODUCTO_SALUD(modulo):
     # Validar que el modulo exista
     # if modulo not in ['salud', 'gastronomia', 'lacma', 'arquitectura']:
@@ -504,6 +505,7 @@ def subir_imagen(id_producto):
 
 # ---------------------------FUNCION PARA CARGAR PDFS DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_GUIA---------------------------- 
 @bp.route('/subir_pdf/<int:id_producto>', methods=['GET', 'POST'])
+@login_required
 def subir_pdf(id_producto):
     if 'pdf_salud' not in request.files:
         flash('No se seleccionó ningún archivo', 'error')
