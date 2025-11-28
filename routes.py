@@ -503,7 +503,7 @@ def subir_imagen(id_producto):
         return redirect(url_for('inventario.index_modulo', modulo='modulo'))
 
 # ---------------------------FUNCION PARA CARGAR PDFS DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_GUIA---------------------------- 
-@bp.route('/subir_pdf/<int:id_producto>', methods=['POST'])
+@bp.route('/subir_pdf/<int:id_producto>', methods=['GET', 'POST'])
 def subir_pdf(id_producto):
     if 'pdf_salud' not in request.files:
         flash('No se seleccionó ningún archivo', 'error')
