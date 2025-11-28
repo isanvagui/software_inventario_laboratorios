@@ -264,7 +264,6 @@ def index_modulo(modulo):
 #     return render_template('indexSalud.html', indexssalud=data, proveedores=proveedores, estadoEquipos=estadoEquipos, ubicacionEquipos=ubicacionEquipos)
 
 @bp.route('/<modulo>/add_productoSalud', methods=['POST'])
-@login_required
 def AGREGAR_PRODUCTO_SALUD(modulo):
     # Validar que el modulo exista
     # if modulo not in ['salud', 'gastronomia', 'lacma', 'arquitectura']:
@@ -505,21 +504,20 @@ def subir_imagen(id_producto):
 
 # ---------------------------FUNCION PARA CARGAR PDFS DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_GUIA---------------------------- 
 @bp.route('/subir_pdf/<int:id_producto>', methods=['GET', 'POST'])
-@login_required
 def subir_pdf(id_producto):
     if 'pdf_salud' not in request.files:
         flash('No se seleccionó ningún archivo', 'error')
-        return redirect(url_for('index_modulo'))
+        return redirect(url_for('inventario.index_modulo'))
 
     file = request.files['pdf_salud']
     if file.filename == '':
         flash('Por favor seleccione un archivo válido', 'error')
-        return redirect(url_for('index_modulo'))
+        return redirect(url_for('inventario.index_modulo'))
 
     # Validar extensión
     if not file.filename.lower().endswith('.pdf'):
         flash('Solo se permiten archivos PDF', 'error')
-        return redirect(url_for('index_modulo'))
+        return redirect(url_for('inventario.index_modulo'))
 
     # Guardar archivo
     filename = secure_filename(file.filename)
