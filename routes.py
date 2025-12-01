@@ -265,206 +265,208 @@ def index_modulo(modulo):
 #     # print(ubicacionEquipos)
 #     return render_template('indexSalud.html', indexssalud=data, proveedores=proveedores, estadoEquipos=estadoEquipos, ubicacionEquipos=ubicacionEquipos)
 
-@bp.route('/<modulo>/add_productoSalud', methods=['POST'])
+@bp.route('/<modulo>/add_productoSalud', methods=['GET', 'POST'])
 def AGREGAR_PRODUCTO_SALUD(modulo):
     # Validar que el modulo exista
     # if modulo not in ['salud', 'gastronomia', 'lacma', 'arquitectura']:
     #     flash("Modulo no válido", "error")
     #     return redirect(url_for('home'))
 
-    if request.method =='POST':
-        cod_articulo = request.form ['cod_articulo']
-        nombre_equipo = request.form ['nombre_equipo']
+    if request.method =='GET':
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    
+    cod_articulo = request.form ['cod_articulo']
+    nombre_equipo = request.form ['nombre_equipo']
 
-        # Validación de cod_articulo
-        try:
-            cod_articulo = int(cod_articulo)
-        except ValueError:
-            flash('Por favor ingresar solo números en el código del equipo', 'error')
-            return redirect(url_for('index_modulo', modulo=modulo))
+    # Validación de cod_articulo
+    try:
+        cod_articulo = int(cod_articulo)
+    except ValueError:
+        flash('Por favor ingresar solo números en el código del equipo', 'error')
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
-        # Consulta para verificar si el cod_articulo ya existe en la base de datos
-        cur = db.connection.cursor()
-        cur.execute("SELECT * FROM indexssalud WHERE cod_articulo = %s", (cod_articulo,))
-        existing_articulo = cur.fetchone()
+    # Consulta para verificar si el cod_articulo ya existe en la base de datos
+    cur = db.connection.cursor()
+    cur.execute("SELECT * FROM indexssalud WHERE cod_articulo = %s", (cod_articulo,))
+    existing_articulo = cur.fetchone()
 
-        if existing_articulo:
-            flash(f'El código de equipo {cod_articulo} ya existe', 'error')
-            return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    if existing_articulo:
+        flash(f'El código de equipo {cod_articulo} ya existe', 'error')
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
-        # PARA EL CHECKBOX Y SEMAFORO DE MANTENIMIENTO
-        fecha_mantenimiento = request.form ['fecha_mantenimiento']
-        vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
-        checkbox_mantenimiento = 'Inactivo' # Valor predeterminado
-        
-        # # Obtener hora actual del equipo
-        # hora_actual = datetime.now().date()
-        color = 'verde'
+    # PARA EL CHECKBOX Y SEMAFORO DE MANTENIMIENTO
+    fecha_mantenimiento = request.form ['fecha_mantenimiento']
+    vencimiento_mantenimiento = request.form ['vencimiento_mantenimiento']
+    checkbox_mantenimiento = 'Inactivo' # Valor predeterminado
+    
+    # # Obtener hora actual del equipo
+    # hora_actual = datetime.now().date()
+    color = 'verde'
 
-        # if  vencimiento_mantenimiento:
+    # if  vencimiento_mantenimiento:
 
-        #     vencimiento_mant = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d').date()
-        #     if vencimiento_mant < hora_actual + timedelta(days=0):
-        #         color = 'purple'  # Falta menos de un mes
-        #     elif vencimiento_mant <= hora_actual + timedelta(days=30):
-        #         color = 'red'  # Falta menos de tres meses
-        #     elif vencimiento_mant <= hora_actual + timedelta(days=90):
-        #         color = 'yellow'  # Falta menos de tres meses
-        # else:
-        #     flash('Debe ingresar las fechas de mantenimiento.', 'error')
-        #     return redirect(url_for('indexSalud'))
-        if not vencimiento_mantenimiento:
-            flash('Debe ingresar la fecha vencimiento de mantenimiento.', 'error')
-            print ("Color semaforo:", vencimiento_mantenimiento)
-            return redirect(url_for('index_modulo', modulo=modulo))
-        
+    #     vencimiento_mant = datetime.strptime(vencimiento_mantenimiento, '%Y-%m-%d').date()
+    #     if vencimiento_mant < hora_actual + timedelta(days=0):
+    #         color = 'purple'  # Falta menos de un mes
+    #     elif vencimiento_mant <= hora_actual + timedelta(days=30):
+    #         color = 'red'  # Falta menos de tres meses
+    #     elif vencimiento_mant <= hora_actual + timedelta(days=90):
+    #         color = 'yellow'  # Falta menos de tres meses
+    # else:
+    #     flash('Debe ingresar las fechas de mantenimiento.', 'error')
+    #     return redirect(url_for('indexSalud'))
+    if not vencimiento_mantenimiento:
+        flash('Debe ingresar la fecha vencimiento de mantenimiento.', 'error')
+        print ("Color semaforo:", vencimiento_mantenimiento)
+        return redirect(url_for('index_modulo', modulo=modulo))
+    
 
-        # PARA EL CHECKBOX DE CALIBRACIÓN
-        fecha_calibracion = request.form ['fecha_calibracion'] or None
-        vencimiento_calibracion = request.form ['vencimiento_calibracion'] or None
-        checkbox_calibracion = 'Inactivo' # Valor predeterminado
+    # PARA EL CHECKBOX DE CALIBRACIÓN
+    fecha_calibracion = request.form ['fecha_calibracion'] or None
+    vencimiento_calibracion = request.form ['vencimiento_calibracion'] or None
+    checkbox_calibracion = 'Inactivo' # Valor predeterminado
 
-        fecha_ingreso = request.form ['fecha_ingreso']
-        # Validación de fecha_ingreso
-        if not fecha_ingreso or fecha_ingreso.strip() == '':
-            flash('Verifique la fecha de ingreso. El campo no puede estar vacío.', 'error')
-            return redirect(url_for('inventario.index_modulo', modulo=modulo))
-        
-        periodicidad = request.form ['periodicidad']
-        # Validación de periodicidad
-        try:
-            periodicidad = int (periodicidad)
-        except ValueError:
-            flash('Por favor ingresar solo números en la periodicidad del equipo', 'error')
-            return redirect(url_for('inventario.index_modulo', modulo=modulo))
-        
-        estado_equipo = request.form ['estado_equipo']
-        ubicacion_original = request.form ['ubicacion_original']
-        garantia = request.form ['garantia']
-        criticos = request.form ['criticos']
-        proveedor_responsable = request.form ['proveedor_responsable']
+    fecha_ingreso = request.form ['fecha_ingreso']
+    # Validación de fecha_ingreso
+    if not fecha_ingreso or fecha_ingreso.strip() == '':
+        flash('Verifique la fecha de ingreso. El campo no puede estar vacío.', 'error')
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    
+    periodicidad = request.form ['periodicidad']
+    # Validación de periodicidad
+    try:
+        periodicidad = int (periodicidad)
+    except ValueError:
+        flash('Por favor ingresar solo números en la periodicidad del equipo', 'error')
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    
+    estado_equipo = request.form ['estado_equipo']
+    ubicacion_original = request.form ['ubicacion_original']
+    garantia = request.form ['garantia']
+    criticos = request.form ['criticos']
+    proveedor_responsable = request.form ['proveedor_responsable']
 
-        # Manejo de la imagen
-        if 'imagen_producto' not in request.files:
-            flash('No existe archivo de imagen.', 'error')
-            return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    # Manejo de la imagen
+    if 'imagen_producto' not in request.files:
+        flash('No existe archivo de imagen.', 'error')
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
-        file = request.files['imagen_producto']
+    file = request.files['imagen_producto']
 
-        if file.filename == '':
-            flash('Por favor seleccione un archivo de imagen.', 'error')
-            return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    if file.filename == '':
+        flash('Por favor seleccione un archivo de imagen.', 'error')
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
-        # Validar extensión de imagen
-        extensiones_permitidas_img = ('.png', '.jpg', '.jpeg')
-        if not file.filename.lower().endswith(extensiones_permitidas_img):
-            flash(f'Formato de imagen no permitido. Solo se permiten: {", ".join(extensiones_permitidas_img)}', 'error')
-            return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    # Validar extensión de imagen
+    extensiones_permitidas_img = ('.png', '.jpg', '.jpeg')
+    if not file.filename.lower().endswith(extensiones_permitidas_img):
+        flash(f'Formato de imagen no permitido. Solo se permiten: {", ".join(extensiones_permitidas_img)}', 'error')
+        return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
-        # Guardar imagen
-        filename = secure_filename(file.filename)
-        filepath_to_db_img = os.path.join('fotos', filename).replace("\\", "/")
-        ruta_absoluta = os.path.join(bp.root_path, 'static', filepath_to_db_img)
-        file.save(ruta_absoluta)
+    # Guardar imagen
+    filename = secure_filename(file.filename)
+    filepath_to_db_img = os.path.join('fotos', filename).replace("\\", "/")
+    ruta_absoluta = os.path.join(bp.root_path, 'static', filepath_to_db_img)
+    file.save(ruta_absoluta)
 
-        # Manejo del PDF
-        filepath_to_db_pdf = None
-        if 'guia_pdf' in request.files:
-            file_pdf = request.files['guia_pdf']
-            if file_pdf and file_pdf.filename != '':
-                # Validar extensión del PDF
-                if not file_pdf.filename.lower().endswith('.pdf'):
-                    flash('Formato no permitido. Solo se aceptan archivos PDF.', 'error')
-                    return redirect(url_for('inventario.index_modulo', modulo=modulo))
+    # Manejo del PDF
+    filepath_to_db_pdf = None
+    if 'guia_pdf' in request.files:
+        file_pdf = request.files['guia_pdf']
+        if file_pdf and file_pdf.filename != '':
+            # Validar extensión del PDF
+            if not file_pdf.filename.lower().endswith('.pdf'):
+                flash('Formato no permitido. Solo se aceptan archivos PDF.', 'error')
+                return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
-        # Guardar PDF
-        filename_pdf = secure_filename(file_pdf.filename)
-        filepath_to_db_pdf = os.path.join('pdf', filename_pdf).replace("\\", "/")
-        ruta_absoluta_pdf = os.path.join(bp.root_path, 'static', filepath_to_db_pdf)
-        file_pdf.save(ruta_absoluta_pdf)
+    # Guardar PDF
+    filename_pdf = secure_filename(file_pdf.filename)
+    filepath_to_db_pdf = os.path.join('pdf', filename_pdf).replace("\\", "/")
+    ruta_absoluta_pdf = os.path.join(bp.root_path, 'static', filepath_to_db_pdf)
+    file_pdf.save(ruta_absoluta_pdf)
 
-        especificaciones_instalacion = request.form ['especificaciones_instalacion']
-        cuidados_basicos = request.form ['cuidados_basicos']
-        periodicidad_calibracion = request.form ['periodicidad_calibracion']
-        marca_equipo_salud = request.form ['marca_equipo_salud']
-        modelo_equipo_salud = request.form ['modelo_equipo_salud']
-        serial_equipo_salud = request.form ['serial_equipo_salud']
-        fecha_de_baja = date.today() if estado_equipo == "DE BAJA" else None
+    especificaciones_instalacion = request.form ['especificaciones_instalacion']
+    cuidados_basicos = request.form ['cuidados_basicos']
+    periodicidad_calibracion = request.form ['periodicidad_calibracion']
+    marca_equipo_salud = request.form ['marca_equipo_salud']
+    modelo_equipo_salud = request.form ['modelo_equipo_salud']
+    serial_equipo_salud = request.form ['serial_equipo_salud']
+    fecha_de_baja = date.today() if estado_equipo == "DE BAJA" else None
 
-        cur = db.connection.cursor()
-        if estado_equipo == "DE BAJA":
-            # Guardar en la tabla de equipos de baja
-            cur.execute("""INSERT INTO equipossalud_debaja (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, 
-                                                            vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, 
-                                                            color, checkbox_mantenimiento, checkbox_calibracion, imagen, especificaciones_instalacion, cuidados_basicos, periodicidad_calibracion, 
-                                                            marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud, fecha_de_baja) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                (
-                    cod_articulo,
-                    nombre_equipo,
-                    fecha_mantenimiento,
-                    vencimiento_mantenimiento,
-                    fecha_calibracion,
-                    vencimiento_calibracion,
-                    fecha_ingreso,
-                    periodicidad,
-                    estado_equipo,
-                    ubicacion_original,
-                    garantia,
-                    criticos,
-                    proveedor_responsable,
-                    color,
-                    checkbox_mantenimiento,
-                    checkbox_calibracion,
-                    filepath_to_db_img,
-                    especificaciones_instalacion,
-                    cuidados_basicos,
-                    periodicidad_calibracion,
-                    marca_equipo_salud,
-                    modelo_equipo_salud,
-                    serial_equipo_salud,
-                    fecha_de_baja
-                    
-                ),
-            )
-        else:   
-            print("Insertando equipo en modulo:", modulo)
-            # Guardar en la tabla de equipos de indexssalud
-            cur.execute("""INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad,
-                           estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, checkbox_mantenimiento, checkbox_calibracion, imagen, especificaciones_instalacion, cuidados_basicos,
-                           periodicidad_calibracion, marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud, pdf_salud, modulo) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                (
-                    cod_articulo,
-                    nombre_equipo,
-                    fecha_mantenimiento,
-                    vencimiento_mantenimiento,
-                    fecha_calibracion,
-                    vencimiento_calibracion,
-                    fecha_ingreso,
-                    periodicidad,
-                    estado_equipo,
-                    ubicacion_original,
-                    garantia,
-                    criticos,
-                    proveedor_responsable,
-                    color,
-                    checkbox_mantenimiento,
-                    checkbox_calibracion,
-                    filepath_to_db_img,
-                    especificaciones_instalacion,
-                    cuidados_basicos,
-                    periodicidad_calibracion,
-                    marca_equipo_salud,
-                    modelo_equipo_salud,
-                    serial_equipo_salud,
-                    filepath_to_db_pdf,
-                    modulo
+    cur = db.connection.cursor()
+    if estado_equipo == "DE BAJA":
+        # Guardar en la tabla de equipos de baja
+        cur.execute("""INSERT INTO equipossalud_debaja (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, 
+                                                        vencimiento_calibracion, fecha_ingreso, periodicidad, estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, 
+                                                        color, checkbox_mantenimiento, checkbox_calibracion, imagen, especificaciones_instalacion, cuidados_basicos, periodicidad_calibracion, 
+                                                        marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud, fecha_de_baja) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (
+                cod_articulo,
+                nombre_equipo,
+                fecha_mantenimiento,
+                vencimiento_mantenimiento,
+                fecha_calibracion,
+                vencimiento_calibracion,
+                fecha_ingreso,
+                periodicidad,
+                estado_equipo,
+                ubicacion_original,
+                garantia,
+                criticos,
+                proveedor_responsable,
+                color,
+                checkbox_mantenimiento,
+                checkbox_calibracion,
+                filepath_to_db_img,
+                especificaciones_instalacion,
+                cuidados_basicos,
+                periodicidad_calibracion,
+                marca_equipo_salud,
+                modelo_equipo_salud,
+                serial_equipo_salud,
+                fecha_de_baja
+                
+            ),
+        )
+    else:   
+        print("Insertando equipo en modulo:", modulo)
+        # Guardar en la tabla de equipos de indexssalud
+        cur.execute("""INSERT INTO indexssalud (cod_articulo, nombre_equipo, fecha_mantenimiento, vencimiento_mantenimiento, fecha_calibracion, vencimiento_calibracion, fecha_ingreso, periodicidad,
+                        estado_equipo, ubicacion_original, garantia, criticos, proveedor_responsable, color, checkbox_mantenimiento, checkbox_calibracion, imagen, especificaciones_instalacion, cuidados_basicos,
+                        periodicidad_calibracion, marca_equipo_salud, modelo_equipo_salud, serial_equipo_salud, pdf_salud, modulo) VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (
+                cod_articulo,
+                nombre_equipo,
+                fecha_mantenimiento,
+                vencimiento_mantenimiento,
+                fecha_calibracion,
+                vencimiento_calibracion,
+                fecha_ingreso,
+                periodicidad,
+                estado_equipo,
+                ubicacion_original,
+                garantia,
+                criticos,
+                proveedor_responsable,
+                color,
+                checkbox_mantenimiento,
+                checkbox_calibracion,
+                filepath_to_db_img,
+                especificaciones_instalacion,
+                cuidados_basicos,
+                periodicidad_calibracion,
+                marca_equipo_salud,
+                modelo_equipo_salud,
+                serial_equipo_salud,
+                filepath_to_db_pdf,
+                modulo
 
-                ),
-            )
-        db.connection.commit()
+            ),
+        )
+    db.connection.commit()
 
-        flash (f"Equipo agregado correctamente al módulo {modulo}", "success")
-        return redirect(url_for('inventario.index_modulo', modulo=modulo)) 
+    flash (f"Equipo agregado correctamente al módulo {modulo}", "success")
+    return redirect(url_for('inventario.index_modulo', modulo=modulo)) 
     
 # ---------------------------FUNCION PARA CARGAR IMAGEN DEL EQUIPO DESDE LA TABLA indexSalud EN EL CAMPO ACCIONES SUBIR_IMAGEN-----------------------------  
 @bp.route('/subir_imagen/<int:id_producto>', methods=['POST'])
