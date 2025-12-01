@@ -369,21 +369,23 @@ def AGREGAR_PRODUCTO_SALUD(modulo):
     ruta_absoluta = os.path.join(bp.root_path, 'static', filepath_to_db_img)
     file.save(ruta_absoluta)
 
-    # Manejo del PDF
+    # -------------------------
+    #   MANEJO DE PDF
+    # -------------------------
+    file_pdf = request.files.get("guia_pdf")
     filepath_to_db_pdf = None
-    if 'guia_pdf' in request.files:
-        file_pdf = request.files['guia_pdf']
-        if file_pdf and file_pdf.filename != '':
-            # Validar extensión del PDF
-            if not file_pdf.filename.lower().endswith('.pdf'):
-                flash('Formato no permitido. Solo se aceptan archivos PDF.', 'error')
-                return redirect(url_for('inventario.index_modulo', modulo=modulo))
 
-    # Guardar PDF
-    filename_pdf = secure_filename(file_pdf.filename)
-    filepath_to_db_pdf = os.path.join('pdf', filename_pdf).replace("\\", "/")
-    ruta_absoluta_pdf = os.path.join(bp.root_path, 'static', filepath_to_db_pdf)
-    file_pdf.save(ruta_absoluta_pdf)
+    if file_pdf and file_pdf.filename != "":
+        if not file_pdf.filename.lower().endswith(".pdf"):
+            flash("Solo se permiten archivos PDF.", "error")
+            return redirect(url_for('inventario.index_modulo', modulo=modulo))
+
+        filename_pdf = secure_filename(file_pdf.filename)
+        filepath_to_db_pdf = f"pdf/{filename_pdf}"
+
+        ruta_pdf = os.path.join(bp.root_path, "static", filepath_to_db_pdf)
+        os.makedirs(os.path.dirname(ruta_pdf), exist_ok=True)
+        file_pdf.save(ruta_pdf)
 
     especificaciones_instalacion = request.form ['especificaciones_instalacion']
     cuidados_basicos = request.form ['cuidados_basicos']
