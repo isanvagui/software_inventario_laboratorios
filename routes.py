@@ -44,6 +44,8 @@ from extensions import db, login_manager
 
 
 bp = Blueprint('inventario', __name__)
+UPLOAD_FOLDER_PDF = "/var/www/software_inventario_laboratorios/static/pdf"
+
 
 @bp.context_processor
 def link_onedrive_mantenimiento():
@@ -527,8 +529,8 @@ def subir_pdf(id_producto):
 
     # Guardar archivo
     filename = secure_filename(file.filename)
-    filepath_to_db_pdf = os.path.join('pdf', filename).replace("\\", "/")
-    ruta_absoluta = os.path.join(bp.root_path, 'static', filepath_to_db_pdf)
+    filepath_to_db_pdf = f"pdf/{filename}"
+    ruta_absoluta = os.path.join(UPLOAD_FOLDER_PDF, filename)
     file.save(ruta_absoluta)
 
     cur = db.connection.cursor()

@@ -49,7 +49,7 @@ app.register_blueprint(bp, url_prefix='/inventario-laboratorios')
 
 # Donde configuro mi clave
 app.config['SECRET_KEY'] = 'mysecretkey'
-app.config['UPLOAD_FOLDER'] = 'static/fotos'
+# app.config['UPLOAD_FOLDER'] = 'static/fotos'
 
 # Inicializo las extenciones
 csrf.init_app(app)
