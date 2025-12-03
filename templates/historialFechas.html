@@ -107,7 +107,7 @@
                             {% endfor %}
                             <!-- Mostrar registros de calibración -->
                             {% for registro in historial.calibracion %}                            
-                            <form method="POST" action="{{ url_for('update_historial_fechas_calibracion') }}">
+                            <form method="POST" action="{{ url_for('inventario.update_historial_fechas_calibracion') }}">
                                 <tr>
                                     <td>{{ registro.cod_articulo}}</td>
                                     <td>
