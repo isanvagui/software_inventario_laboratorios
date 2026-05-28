@@ -32,19 +32,23 @@
       <a href="{{ url_for('inventario.index_modulo', modulo='arquitectura') }}">👷🏼‍♂️ Arquitectura e Ingeniería</a>
       
 
-    {% elif current_user.rol == 'salud' %}
-      <a href="{{ url_for('inventario.index_modulo', modulo='salud') }}">👩🏻‍⚕️ Ciencias de la Salud</a>
-      {% if request.path == url_for('inventario.index_modulo', modulo='salud') %}
-        {% elif request.path == url_for('inventario.equiposDeBajaSalud') %}
-        <a href="{{ url_for('inventario.exportExcelDeBaja') }}" data-icon="📂"  id="btnExportarBaja"> Exportar Equipos De Baja</a>
-      {% endif %}
+    {% if 'DeBaja' in request.path or 'baja' in request.path.lower() %}
+          <a href="{{ url_for('inventario.exportExcelDeBaja') }}" data-icon="📂" id="btnExportarBaja"> Exportar Equipos De Baja</a>
+    {% endif %}
 
-    {% elif current_user.rol == 'gastronomia' %}
-      <a href="{{ url_for('index_modulo', modulo='gastronomia') }}">👨🏻‍🍳 Gastronomía</a>
-      {% if request.path == url_for('index_modulo', modulo='gastronomia') %}
-        {% elif request.path == url_for('equiposDeBajaSalud') %}
-        <a href="{{ url_for('exportExcelDeBaja') }}" data-icon="📂"  id="btnExportarBaja"> Exportar Equipos De Baja</a>
-      {% endif %}
+      {% elif current_user.rol == 'salud' %}
+        <a href="{{ url_for('inventario.index_modulo', modulo='salud') }}">👩🏻‍⚕️ Ciencias de la Salud</a>
+        
+        {% if request.path == url_for('inventario.equiposDeBajaSalud') %}
+          <a href="{{ url_for('inventario.exportExcelDeBaja') }}" data-icon="📂" id="btnExportarBaja"> Exportar Equipos De Baja</a>
+        {% endif %}
+
+      {% elif current_user.rol == 'gastronomia' %}
+        <a href="{{ url_for('index_modulo', modulo='gastronomia') }}">👨🏻‍🍳 Gastronomía</a>
+
+        {% if request.path == url_for('inventario.equiposDeBajaSalud') %}
+          <a href="{{ url_for('invetario.exportExcelDeBaja') }}" data-icon="📂"  id="btnExportarBaja"> Exportar Equipos De Baja</a>
+        {% endif %}
 
     {% elif current_user.rol == 'lacma' %}
       <a href="{{ url_for('index_modulo', modulo='lacma') }}" data-icon="🏅"> LACMA</a>
@@ -53,6 +57,11 @@
       <a href="{{ url_for('index_modulo', modulo='arquitectura') }}" data-icon="👷🏼‍♂️"> Arquitectura e Ingeniería</a>
     {% endif %}
 
+
+    {% set modulo_actual = request.view_args.get('modulo') if request.view_args else none %}
+    {% if modulo_actual in ['salud', 'gastronomia', 'lacma', 'arquitectura'] %}
+      <a href="{{ url_for('inventario.protocolos_generales', modulo=modulo_actual) }}" data-icon="📜"> Protocolos Generales</a>
+    {% endif %}
 
     <!-- Si estamos en modulo SALUD -->
     {% if request.path == url_for('inventario.index_modulo', modulo='salud') %}
@@ -64,7 +73,7 @@
           data-bs-toggle="modal"
           data-bs-target="#modalOpciones"
           title="Actualizar fechas y guarda en historial" data-icon="🔁">
-           Actualización Masiva
+           Actualización Masiva MTO-CA
       </a>
       <a href="{{ url_for('inventario.equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
       <a href="{{ url_for('inventario.historial_prestamo_salud')}}" data-icon="🕒"> Historial de Prestamos</a>
@@ -81,7 +90,7 @@
           data-bs-toggle="modal"
           data-bs-target="#modalOpciones"
           title="Actualizar fechas y guarda en historial" data-icon="🔁">
-           Actualización Masiva
+           Actualización Masiva MTO-CA
       </a>
       <a href="{{ url_for('inventario.equiposDeBajaSalud') }}" data-icon="🗑️"> Equipos de Baja</a>
       <a href="{{ url_for('inventario.historial_prestamo_salud')}}" data-icon="🕒"> Historial de Prestamos</a>

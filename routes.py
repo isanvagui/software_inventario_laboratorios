@@ -1324,6 +1324,8 @@ def update_estado_equipo(modulo):
             # Actualizar el estado y marcar como dado de baja en indexssalud
             cur.execute("""UPDATE indexssalud SET estado_equipo = %s, enable = 0, de_baja = 1 WHERE cod_articulo = %s""", (nuevo_estado, cod_articulo))
 
+            cur.execute("""UPDATE protocolos SET enable = 0, de_baja = 1, fecha_baja = NOW() WHERE equipo_id = %s""", (producto_id,))
+
             # Verificar si el equipo ya está en equipossalud_debaja
             cur.execute('SELECT * FROM equipossalud_debaja WHERE cod_articulo = %s', (cod_articulo,))
             equipo_existente = cur.fetchone()
@@ -1736,3 +1738,155 @@ def ELIMINAR_CONTACTO_SALUD(id):
     db.connection.commit()
     flash('Equipo eliminado satisfactoriamente', 'success')
     return redirect(url_for('index_modulo', modulo='modulo'))
+
+# ==========================INICIA FUNCIÓN PROTOCOLOS POR EQUIPO=====================
+@bp.route('/<modulo>/protocolos/equipo/<int:equipo_id>')
+@login_required
+def protocolo_equipo(modulo,equipo_id):
+
+    modulos_validos = ['salud', 'gastronomia', 'lacma', 'arquitectura']
+
+    if modulo not in modulos_validos:
+        return redirect(url_for('inventario.home'))
+
+    cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    try:
+        cur.execute("""
+            SELECT
+                id,
+                cod_articulo,
+                nombre_equipo,
+                estado_equipo,
+                ubicacion_original,
+                marca_equipo_salud,
+                modelo_equipo_salud,
+                serial_equipo_salud,
+                modulo
+            FROM indexssalud
+            WHERE id = %s
+              AND modulo = %s
+              AND enable = 1
+              AND de_baja = 0
+            LIMIT 1
+        """, (equipo_id, modulo))
+
+        equipo = cur.fetchone()
+
+        if not equipo:
+            flash('Equipo no encontrado o no disponible para protocolos.', 'warning')
+            return redirect(url_for('inventario.home'))
+        
+        cur.execute("""
+            SELECT
+                id,
+                equipo_id,
+                anio,
+                actividades_de_mantenimiento_preventivo,
+                proveedor_interno,
+                proveedor_externo,
+                enable,
+                de_baja,
+                fecha_baja
+            FROM protocolos
+            WHERE equipo_id = %s
+              AND enable = 1
+              AND de_baja = 0
+            ORDER BY anio DESC
+        """, (equipo_id,))
+        protocolos = cur.fetchall()
+    finally:
+        cur.close()
+
+    return render_template(
+        'protocolo_equipo.html',
+        equipo=equipo,
+        protocolos=protocolos,
+        modulo=modulo
+    )
+
+@bp.route('/<modulo>/protocolos')
+@login_required
+def protocolos_generales(modulo):
+    modulos_validos = ['salud', 'gastronomia', 'lacma', 'arquitectura']
+
+    if modulo not in modulos_validos:
+        return redirect(url_for('inventario.home'))
+
+    cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    cur.execute("""
+        SELECT
+            p.id,
+            p.equipo_id,
+            p.anio,
+            p.actividades_de_mantenimiento_preventivo,
+            p.proveedor_interno,
+            p.proveedor_externo,
+            i.id AS equipo_id,
+            i.cod_articulo,
+            i.nombre_equipo,
+            i.modulo
+        FROM protocolos p
+        INNER JOIN indexssalud i ON i.id = p.equipo_id
+        WHERE p.enable = 1
+          AND p.de_baja = 0
+          AND i.enable = 1
+          AND i.de_baja = 0
+          AND i.modulo = %s
+        ORDER BY i.nombre_equipo ASC, p.anio DESC
+    """, (modulo,))
+
+    protocolos = cur.fetchall()
+    cur.close()
+
+    return render_template(
+        'protocolos_generales.html',
+        protocolos=protocolos,
+        modulo=modulo
+    )
+
+@bp.route('/<modulo>/protocolos/equipo/<int:equipo_id>/agregar', methods=['POST'])
+@login_required
+def agregar_protocolo(modulo, equipo_id):
+    modulos_validos = ['salud', 'gastronomia', 'lacma', 'arquitectura']
+    if modulo not in modulos_validos:
+        return redirect(url_for('inventario.home'))
+
+    # 1. Capturar los datos del formulario del modal
+    anio = request.form.get('anio')
+    actividades = request.form.get('actividades')
+    proveedor_interno = request.form.get('proveedor_interno', '')
+    proveedor_externo = request.form.get('proveedor_externo', '')
+
+    # Validaciones básicas de backend
+    if not anio or not actividades:
+        flash('El año y las actividades de mantenimiento son campos obligatorios.', 'danger')
+        return redirect(url_for('inventario.protocolo_equipo', modulo=modulo, equipo_id=equipo_id))
+
+    cur = db.connection.cursor()
+    try:
+        # 2. Insertar en la base de datos vinculando el equipo_id
+        cur.execute("""
+            INSERT INTO protocolos (
+                equipo_id, 
+                anio, 
+                actividades_de_mantenimiento_preventivo, 
+                proveedor_interno, 
+                proveedor_externo, 
+                enable, 
+                de_baja
+            ) VALUES (%s, %s, %s, %s, %s, 1, 0)
+        """, (equipo_id, anio, actividades, proveedor_interno, proveedor_externo))
+        
+        db.connection.commit()
+        flash('¡Protocolo de mantenimiento agregado con éxito!', 'success')
+        
+    except Exception as e:
+        db.connection.rollback()
+        flash(f'Error al guardar el protocolo: {str(e)}', 'danger')
+    finally:
+        cur.close()
+
+    # 3. Redirigir a la misma pantalla para ver el cambio reflejado
+    return redirect(url_for('inventario.protocolo_equipo', modulo=modulo, equipo_id=equipo_id))

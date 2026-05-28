@@ -455,6 +455,10 @@
                                         {% else %}
                                             <span class="text-muted">SIN GUIA</span>
                                         {% endif %}
+                                        <br>
+                                        <div class="btn-eliminar">
+                                            <a href="{{ url_for('inventario.protocolo_equipo',  modulo=producto.modulo, equipo_id=producto.id) }}" class="btn btn-secondary btn-sm"> <FONT SIZE=2>Protocolo</FONT> </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -664,8 +668,8 @@ function pintarSemaforos() {
             }
 
             el.style.backgroundColor = color;
-            el.style.width = "45px";
-            el.style.height = "45px";
+            el.style.width = "35px";
+            el.style.height = "35px";
             el.style.borderRadius = "50%";           // 🔵 Hace el div completamente redondo
             el.style.display = "inline-block";
             el.style.border = "1px solid #333";      // 🔲 Borde opcional para mejor visibilidad
